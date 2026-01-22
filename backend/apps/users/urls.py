@@ -1,0 +1,22 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Authentication
+    path('register/', views.UserRegistrationView.as_view(), name='register'),
+    path('login/', views.CustomTokenObtainPairView.as_view(), name='login'),
+
+    # User management
+    path('me/', views.UserDetailView.as_view(), name='user-detail'),
+    path('profile/', views.UserProfileView.as_view(), name='user-profile'),
+    path('change-password/', views.ChangePasswordView.as_view(),
+         name='change-password'),
+
+    # Notifications
+    path('notifications/', views.NotificationListView.as_view(),
+         name='notification-list'),
+    path('notifications/<int:pk>/read/',
+         views.MarkNotificationAsReadView.as_view(), name='mark-notification-read'),
+    path('notifications/read-all/', views.MarkAllNotificationsAsReadView.as_view(),
+         name='mark-all-notifications-read'),
+]
