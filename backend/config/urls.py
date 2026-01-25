@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
-from apps.users.views import CustomTokenObtainPairView, UserRegistrationView, UserProfileView, change_password
+from apps.users.views import CustomTokenObtainPairView, UserRegistrationView, UserProfileView, ChangePasswordView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/register/', UserRegistrationView.as_view(), name='register'),
     path('api/auth/profile/', UserProfileView.as_view(), name='user-profile'),
-    path('api/auth/change-password/', change_password, name='change-password'),
+    path('api/auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
 
     # App endpoints
     path('api/users/', include('apps.users.urls')),
