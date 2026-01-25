@@ -1,14 +1,16 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 // Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
-// import Register from './pages/Register';
+import Register from './pages/Register';
 // import Services from './pages/Services';
 // import ServiceDetail from './pages/ServiceDetail';
 import BusinessDashboard from './pages/BusinessDashboard';
@@ -32,24 +34,100 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            {/* <Route path="/register" element={<Register />} /> */}
+
+            {/* Login/Register - Protected by PublicRoute */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+
             {/* <Route path="/services" element={<Services />} /> */}
             {/* <Route path="/services/:id" element={<ServiceDetail />} /> */}
-            {/* <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} /> */}
-            
-            {/* Customer Routes */}
-            {/* <Route path="/appointments" element={<MyAppointments />} /> */}
-            {/* <Route path="/profile" element={<CustomerProfile />} /> */}
-            {/* <Route path="/book/:serviceId" element={<BookAppointment />} /> */}
-            
-            {/* Business Routes */}
-            <Route path="/dashboard" element={<BusinessDashboard />} />
-            {/* <Route path="/dashboard/services" element={<BusinessServices />} /> */}
-            {/* <Route path="/dashboard/appointments" element={<BusinessAppointments />} /> */}
-            {/* <Route path="/dashboard/employees" element={<BusinessEmployees />} /> */}
-            {/* <Route path="/dashboard/schedule" element={<BusinessSchedule />} /> */}
+            {/* <Route path="/about" element={<About />} /> */}
+            {/* <Route path="/contact" element={<Contact />} /> */}
+
+            {/* Customer Routes - Protected for logged-in customers */}
+            {/* <Route 
+              path="/appointments" 
+              element={
+                <ProtectedRoute allowedUserTypes={['customer']}>
+                  <MyAppointments />
+                </ProtectedRoute>
+              } 
+            /> */}
+            {/* <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <CustomerProfile />
+                </ProtectedRoute>
+              } 
+            /> */}
+            {/* <Route 
+              path="/book/:serviceId" 
+              element={
+                <ProtectedRoute>
+                  <BookAppointment />
+                </ProtectedRoute>
+              } 
+            /> */}
+
+            {/* Business Routes - Protected for business owners only */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowedUserTypes={['business_owner']}>
+                  <BusinessDashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* <Route 
+              path="/dashboard/services" 
+              element={
+                <ProtectedRoute allowedUserTypes={['business_owner']}>
+                  <BusinessServices />
+                </ProtectedRoute>
+              } 
+            /> */}
+            {/* <Route 
+              path="/dashboard/appointments" 
+              element={
+                <ProtectedRoute allowedUserTypes={['business_owner']}>
+                  <BusinessAppointments />
+                </ProtectedRoute>
+              } 
+            /> */}
+            {/* <Route 
+              path="/dashboard/employees" 
+              element={
+                <ProtectedRoute allowedUserTypes={['business_owner']}>
+                  <BusinessEmployees />
+                </ProtectedRoute>
+              } 
+            /> */}
+            {/* <Route 
+              path="/dashboard/schedule" 
+              element={
+                <ProtectedRoute allowedUserTypes={['business_owner']}>
+                  <BusinessSchedule />
+                </ProtectedRoute>
+              } 
+            /> */}
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>
         <ToastContainer

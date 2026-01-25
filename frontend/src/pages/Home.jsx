@@ -59,7 +59,7 @@ const Home = () => {
             <div className="text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
                 Book Appointments with{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
+                <span className="bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
                   Ease
                 </span>
               </h1>

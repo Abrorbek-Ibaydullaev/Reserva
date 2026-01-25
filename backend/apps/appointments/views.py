@@ -17,7 +17,7 @@ from .serializers import (
 )
 from apps.schedules.views import CheckAvailabilityView
 from apps.services.models import Service
-from apps.users.models import Notification
+# from apps.users.models import Notification
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
