@@ -51,16 +51,16 @@ const Register = () => {
 
             const result = await authRegister(registerData);
 
-            if (result.success) {
-                alert('Registration successful!');
-                if (userType === 'business_owner') {
-                    navigate('/dashboard', { replace: true });
-                } else {
-                    navigate('/services', { replace: true });
-                }
-            } else {
-                setError(result.message || 'Registration failed. Please try again.');
-            }
+            // if (result.success) {
+            //     alert('Registration successful!');
+            //     if (userType === 'business_owner') {
+            //         navigate('/dashboard', { replace: true });
+            //     } else {
+            //         navigate('/services', { replace: true });
+            //     }
+            // } else {
+            //     setError(result.message || 'Registration failed. Please try again.');
+            // }
         } catch (err) {
             setError('An error occurred during registration. Please try again.');
             console.error('Registration error:', err);
@@ -329,15 +329,15 @@ const Register = () => {
 
                                 {/* Confirm Password */}
                                 <div>
-                                    <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-900 mb-2">
+                                    <label htmlFor="password2" className="block text-sm font-medium text-gray-900 mb-2">
                                         Confirm Password
                                     </label>
                                     <div className="relative">
                                         <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                         <input
-                                            id="confirm_password"
+                                            id="password2"
                                             type={showConfirmPassword ? 'text' : 'password'}
-                                            {...register('confirm_password', {
+                                            {...register('password2', {
                                                 required: 'Please confirm your password',
                                                 validate: value => value === password || 'Passwords do not match',
                                             })}
@@ -356,8 +356,8 @@ const Register = () => {
                                             )}
                                         </button>
                                     </div>
-                                    {errors.confirm_password && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.confirm_password.message}</p>
+                                    {errors.password2 && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.password2.message}</p>
                                     )}
                                 </div>
                             </div>

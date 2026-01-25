@@ -1,8 +1,9 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/api';
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -25,8 +26,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         clearAuthData();
       }
-    } catch (error) {
-      console.error('Auth check error:', error);
+    } catch {
       clearAuthData();
     } finally {
       setLoading(false);
@@ -34,74 +34,95 @@ export const AuthProvider = ({ children }) => {
   };
 
   const clearAuthData = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user_data');
+    localStorage.clear();
     setUser(null);
     setIsAuthenticated(false);
   };
 
+  /**
+   * LOGIN
+   */
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const result = await authService.login(email, password);
+      await authService.login(email, password);
 
-      if (result.success) {
-        const userData = result.user || authService.getCurrentUser();
-        setUser(userData);
-        setIsAuthenticated(true);
-        return { success: true, user: userData };
-      }
+      const userData = authService.getCurrentUser();
+      setUser(userData);
+      setIsAuthenticated(true);
 
-      return { success: false, message: result.message };
+      return { success: true, user: userData };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Login failed' };
+      return {
+        success: false,
+        message: error.response?.data || 'Login failed',
+      };
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * REGISTER
+   */
   const register = async (userData) => {
     try {
       setLoading(true);
-      const result = await authService.register(userData);
 
-      if (result.success) {
-        if (result.user) {
-          setUser(result.user);
-          setIsAuthenticated(true);
-          return { success: true, user: result.user };
-        }
-        return { success: true, message: 'Registration successful' };
-      }
+      // Ensure password2
+      const payload = {
+        ...userData,
+        password2: userData.password2 || userData.password,
+      };
 
-      return { success: false, message: result.message };
+      // 1. Register
+      await authService.register(payload);
+
+      // 2. Auto-login
+      await authService.login(payload.email, payload.password);
+
+      // 3. Load user
+      const currentUser = authService.getCurrentUser();
+
+      setUser(currentUser);
+      setIsAuthenticated(true);
+
+      return { success: true, user: currentUser };
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, message: 'Registration failed' };
+      return {
+        success: false,
+        message: error.response?.data || 'Registration failed',
+      };
     } finally {
       setLoading(false);
     }
   };
 
+
+  /**
+   * LOGOUT
+   */
   const logout = () => {
     authService.logout();
     clearAuthData();
     navigate('/login');
   };
 
-  const value = {
-    user,
-    isAuthenticated,
-    loading,
-    login,
-    register,
-    logout,
-    checkAuthStatus
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout,
+        checkAuthStatus,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
