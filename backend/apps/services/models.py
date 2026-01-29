@@ -13,6 +13,7 @@ class Category(models.Model):
                             null=True)  # Font Awesome icon class
     image = models.ImageField(
         upload_to='category_images/', blank=True, null=True)
+    is_predefined = models.BooleanField(default=False, help_text="Pre-defined category that cannot be deleted")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -17,7 +17,7 @@ User = get_user_model()
 
 
 class CategoryListView(generics.ListAPIView):
-    """List all categories."""
+    """List all pre-defined categories. Categories are managed via management commands only."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny]

@@ -31,10 +31,21 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_at')
+    list_display = ('name', 'is_predefined', 'created_at')
     search_fields = ('name', 'description')
-    prepopulated_fields = {'slug': ('name',)} if hasattr(
-        Category, 'slug') else {}
+    readonly_fields = ('created_at', 'updated_at', 'name', 'description', 'icon', 'image', 'is_predefined')
+    
+    def has_add_permission(self, request):
+        """Prevent adding new categories through admin."""
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        """Prevent deleting categories through admin."""
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        """Allow viewing but not editing categories."""
+        return True
 
 
 @admin.register(ServiceReview)

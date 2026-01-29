@@ -11,7 +11,7 @@ import PublicRoute from './components/PublicRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-// import Services from './pages/Services';
+import Services from './pages/Services';
 // import ServiceDetail from './pages/ServiceDetail';
 import BusinessDashboard from './pages/BusinessDashboard';
 // import CustomerProfile from './pages/CustomerProfile';
@@ -54,6 +54,7 @@ function App() {
             />
 
             {/* <Route path="/services" element={<Services />} /> */}
+            <Route path="/services" element={<Services />} />
             {/* <Route path="/services/:id" element={<ServiceDetail />} /> */}
             {/* <Route path="/about" element={<About />} /> */}
             {/* <Route path="/contact" element={<Contact />} /> */}
