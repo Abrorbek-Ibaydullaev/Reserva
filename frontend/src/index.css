@@ -8,6 +8,10 @@
 
 /* Base styles */
 @layer base {
+  html, body {
+    scroll-behavior: auto;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     margin: 0;

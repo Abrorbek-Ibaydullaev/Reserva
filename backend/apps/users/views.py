@@ -1,16 +1,18 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.db import models
 from .models import UserProfile, Notification
 from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
     UserProfileSerializer,
     ChangePasswordSerializer,
-    NotificationSerializer
+    NotificationSerializer,
+    BusinessSerializer
 )
 
 User = get_user_model()
@@ -109,3 +111,21 @@ class MarkAllNotificationsAsReadView(APIView):
         Notification.objects.filter(
             user=request.user, is_read=False).update(is_read=True)
         return Response({"message": "All notifications marked as read."}, status=status.HTTP_200_OK)
+
+
+class BusinessListView(generics.ListAPIView):
+    """List all business owners with their service counts."""
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['first_name', 'last_name', 'email']
+
+    def get_queryset(self):
+        return User.objects.filter(user_type='business_owner').annotate(
+            services_count=models.Count('services', filter=models.Q(services__is_active=True))
+        ).filter(services_count__gt=0).order_by('-services_count')
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return BusinessSerializer
+        return UserSerializer

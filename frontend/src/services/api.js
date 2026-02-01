@@ -223,6 +223,7 @@ export const userService = {
         api.put(`/users/notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
         api.post('/users/notifications/read-all/'),
+    getBusinesses: () => api.get('/users/businesses/'),
 };
 
 export default api;

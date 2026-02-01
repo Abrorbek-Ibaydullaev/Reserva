@@ -67,3 +67,21 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
         read_only_fields = ('user', 'created_at')
+
+
+class BusinessSerializer(serializers.ModelSerializer):
+    """Serializer for business owners with service count."""
+    full_name = serializers.SerializerMethodField()
+    services_count = serializers.SerializerMethodField()
+    profile = UserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name', 'full_name',
+                  'phone_number', 'profile_picture', 'services_count', 'profile')
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+
+    def get_services_count(self, obj):
+        return getattr(obj, 'services_count', 0)

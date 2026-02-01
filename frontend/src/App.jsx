@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout/Layout';
+import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
@@ -12,6 +14,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Services from './pages/Services';
+import BusinessDetail from './pages/BusinessDetail';
 // import ServiceDetail from './pages/ServiceDetail';
 import BusinessDashboard from './pages/BusinessDashboard';
 // import CustomerProfile from './pages/CustomerProfile';
@@ -28,8 +31,10 @@ import BusinessDashboard from './pages/BusinessDashboard';
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <ThemeProvider>
+      <Router>
+        <ScrollToTop />
+        <AuthProvider>
         <Layout>
           <Routes>
             {/* Public Routes */}
@@ -55,6 +60,7 @@ function App() {
 
             {/* <Route path="/services" element={<Services />} /> */}
             <Route path="/services" element={<Services />} />
+            <Route path="/business/:businessId" element={<BusinessDetail />} />
             {/* <Route path="/services/:id" element={<ServiceDetail />} /> */}
             {/* <Route path="/about" element={<About />} /> */}
             {/* <Route path="/contact" element={<Contact />} /> */}
@@ -145,6 +151,7 @@ function App() {
         />
       </AuthProvider>
     </Router>
+    </ThemeProvider>
   );
 }
 

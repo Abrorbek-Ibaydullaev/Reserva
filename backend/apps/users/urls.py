@@ -12,6 +12,9 @@ urlpatterns = [
     path('change-password/', views.ChangePasswordView.as_view(),
          name='change-password'),
 
+    # Business management
+    path('businesses/', views.BusinessListView.as_view(), name='business-list'),
+
     # Notifications
     path('notifications/', views.NotificationListView.as_view(),
          name='notification-list'),

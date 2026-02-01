@@ -70,9 +70,9 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                     {/* Header - FIXED: Added explicit text colors */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-center">
                         <div className="flex justify-center mb-4">

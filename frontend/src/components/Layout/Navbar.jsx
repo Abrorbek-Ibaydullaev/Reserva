@@ -14,6 +14,7 @@ import {
   ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -52,7 +53,7 @@ const Navbar = () => {
   };
 
   return (
-    <Disclosure as="nav" className="bg-white shadow-lg">
+    <Disclosure as="nav" className="bg-white dark:bg-gray-900 shadow-lg">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,8 +62,8 @@ const Navbar = () => {
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
                   <Link to="/" className="flex items-center space-x-2">
-                    <CalendarIcon className="h-8 w-8 text-primary-600" />
-                    <span className="text-xl font-bold text-gray-900">Reserva</span>
+                    <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">Reserva</span>
                   </Link>
                 </div>
                 
@@ -72,7 +73,7 @@ const Navbar = () => {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-600"
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 border-b-2 border-transparent hover:border-primary-600 dark:hover:border-primary-400"
                     >
                       {item.name}
                     </Link>
@@ -82,9 +83,12 @@ const Navbar = () => {
 
               {/* Right side items */}
               <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
                 {/* Notifications */}
                 {isAuthenticated && (
-                  <button className="relative p-1 text-gray-400 hover:text-gray-500 focus:outline-none">
+                  <button className="relative p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none">
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" />
                     <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
@@ -103,9 +107,9 @@ const Navbar = () => {
                             alt={user.first_name}
                           />
                         ) : (
-                          <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                          <UserCircleIcon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
                         )}
-                        <span className="hidden md:block text-sm font-medium text-gray-700">
+                        <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
                           {user?.first_name || 'User'}
                         </span>
                       </Menu.Button>
@@ -119,17 +123,17 @@ const Navbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         {getNavigationItems().map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <Link
                                 to={item.href}
                                 className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } flex items-center px-4 py-2 text-sm text-gray-700`}
+                                  active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                                } flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                               >
-                                <item.icon className="mr-3 h-5 w-5 text-gray-400" />
+                                <item.icon className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 {item.name}
                               </Link>
                             )}
@@ -140,10 +144,10 @@ const Navbar = () => {
                             <button
                               onClick={handleLogout}
                               className={`${
-                                active ? 'bg-gray-100' : ''
-                              } flex w-full items-center px-4 py-2 text-sm text-gray-700`}
+                                active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              } flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                             >
-                              <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400" />
+                              <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
                               Logout
                             </button>
                           )}
@@ -155,13 +159,13 @@ const Navbar = () => {
                   <div className="flex items-center space-x-4">
                     <Link
                       to="/login"
-                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600"
+                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                     >
                       Login
                     </Link>
                     <Link
                       to="/register"
-                        className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600"
+                        className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                     >
                       Sign Up
                     </Link>
@@ -171,7 +175,7 @@ const Navbar = () => {
 
               {/* Mobile menu button */}
               <div className="flex items-center sm:hidden">
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" />
@@ -191,7 +195,7 @@ const Navbar = () => {
                   key={item.name}
                   as={Link}
                   to={item.href}
-                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-primary-500 hover:bg-gray-50 hover:text-gray-800"
+                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 dark:text-gray-400 hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200"
                 >
                   {item.name}
                 </Disclosure.Button>
