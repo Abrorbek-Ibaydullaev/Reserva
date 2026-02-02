@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.db import models
 from .models import UserProfile, Notification
+from apps.services.models import Service
 from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
@@ -123,7 +124,9 @@ class BusinessListView(generics.ListAPIView):
     def get_queryset(self):
         return User.objects.filter(user_type='business_owner').annotate(
             services_count=models.Count('services', filter=models.Q(services__is_active=True))
-        ).filter(services_count__gt=0).order_by('-services_count')
+        ).filter(services_count__gt=0).order_by('-services_count').prefetch_related(
+            models.Prefetch('services', queryset=Service.objects.filter(is_active=True)[:3], to_attr='services_active')
+        )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

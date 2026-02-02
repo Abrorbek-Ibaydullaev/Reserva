@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserProfile, Notification
 from django.contrib.auth.password_validation import validate_password
+from apps.services.serializers import ServiceListSerializer
 
 User = get_user_model()
 
@@ -73,12 +74,13 @@ class BusinessSerializer(serializers.ModelSerializer):
     """Serializer for business owners with service count."""
     full_name = serializers.SerializerMethodField()
     services_count = serializers.SerializerMethodField()
+    services = ServiceListSerializer(many=True, read_only=True, source='services_active')
     profile = UserProfileSerializer(read_only=True)
 
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'full_name',
-                  'phone_number', 'profile_picture', 'services_count', 'profile')
+                  'phone_number', 'profile_picture', 'services_count', 'services', 'profile')
 
     def get_full_name(self, obj):
         return obj.get_full_name()
