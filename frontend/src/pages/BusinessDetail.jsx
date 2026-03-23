@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ServiceCard from '../components/Services/ServiceCard';
+// Replaced ServiceCard with a simple vertical list layout for services
 import { userService, serviceService } from '../services/api';
 import {
   ArrowLeftIcon,
@@ -18,6 +18,7 @@ const BusinessDetail = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({ search: '' });
 
   useEffect(() => {
     fetchBusinessAndServices();
@@ -51,6 +52,25 @@ const BusinessDetail = () => {
     }
   };
 
+  const formatPrice = (price) => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(price);
+    } catch {
+      return `$${price}`;
+    }
+  };
+  const formatDuration = (mins) => {
+    if (!mins) return '';
+    if (mins < 60) return `${mins} min`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
+  };
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -101,13 +121,13 @@ const BusinessDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-100">
       {/* Back Button */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link
             to="/services"
-            className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back to Businesses
@@ -115,111 +135,130 @@ const BusinessDetail = () => {
         </div>
       </div>
 
-      {/* Business Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Business Image */}
-            <div className="flex-shrink-0">
-              <img
-                src={business.profile_picture || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'}
-                alt={business.full_name}
-                className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg"
-                onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80';
-                }}
-              />
+      {/* Main Content: Two Columns */}
+      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Left: Services */}
+        <div className="md:col-span-2">
+          <div className="mb-4">
+            <div className="flex items-center bg-white rounded-lg border border-gray-200 px-3 py-2">
+              <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.35-5.15a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input className="flex-1 ml-2 outline-none py-2 bg-transparent" placeholder="Search services" value={filters.search} onChange={(e) => setFilters({ search: e.target.value })} />
             </div>
+          </div>
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Popular Services</h3>
+          </div>
+          {services.filter((s) => s.name?.toLowerCase().includes(filters.search.toLowerCase())).length === 0 ? (
+            <div className="text-center py-6 text-gray-500">No services found.</div>
+          ) : (
+            <div className="flex flex-col space-y-4">
+              {services
+                .filter((s) => s.name?.toLowerCase().includes(filters.search.toLowerCase()))
+                .map((service) => (
+                  /* Change 1: Use 'grid' instead of 'flex'. 
+                     grid-cols-[1fr_100px_auto] defines 3 columns:
+                     - 1fr: Service name/desc takes all available left space.
+                     - 100px: Fixed width for Price/Duration (The "Green Line" effect).
+                     - auto: The Book button.
+                  */
+                  <div
+                    key={service.id}
+                    className="grid grid-cols-[1fr_110px_auto] items-center bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+                  >
+                    {/* Column 1: Service Details */}
+                    <div className="pr-4">
+                      <div className="text-lg font-bold text-gray-900">
+                        {service.name}
+                      </div>
+                      {service.description && (
+                        <div className="text-sm text-gray-500 mt-1 line-clamp-2">
+                          {service.description}
+                        </div>
+                      )}
+                    </div>
 
-            {/* Business Info */}
-            <div className="flex-1">
-              <div className="flex items-center mb-2">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mr-3">
-                  {business.full_name}
-                </h1>
-                <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-sm font-medium rounded-full">
-                  Business Owner
-                </span>
-              </div>
+                    {/* Column 2: Price and Duration (ALIGNED VERTICALLY) */}
+                    <div className="flex flex-col items-end pr-6 whitespace-nowrap">
+                      <div className="text-xl font-bold text-gray-800">
+                        {formatPrice(service.price)}
+                      </div>
+                      <div className="text-sm font-medium text-gray-400">
+                        {formatDuration(service.duration)}
+                      </div>
+                    </div>
 
-              {/* Rating */}
-              <div className="flex items-center mb-4">
-                <div className="flex mr-2">
-                  {renderStars(4.5)}
-                </div>
-                <span className="text-lg font-medium text-gray-900 dark:text-white mr-2">
-                  4.5
-                </span>
-                <span className="text-gray-500 dark:text-gray-400">
-                  (120 reviews)
-                </span>
-              </div>
-
-              {/* Contact Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {business.email && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
-                    <EnvelopeIcon className="h-5 w-5 mr-3" />
-                    <span>{business.email}</span>
+                    {/* Column 3: Book Button */}
+                    <div className="flex justify-end">
+                      <Link
+                        to={`/book/${service.id}`}
+                        className="px-8 py-3 bg-[#4a90b0] text-white rounded-xl text-lg font-semibold hover:bg-[#3d7691] transition-colors min-w-[100px] text-center"
+                      >
+                        Book
+                      </Link>
+                    </div>
                   </div>
-                )}
-                {business.phone_number && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
-                    <PhoneIcon className="h-5 w-5 mr-3" />
-                    <span>{business.phone_number}</span>
-                  </div>
-                )}
-                {business.profile?.location && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-400">
-                    <MapPinIcon className="h-5 w-5 mr-3" />
-                    <span>{business.profile.location}</span>
-                  </div>
-                )}
-                <div className="flex items-center text-gray-600 dark:text-gray-400">
-                  <BuildingStorefrontIcon className="h-5 w-5 mr-3" />
-                  <span>{business.services_count} services available</span>
-                </div>
-              </div>
+                ))}
+            </div>
+          )}
+        </div>
 
-              {/* Bio */}
-              {business.profile?.bio && (
-                <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  {business.profile.bio}
-                </p>
+        {/* Right: Business Info & Social/Consumer Info */}
+        <div className="space-y-6">
+          {/* Business Card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-center">
+            <img
+              src={business.profile_picture || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'}
+              alt={business.full_name}
+              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg mb-4"
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80';
+              }}
+            />
+            <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">{business.full_name}</h1>
+            <span className="px-3 py-1 bg-primary-100 text-primary-800 text-xs font-medium rounded-full mb-2">Business Owner</span>
+            <div className="flex items-center justify-center mb-2">
+              <div className="flex mr-2">{renderStars(4.5)}</div>
+              <span className="text-base font-medium text-gray-900 mr-2">4.5</span>
+              <span className="text-gray-500">(120 reviews)</span>
+            </div>
+            <div className="space-y-2 w-full text-gray-600 text-sm mt-2">
+              {business.email && (
+                <div className="flex items-center"><EnvelopeIcon className="h-5 w-5 mr-2" /><span>{business.email}</span></div>
               )}
+              {business.phone_number && (
+                <div className="flex items-center"><PhoneIcon className="h-5 w-5 mr-2" /><span>{business.phone_number}</span></div>
+              )}
+              {business.profile?.location && (
+                <div className="flex items-center"><MapPinIcon className="h-5 w-5 mr-2" /><span>{business.profile.location}</span></div>
+              )}
+              <div className="flex items-center"><BuildingStorefrontIcon className="h-5 w-5 mr-2" /><span>{business.services_count} services available</span></div>
             </div>
+            {business.profile?.bio && (
+              <p className="text-gray-700 text-center text-base mt-4">{business.profile.bio}</p>
+            )}
+          </div>
+
+          {/* Social Links (placeholder) */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center">
+            <div className="flex space-x-6 mb-2">
+              <a href="#" className="flex flex-col items-center text-gray-500 hover:text-gray-700">
+                <svg className="h-7 w-7 mb-1" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a4.5 4.5 0 0 0-9.724 0C6.09 6.336 4.5 8.747 4.5 12.005c0 3.257 1.59 5.668 2.638 7.517a4.5 4.5 0 0 0 9.724 0c1.048-1.849 2.638-4.26 2.638-7.517 0-3.258-1.59-5.669-2.638-7.518Z" /></svg>
+                <span className="text-xs">Instagram</span>
+              </a>
+              <a href="#" className="flex flex-col items-center text-gray-500 hover:text-gray-700">
+                <svg className="h-7 w-7 mb-1" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-6a2.25 2.25 0 0 1-2.25-2.25V6.75m10.5 0A2.25 2.25 0 0 0 15 4.5h-6a2.25 2.25 0 0 0-2.25 2.25m10.5 0v10.5m0 0A2.25 2.25 0 0 1 15 19.5h-6a2.25 2.25 0 0 1-2.25-2.25m0 0V6.75" /></svg>
+                <span className="text-xs">Facebook</span>
+              </a>
+            </div>
+            <div className="text-xs text-gray-500 text-center">Social links placeholder</div>
+          </div>
+
+          {/* Consumer Info (placeholder) */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <h4 className="font-semibold text-gray-900 mb-2 text-sm">CONSUMER INFORMATION</h4>
+            <p className="text-xs text-gray-600">This is a placeholder for consumer information, terms, or other legal text. You can update this section as needed.</p>
           </div>
         </div>
-      </div>
-
-      {/* Services Section */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Services by {business.full_name}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Browse and book from {services.length} available service{services.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {services.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500 dark:text-gray-400 mb-4">No services available at the moment.</div>
-            <Link
-              to="/services"
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            >
-              Browse Other Businesses
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
