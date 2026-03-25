@@ -89,12 +89,8 @@ export const authService = {
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-
-            const userResponse = await api.get('/auth/profile/');
-            localStorage.setItem(
-                'user_data',
-                JSON.stringify(userResponse.data)
-            );
+            const userData = response.data.user || (await api.get('/users/me/')).data;
+            localStorage.setItem('user_data', JSON.stringify(userData));
         }
 
         return response.data;
@@ -122,13 +118,13 @@ export const authService = {
     },
 
     getUserProfile: async () => {
-        const response = await api.get('/auth/profile/');
+        const response = await api.get('/users/me/');
         localStorage.setItem('user_data', JSON.stringify(response.data));
         return response;
     },
 
     updateProfile: async (userData) => {
-        const response = await api.put('/auth/profile/', userData);
+        const response = await api.put('/users/me/', userData);
         localStorage.setItem('user_data', JSON.stringify(response.data));
         return response;
     },
@@ -148,12 +144,12 @@ export const authService = {
  */
 export const serviceService = {
     getAllServices: (params) => api.get('/services/', { params }),
-    getServiceById: (id) => api.get(`/services/${id}/`),
+    getServiceById: (id) => api.get(`/services/id/${id}/`),
     getServiceBySlug: (slug) => api.get(`/services/slug/${slug}/`),
     getCategories: () => api.get('/services/categories/'),
-    createService: (data) => api.post('/services/', data),
-    updateService: (id, data) => api.put(`/services/${id}/`, data),
-    deleteService: (id) => api.delete(`/services/${id}/`),
+    createService: (data) => api.post('/services/my-services/', data),
+    updateService: (id, data) => api.put(`/services/my-services/${id}/`, data),
+    deleteService: (id) => api.delete(`/services/my-services/${id}/`),
     getMyServices: () => api.get('/services/my-services/'),
     addReview: (id, data) => api.post(`/services/${id}/reviews/`, data),
     getServiceReviews: (id) => api.get(`/services/${id}/reviews/`),
@@ -167,28 +163,16 @@ export const serviceService = {
 export const appointmentService = {
     getAllAppointments: (params) => api.get('/appointments/', { params }),
     getAppointment: (id) => api.get(`/appointments/${id}/`),
-
-    createAppointment: (data) =>
-        api.post('/appointments/create_booking/', {
-            service_id: data.service_id,
-            provider_id: data.provider_id,
-            client_id: data.client_id,
-            start_datetime: data.start_datetime,
-            client_notes: data.client_notes || '',
-        }),
-
-    getAvailableSlots: (params) =>
-        api.get('/appointments/available_slots/', { params }),
-
+    createAppointment: (data) => api.post('/appointments/', data),
+    updateAppointmentStatus: (id, data) => api.put(`/appointments/${id}/status/`, data),
     cancelAppointment: (id, reason) =>
         api.post(`/appointments/${id}/cancel/`, {
             reason: reason || 'Client requested cancellation',
         }),
-
-    rescheduleAppointment: (id, newStartTime) =>
-        api.post(`/appointments/${id}/reschedule/`, {
-            start_datetime: newStartTime,
-        }),
+    rescheduleAppointment: (id, data) => api.put(`/appointments/${id}/reschedule/`, data),
+    getTodayAppointments: () => api.get('/appointments/today/'),
+    getUpcomingAppointments: () => api.get('/appointments/upcoming/'),
+    getAvailableSlots: (params) => api.get('/schedules/available-slots/', { params }),
 };
 
 /**
@@ -197,19 +181,23 @@ export const appointmentService = {
  * =========================
  */
 export const scheduleService = {
-    getWorkingHours: (providerId) =>
-        api.get('/schedules/working-hours/', {
-            params: { provider: providerId },
-        }),
-
-    createWorkingHours: (data) =>
-        api.post('/schedules/working-hours/', data),
-
-    updateWorkingHours: (id, data) =>
-        api.put(`/schedules/working-hours/${id}/`, data),
-
-    deleteWorkingHours: (id) =>
-        api.delete(`/schedules/working-hours/${id}/`),
+    getBusinessHours: () => api.get('/schedules/business-hours/'),
+    createBusinessHours: (data) => api.post('/schedules/business-hours/', data),
+    updateBusinessHours: (id, data) => api.put(`/schedules/business-hours/${id}/`, data),
+    getEmployees: (params) => api.get('/schedules/employees/', { params }),
+    createEmployee: (data) => api.post('/schedules/employees/', data),
+    updateEmployee: (id, data) => api.put(`/schedules/employees/${id}/`, data),
+    deleteEmployee: (id) => api.delete(`/schedules/employees/${id}/`),
+    getEmployeeSchedules: (employeeId) => api.get(`/schedules/employees/${employeeId}/schedules/`),
+    createEmployeeSchedule: (employeeId, data) => api.post(`/schedules/employees/${employeeId}/schedules/`, data),
+    getTimeOffRequests: () => api.get('/schedules/time-off/'),
+    createTimeOffRequest: (data) => api.post('/schedules/time-off/', data),
+    updateTimeOffRequest: (id, data) => api.put(`/schedules/time-off/${id}/`, data),
+    deleteTimeOffRequest: (id) => api.delete(`/schedules/time-off/${id}/`),
+    getResources: () => api.get('/schedules/resources/'),
+    createResource: (data) => api.post('/schedules/resources/', data),
+    updateResource: (id, data) => api.put(`/schedules/resources/${id}/`, data),
+    deleteResource: (id) => api.delete(`/schedules/resources/${id}/`),
 };
 
 /**
@@ -218,6 +206,10 @@ export const scheduleService = {
  * =========================
  */
 export const userService = {
+    getMe: () => api.get('/users/me/'),
+    updateMe: (data) => api.put('/users/me/', data),
+    getProfile: () => api.get('/users/profile/'),
+    updateProfile: (data) => api.put('/users/profile/', data),
     getNotifications: () => api.get('/users/notifications/'),
     markNotificationAsRead: (id) =>
         api.put(`/users/notifications/${id}/read/`),

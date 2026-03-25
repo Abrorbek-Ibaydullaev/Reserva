@@ -1,8 +1,37 @@
+from datetime import time
 from django.db import models
 from django.contrib.auth import get_user_model
 from apps.services.models import Service
 
 User = get_user_model()
+
+
+DEFAULT_BUSINESS_HOURS = {
+    0: (True, time(9, 0), time(18, 0)),
+    1: (True, time(9, 0), time(18, 0)),
+    2: (True, time(9, 0), time(18, 0)),
+    3: (True, time(9, 0), time(18, 0)),
+    4: (True, time(9, 0), time(18, 0)),
+    5: (True, time(10, 0), time(16, 0)),
+    6: (False, None, None),
+}
+
+
+def ensure_default_business_hours(business_owner):
+    """Bootstrap a basic weekly schedule for businesses with no configured hours."""
+    existing_hours = BusinessHours.objects.filter(business_owner=business_owner)
+    if existing_hours.exists():
+        return
+
+    for day_of_week, (is_open, opening_time, closing_time) in DEFAULT_BUSINESS_HOURS.items():
+        BusinessHours.objects.create(
+            business_owner=business_owner,
+            day_of_week=day_of_week,
+            is_open=is_open,
+            opening_time=opening_time,
+            closing_time=closing_time,
+            is_24_hours=False,
+        )
 
 
 class BusinessHours(models.Model):

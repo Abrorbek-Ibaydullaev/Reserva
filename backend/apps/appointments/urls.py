@@ -10,6 +10,8 @@ urlpatterns = [
     # Appointment status
     path('<int:pk>/status/', views.UpdateAppointmentStatusView.as_view(),
          name='update-appointment-status'),
+    path('<int:pk>/cancel/', views.CancelAppointmentView.as_view(),
+         name='cancel-appointment'),
     path('<int:pk>/reschedule/', views.RescheduleAppointmentView.as_view(),
          name='reschedule-appointment'),
 

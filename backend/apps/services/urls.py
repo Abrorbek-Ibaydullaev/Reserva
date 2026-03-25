@@ -7,6 +7,7 @@ urlpatterns = [
 
     # Services
     path('', views.ServiceListView.as_view(), name='service-list'),
+    path('id/<int:pk>/', views.ServiceDetailByIdView.as_view(), name='service-detail-by-id'),
     path('<slug:slug>/', views.ServiceDetailView.as_view(), name='service-detail'),
 
     # Business owner services

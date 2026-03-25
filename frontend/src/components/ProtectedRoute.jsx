@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children, allowedUserTypes = [] }) => {
+const ProtectedRoute = ({ children, allowedUserTypes = [], redirectTo = '/' }) => {
     const { isAuthenticated, user, loading } = useAuth();
     const location = useLocation();
 
@@ -21,8 +21,7 @@ const ProtectedRoute = ({ children, allowedUserTypes = [] }) => {
 
     // If specific user types are required, check them
     if (allowedUserTypes.length > 0 && !allowedUserTypes.includes(user?.user_type)) {
-        // Redirect to home if user type doesn't match
-        return <Navigate to="/" replace />;
+        return <Navigate to={redirectTo} replace state={{ from: location }} />;
     }
 
     return children;

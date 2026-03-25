@@ -1,6 +1,8 @@
-from rest_framework import generics, permissions, status, filters
+from rest_framework import generics, permissions, status, filters, serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -15,9 +17,9 @@ from .serializers import (
     CancellationReasonSerializer,
     AppointmentCancellationSerializer
 )
-from apps.schedules.views import CheckAvailabilityView
+from apps.schedules.models import BusinessHours, EmployeeTimeOff, ensure_default_business_hours
 from apps.services.models import Service
-# from apps.users.models import Notification
+from apps.users.models import Notification
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -25,6 +27,7 @@ User = get_user_model()
 
 class AppointmentListView(generics.ListCreateAPIView):
     """List and create appointments."""
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -48,62 +51,127 @@ class AppointmentListView(generics.ListCreateAPIView):
             return Appointment.objects.none()
 
     def perform_create(self, serializer):
-        # Check availability before creating appointment
-        availability_check = CheckAvailabilityView()
-        availability_check.request = self.request
+        if self.request.user.user_type != 'customer':
+            raise ValidationError({
+                'error': 'Booking not allowed',
+                'details': 'Only customers can create appointments.',
+            })
 
-        # Get service to check business owner
-        service_id = self.request.data.get('service')
-        service = Service.objects.get(id=service_id)
-
-        # Prepare data for availability check
-        availability_data = {
-            'service_id': service_id,
-            'employee_id': self.request.data.get('employee'),
-            'date': self.request.data.get('date'),
-            'start_time': self.request.data.get('start_time'),
-            'end_time': '',  # Will be calculated
-            'resource_id': self.request.data.get('resource')
-        }
-
-        # Calculate end time
-        from datetime import datetime, timedelta
-        date = datetime.strptime(availability_data['date'], '%Y-%m-%d').date()
-        start_time = datetime.strptime(
-            availability_data['start_time'], '%H:%M').time()
-        duration = int(self.request.data.get('duration', 60))
+        service = serializer.validated_data['service']
+        employee = serializer.validated_data.get('employee')
+        resource = serializer.validated_data.get('resource')
+        date = serializer.validated_data['date']
+        start_time = serializer.validated_data['start_time']
+        duration = serializer.validated_data['duration']
 
         start_datetime = datetime.combine(date, start_time)
-        end_datetime = start_datetime + timedelta(minutes=duration)
-        availability_data['end_time'] = end_datetime.time()
+        end_time = (start_datetime + timedelta(minutes=duration)).time()
 
-        # Check availability
-        availability_response = availability_check.post(
-            availability_check.request)
-
-        if availability_response.status_code == 200 and availability_response.data.get('available'):
-            appointment = serializer.save()
-
-            # Create notification for business owner
-            Notification.objects.create(
-                user=service.business_owner,
-                notification_type='appointment_confirmation',
-                title='New Appointment Request',
-                message=f'New appointment request from {self.request.user.email} for {service.name}'
-            )
-
-            # Create notification for customer
-            Notification.objects.create(
-                user=self.request.user,
-                notification_type='appointment_confirmation',
-                title='Appointment Requested',
-                message=f'Your appointment for {service.name} has been requested'
-            )
-        else:
-            raise serializers.ValidationError({
+        appointment_start = timezone.make_aware(start_datetime, timezone.get_current_timezone())
+        if appointment_start <= timezone.localtime():
+            raise ValidationError({
                 'error': 'Time slot is not available',
-                'details': availability_response.data.get('message', 'Unknown error')
+                'details': 'Selected time has already passed.',
             })
+
+        day_of_week = date.weekday()
+        ensure_default_business_hours(service.business_owner)
+        try:
+            business_hours = BusinessHours.objects.get(
+                business_owner=service.business_owner,
+                day_of_week=day_of_week
+            )
+        except BusinessHours.DoesNotExist as exc:
+            raise ValidationError({
+                'error': 'Time slot is not available',
+                'details': 'Business hours are not set for this day',
+            }) from exc
+
+        if not business_hours.is_open:
+            raise ValidationError({
+                'error': 'Time slot is not available',
+                'details': 'Business is closed on this day',
+            })
+
+        if not business_hours.is_24_hours:
+            if start_time < business_hours.opening_time or end_time > business_hours.closing_time:
+                raise ValidationError({
+                    'error': 'Time slot is not available',
+                    'details': 'Selected time is outside business hours',
+                })
+
+        has_service_conflict = Appointment.objects.filter(
+            service=service,
+            date=date,
+            status__in=['confirmed', 'pending'],
+            start_time__lt=end_time,
+            end_time__gt=start_time
+        ).exists()
+
+        if has_service_conflict:
+            raise ValidationError({
+                'error': 'Time slot is not available',
+                'details': 'This service already has a booking at that time',
+            })
+
+        if employee:
+            employee_has_conflict = Appointment.objects.filter(
+                employee=employee,
+                date=date,
+                status__in=['confirmed', 'pending'],
+                start_time__lt=end_time,
+                end_time__gt=start_time
+            ).exists()
+
+            if employee_has_conflict:
+                raise ValidationError({
+                    'error': 'Time slot is not available',
+                    'details': 'Selected employee is not available at that time',
+                })
+
+            employee_time_off = EmployeeTimeOff.objects.filter(
+                employee=employee,
+                start_date__lte=date,
+                end_date__gte=date,
+                status='approved'
+            ).exists()
+
+            if employee_time_off:
+                raise ValidationError({
+                    'error': 'Time slot is not available',
+                    'details': 'Selected employee is on time off',
+                })
+
+        if resource:
+            resource_has_conflict = Appointment.objects.filter(
+                resource=resource,
+                date=date,
+                status__in=['confirmed', 'pending'],
+                start_time__lt=end_time,
+                end_time__gt=start_time
+            ).exists()
+
+            if resource_has_conflict:
+                raise ValidationError({
+                    'error': 'Time slot is not available',
+                    'details': 'Required resource is already booked',
+                })
+
+        appointment = serializer.save()
+
+        Notification.objects.create(
+            user=service.business_owner,
+            notification_type='appointment_confirmation',
+            title='New Appointment Request',
+            message=f'New appointment request from {self.request.user.email} for {service.name}'
+        )
+
+        Notification.objects.create(
+            user=self.request.user,
+            notification_type='appointment_confirmation',
+            title='Appointment Requested',
+            message=f'Your appointment for {service.name} has been requested'
+        )
 
 
 class AppointmentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -271,6 +339,72 @@ class UpdateAppointmentStatusView(generics.UpdateAPIView):
             )
 
 
+class CancelAppointmentView(APIView):
+    """Cancel an appointment."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        appointment = get_object_or_404(Appointment, id=pk)
+        user = request.user
+
+        if user.user_type == 'customer':
+            if appointment.customer != user:
+                return Response({'error': 'You cannot cancel this appointment.'},
+                                status=status.HTTP_403_FORBIDDEN)
+        elif user.user_type in ['business_owner', 'employee', 'admin']:
+            owns_appointment = appointment.business_owner == user
+            assigned_employee = appointment.employee and appointment.employee.user == user
+            if not owns_appointment and not assigned_employee and user.user_type != 'admin':
+                return Response({'error': 'You cannot cancel this appointment.'},
+                                status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'error': 'You cannot cancel this appointment.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if appointment.status not in ['pending', 'confirmed', 'rescheduled']:
+            return Response({'error': 'Only active appointments can be cancelled.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        reason_text = (request.data.get('reason') or '').strip()
+        appointment.status = 'cancelled'
+        appointment.cancelled_at = datetime.now()
+        appointment.save()
+
+        AppointmentCancellation.objects.update_or_create(
+            appointment=appointment,
+            defaults={
+                'cancelled_by': user,
+                'custom_reason': reason_text or 'No reason provided',
+            }
+        )
+
+        AppointmentHistory.objects.create(
+            appointment=appointment,
+            changed_by=user,
+            from_status='confirmed',
+            to_status='cancelled',
+            notes=reason_text or 'Appointment cancelled'
+        )
+
+        if appointment.customer != user:
+            Notification.objects.create(
+                user=appointment.customer,
+                notification_type='appointment_cancellation',
+                title='Appointment Cancelled',
+                message=f'Your appointment for {appointment.service.name} has been cancelled'
+            )
+
+        if appointment.business_owner != user:
+            Notification.objects.create(
+                user=appointment.business_owner,
+                notification_type='appointment_cancellation',
+                title='Appointment Cancelled',
+                message=f'Appointment #{appointment.appointment_number} has been cancelled'
+            )
+
+        return Response(AppointmentSerializer(appointment).data, status=status.HTTP_200_OK)
+
+
 class RescheduleAppointmentView(generics.UpdateAPIView):
     """Reschedule an appointment."""
     serializer_class = RescheduleAppointmentSerializer
@@ -406,26 +540,31 @@ class UpcomingAppointmentsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        today = datetime.now().date()
+        now = timezone.localtime()
+        today = now.date()
+        current_time = now.time()
 
         if user.user_type == 'customer':
             return Appointment.objects.filter(
                 customer=user,
-                date__gte=today,
                 status__in=['pending', 'confirmed']
+            ).filter(
+                Q(date__gt=today) | Q(date=today, start_time__gt=current_time)
             ).order_by('date', 'start_time')
         elif user.user_type in ['business_owner', 'employee', 'admin']:
             if user.user_type == 'employee':
                 return Appointment.objects.filter(
                     employee__user=user,
-                    date__gte=today,
                     status__in=['pending', 'confirmed']
+                ).filter(
+                    Q(date__gt=today) | Q(date=today, start_time__gt=current_time)
                 ).order_by('date', 'start_time')
             else:
                 return Appointment.objects.filter(
                     business_owner=user,
-                    date__gte=today,
                     status__in=['pending', 'confirmed']
+                ).filter(
+                    Q(date__gt=today) | Q(date=today, start_time__gt=current_time)
                 ).order_by('date', 'start_time')
         else:
             return Appointment.objects.none()

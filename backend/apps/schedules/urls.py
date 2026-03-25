@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     # Business hours
     path('business-hours/', views.BusinessHoursView.as_view(), name='business-hours'),
+    path('business-hours/<int:pk>/', views.BusinessHoursDetailView.as_view(),
+         name='business-hours-detail'),
 
     # Employees
     path('employees/', views.EmployeeListView.as_view(), name='employee-list'),

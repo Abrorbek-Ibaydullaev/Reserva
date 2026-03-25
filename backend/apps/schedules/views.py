@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta, date, time
 from django.db.models import Q
 from .models import BusinessHours, Employee, EmployeeSchedule, EmployeeTimeOff, Resource
+from .models import ensure_default_business_hours
 from .serializers import (
     BusinessHoursSerializer,
     EmployeeSerializer,
@@ -27,6 +28,7 @@ class BusinessHoursView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        ensure_default_business_hours(self.request.user)
         return BusinessHours.objects.filter(business_owner=self.request.user)
 
     def perform_create(self, serializer):
@@ -39,7 +41,13 @@ class EmployeeListView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Employee.objects.filter(business_owner=self.request.user)
+        queryset = Employee.objects.filter(business_owner=self.request.user).select_related(
+            'user'
+        ).prefetch_related('services')
+        is_active = self.request.query_params.get('is_active')
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(business_owner=self.request.user)
@@ -51,7 +59,19 @@ class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Employee.objects.filter(business_owner=self.request.user)
+        return Employee.objects.filter(business_owner=self.request.user).select_related(
+            'user'
+        ).prefetch_related('services')
+
+
+class BusinessHoursDetailView(generics.RetrieveUpdateAPIView):
+    """Retrieve or update a single business-hours record."""
+    serializer_class = BusinessHoursSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        ensure_default_business_hours(self.request.user)
+        return BusinessHours.objects.filter(business_owner=self.request.user)
 
 
 class EmployeeScheduleView(generics.ListCreateAPIView):
@@ -244,18 +264,45 @@ class AvailableTimeSlotsView(APIView):
             return Response({'error': 'Invalid service or date format'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        employee = None
+        if employee_id:
+            try:
+                employee = Employee.objects.get(
+                    id=employee_id,
+                    business_owner=service.business_owner,
+                    is_active=True,
+                )
+            except Employee.DoesNotExist:
+                return Response({
+                    'slots': [],
+                    'reason': 'The selected staff member is unavailable.',
+                }, status=status.HTTP_200_OK)
+
+            if employee.services.exists() and not employee.services.filter(id=service.id).exists():
+                return Response({
+                    'slots': [],
+                    'reason': 'The selected staff member does not provide this service.',
+                }, status=status.HTTP_200_OK)
+
         # Get business hours for the day
         day_of_week = date.weekday()
+        ensure_default_business_hours(service.business_owner)
         try:
             business_hours = BusinessHours.objects.get(
                 business_owner=service.business_owner,
                 day_of_week=day_of_week
             )
         except BusinessHours.DoesNotExist:
-            return Response([], status=status.HTTP_200_OK)
+            return Response({
+                'slots': [],
+                'reason': 'This business has no working hours configured for that day.',
+            }, status=status.HTTP_200_OK)
 
         if not business_hours.is_open:
-            return Response([], status=status.HTTP_200_OK)
+            return Response({
+                'slots': [],
+                'reason': 'This business is closed on the selected day.',
+            }, status=status.HTTP_200_OK)
 
         # Generate time slots
         time_slots = []
@@ -282,6 +329,13 @@ class AvailableTimeSlotsView(APIView):
             current_time = (datetime.combine(date, current_time) +
                             timedelta(minutes=15)).time()
 
+        current_local_time = timezone.localtime().time()
+        if date == timezone.localdate():
+            time_slots = [
+                slot for slot in time_slots
+                if slot['start_time'] > current_local_time
+            ]
+
         # Filter out unavailable slots
         available_slots = []
         for slot in time_slots:
@@ -294,8 +348,57 @@ class AvailableTimeSlotsView(APIView):
                 end_time__gt=slot['start_time']
             ).exists()
 
-            if not conflicts:
-                available_slots.append(slot)
+            if conflicts:
+                continue
+
+            if employee:
+                employee_schedule_exists = EmployeeSchedule.objects.filter(
+                    employee=employee,
+                    date=date,
+                    start_time__lte=slot['start_time'],
+                    end_time__gte=slot['end_time'],
+                    is_available=True,
+                ).exists()
+                employee_has_custom_schedule = EmployeeSchedule.objects.filter(
+                    employee=employee,
+                    date=date,
+                ).exists()
+
+                if employee_has_custom_schedule and not employee_schedule_exists:
+                    continue
+
+                employee_time_off = EmployeeTimeOff.objects.filter(
+                    employee=employee,
+                    start_date__lte=date,
+                    end_date__gte=date,
+                    status='approved',
+                ).exists()
+
+                if employee_time_off:
+                    continue
+
+                employee_conflict = Appointment.objects.filter(
+                    employee=employee,
+                    date=date,
+                    status__in=['confirmed', 'pending'],
+                    start_time__lt=slot['end_time'],
+                    end_time__gt=slot['start_time'],
+                ).exists()
+
+                if employee_conflict:
+                    continue
+
+                slot['employee_id'] = employee.id
+                slot['employee_name'] = employee.user.get_full_name() or employee.user.email
+
+            available_slots.append(slot)
 
         serializer = TimeSlotSerializer(available_slots, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        reason = None
+        if not available_slots:
+            reason = 'No free time slots are left for this date.'
+
+        return Response({
+            'slots': serializer.data,
+            'reason': reason,
+        }, status=status.HTTP_200_OK)

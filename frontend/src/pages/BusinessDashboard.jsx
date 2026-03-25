@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
   CalendarIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
-  ChartBarIcon,
   ClockIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  BriefcaseIcon,
 } from '@heroicons/react/24/outline';
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -24,10 +20,23 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
-// import { appointmentService, serviceService, scheduleService } from '../services/api';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { format, subDays } from 'date-fns';
+import { appointmentService, scheduleService, serviceService } from '../services/api';
+
+const statusColors = {
+  pending: '#f59e0b',
+  confirmed: '#3b82f6',
+  completed: '#10b981',
+  cancelled: '#ef4444',
+  no_show: '#6b7280',
+  rescheduled: '#8b5cf6',
+};
+
+const formatMoney = (value) => `$${Number(value || 0).toFixed(2)}`;
+
+const normalizeList = (response) => response.data?.results || response.data || [];
 
 const BusinessDashboard = () => {
   const [stats, setStats] = useState({
@@ -37,295 +46,259 @@ const BusinessDashboard = () => {
     completedAppointments: 0,
     totalRevenue: 0,
     activeServices: 0,
-    totalEmployees: 0
+    totalEmployees: 0,
   });
-
   const [recentAppointments, setRecentAppointments] = useState([]);
   const [revenueData, setRevenueData] = useState([]);
   const [appointmentStatusData, setAppointmentStatusData] = useState([]);
+  const [weekDelta, setWeekDelta] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const statusColors = {
-    pending: '#F59E0B',
-    confirmed: '#3B82F6',
-    completed: '#10B981',
-    cancelled: '#EF4444',
-    no_show: '#6B7280'
-  };
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchDashboardData();
+    loadDashboard();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const loadDashboard = async () => {
     try {
       setLoading(true);
-      setError(null);
+      setError('');
 
-      // Fetch all data in parallel
       const [appointmentsResponse, servicesResponse, employeesResponse] = await Promise.all([
         appointmentService.getAllAppointments(),
         serviceService.getMyServices(),
-        scheduleService.getEmployees()
+        scheduleService.getEmployees(),
       ]);
 
-      const appointments = appointmentsResponse.data || [];
-      const services = servicesResponse.data || [];
-      const employees = employeesResponse.data || [];
-
-      // Calculate today's appointments
+      const appointments = normalizeList(appointmentsResponse);
+      const services = normalizeList(servicesResponse);
+      const employees = normalizeList(employeesResponse);
       const today = format(new Date(), 'yyyy-MM-dd');
-      const todayAppointments = appointments.filter(app => 
-        app.date === today && app.status !== 'cancelled'
+
+      const completedAppointments = appointments.filter((item) => item.status === 'completed');
+      const totalRevenue = completedAppointments.reduce(
+        (sum, item) => sum + Number(item.total_amount || 0),
+        0
       );
 
-      // Calculate completed appointments with revenue
-      const completedAppointments = appointments.filter(app => 
-        app.status === 'completed'
-      );
-
-      const totalRevenue = completedAppointments.reduce((sum, app) => 
-        sum + parseFloat(app.total_amount || 0), 0
-      );
-
-      // Calculate active services
-      const activeServices = services.filter(service => service.is_active).length;
-
-      // Update stats
       setStats({
         totalAppointments: appointments.length,
-        pendingAppointments: appointments.filter(app => app.status === 'pending').length,
-        todayAppointments: todayAppointments.length,
+        pendingAppointments: appointments.filter((item) => item.status === 'pending').length,
+        todayAppointments: appointments.filter(
+          (item) => item.date === today && item.status !== 'cancelled'
+        ).length,
         completedAppointments: completedAppointments.length,
         totalRevenue,
-        activeServices,
-        totalEmployees: employees.length
+        activeServices: services.filter((item) => item.is_active).length,
+        totalEmployees: employees.filter((item) => item.is_active).length,
       });
 
-      // Get recent appointments
-      const recent = appointments
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        .slice(0, 5);
-      setRecentAppointments(recent);
+      setRecentAppointments(
+        [...appointments]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 5)
+      );
 
-      // Generate revenue data for last 7 days
-      const revenueByDay = generateRevenueData(appointments);
-      setRevenueData(revenueByDay);
-
-      // Generate appointment status data
-      const statusCounts = appointments.reduce((acc, app) => {
-        acc[app.status] = (acc[app.status] || 0) + 1;
-        return acc;
-      }, {});
-
-      const statusData = Object.entries(statusCounts).map(([status, count]) => ({
-        name: status.charAt(0).toUpperCase() + status.slice(1),
-        value: count,
-        color: statusColors[status] || '#6B7280'
-      }));
-
-      setAppointmentStatusData(statusData);
-
+      setRevenueData(buildRevenueData(appointments));
+      setAppointmentStatusData(buildStatusData(appointments));
+      setWeekDelta(buildWeekDelta(appointments));
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setError('Failed to load dashboard data. Please try again.');
+      console.error('Failed to load business dashboard:', err);
+      setError('Failed to load dashboard data.');
     } finally {
       setLoading(false);
     }
   };
 
-  const generateRevenueData = (appointments) => {
+  const buildRevenueData = (appointments) => {
     const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = subDays(new Date(), i);
-      const dateStr = format(date, 'yyyy-MM-dd');
-      
-      const dayRevenue = appointments
-        .filter(app => 
-          app.date === dateStr && 
-          app.status === 'completed' && 
-          app.payment_status === 'paid'
-        )
-        .reduce((sum, app) => sum + parseFloat(app.total_amount || 0), 0);
-      
+
+    for (let offset = 6; offset >= 0; offset -= 1) {
+      const day = subDays(new Date(), offset);
+      const dayKey = format(day, 'yyyy-MM-dd');
+      const revenue = appointments
+        .filter((item) => item.date === dayKey && item.status === 'completed')
+        .reduce((sum, item) => sum + Number(item.total_amount || 0), 0);
+
       days.push({
-        date: format(date, 'EEE'),
-        fullDate: format(date, 'MMM dd'),
-        revenue: dayRevenue
+        label: format(day, 'EEE'),
+        revenue,
       });
     }
-    
+
     return days;
   };
 
-  const StatCard = ({ title, value, icon, change, isPositive }) => {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="p-2 bg-primary-50 rounded-lg">
-            {icon}
-          </div>
-          {change !== undefined && (
-            <div className={`flex items-center text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {isPositive ? <ArrowUpIcon className="h-4 w-4 mr-1" /> : <ArrowDownIcon className="h-4 w-4 mr-1" />}
-              {change}%
-            </div>
-          )}
-        </div>
-        <div>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          <p className="text-sm text-gray-600 mt-1">{title}</p>
-        </div>
-      </div>
-    );
+  const buildStatusData = (appointments) => {
+    const counts = appointments.reduce((acc, item) => {
+      acc[item.status] = (acc[item.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts).map(([status, count]) => ({
+      name: status.replace('_', ' '),
+      value: count,
+      color: statusColors[status] || '#94a3b8',
+    }));
+  };
+
+  const buildWeekDelta = (appointments) => {
+    const currentWeekStart = subDays(new Date(), 6);
+    const previousWeekStart = subDays(new Date(), 13);
+
+    const currentWeekCount = appointments.filter(
+      (item) => new Date(item.date) >= currentWeekStart
+    ).length;
+    const previousWeekCount = appointments.filter((item) => {
+      const appointmentDate = new Date(item.date);
+      return appointmentDate >= previousWeekStart && appointmentDate < currentWeekStart;
+    }).length;
+
+    if (previousWeekCount === 0) {
+      return currentWeekCount > 0 ? 100 : 0;
+    }
+
+    return Math.round(((currentWeekCount - previousWeekCount) / previousWeekCount) * 100);
   };
 
   const getStatusBadge = (status) => {
-    const statusConfig = {
-      pending: { 
-        class: 'bg-yellow-100 text-yellow-800', 
-        icon: <ClockIcon className="h-4 w-4" />, 
-        text: 'Pending' 
-      },
-      confirmed: { 
-        class: 'bg-blue-100 text-blue-800', 
-        icon: <CheckCircleIcon className="h-4 w-4" />, 
-        text: 'Confirmed' 
-      },
-      completed: { 
-        class: 'bg-green-100 text-green-800', 
-        icon: <CheckCircleIcon className="h-4 w-4" />, 
-        text: 'Completed' 
-      },
-      cancelled: { 
-        class: 'bg-red-100 text-red-800', 
-        icon: <ExclamationCircleIcon className="h-4 w-4" />, 
-        text: 'Cancelled' 
-      }
+    const palette = {
+      pending: 'bg-amber-100 text-amber-800',
+      confirmed: 'bg-blue-100 text-blue-800',
+      completed: 'bg-emerald-100 text-emerald-800',
+      cancelled: 'bg-red-100 text-red-800',
+      no_show: 'bg-slate-100 text-slate-700',
+      rescheduled: 'bg-violet-100 text-violet-800',
     };
 
-    const config = statusConfig[status] || statusConfig.pending;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.class}`}>
-        {config.icon}
-        <span className="ml-1">{config.text}</span>
+      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${palette[status] || 'bg-gray-100 text-gray-700'}`}>
+        {status.replace('_', ' ')}
       </span>
     );
   };
 
+  const StatCard = ({ title, value, subtitle, icon }) => (
+    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-500">{title}</p>
+          <p className="mt-3 text-3xl font-bold text-gray-900">{value}</p>
+          {subtitle ? <p className="mt-2 text-sm text-gray-500">{subtitle}</p> : null}
+        </div>
+        <div className="rounded-2xl bg-[#e8f2f6] p-3 text-[#4a90b0]">{icon}</div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Business Dashboard</h1>
-          <p className="text-gray-600 mt-2">Overview of your business performance</p>
+    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Business Dashboard</h1>
+            <p className="mt-2 text-gray-600">Live performance, bookings, staff, and service activity.</p>
+          </div>
+          <div className="rounded-2xl bg-white px-4 py-3 text-sm text-gray-600 shadow-sm border border-gray-200">
+            {weekDelta >= 0 ? '+' : ''}
+            {weekDelta}% appointments vs previous 7 days
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {error ? (
+          <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+            {error}
+          </div>
+        ) : null}
+
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            title="Total Appointments"
+            title="Total Bookings"
             value={stats.totalAppointments}
-            icon={<CalendarIcon className="h-6 w-6 text-primary-600" />}
-            change={12}
-            isPositive={true}
+            subtitle={`${stats.pendingAppointments} pending`}
+            icon={<CalendarIcon className="h-6 w-6" />}
           />
-          
           <StatCard
-            title="Today's Appointments"
+            title="Today"
             value={stats.todayAppointments}
-            icon={<ClockIcon className="h-6 w-6 text-primary-600" />}
+            subtitle={`${stats.completedAppointments} completed overall`}
+            icon={<ClockIcon className="h-6 w-6" />}
           />
-          
           <StatCard
-            title="Pending Appointments"
-            value={stats.pendingAppointments}
-            icon={<ExclamationCircleIcon className="h-6 w-6 text-primary-600" />}
-            change={-5}
-            isPositive={false}
+            title="Revenue"
+            value={formatMoney(stats.totalRevenue)}
+            subtitle="From completed appointments"
+            icon={<CurrencyDollarIcon className="h-6 w-6" />}
           />
-          
           <StatCard
-            title="Total Revenue"
-            value={`$${stats.totalRevenue.toFixed(2)}`}
-            icon={<CurrencyDollarIcon className="h-6 w-6 text-primary-600" />}
-            change={15}
-            isPositive={true}
+            title="Team & Services"
+            value={`${stats.totalEmployees} / ${stats.activeServices}`}
+            subtitle="Active employees / active services"
+            icon={<UserGroupIcon className="h-6 w-6" />}
           />
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Revenue Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-6">
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Revenue Last 7 Days</h3>
-                <p className="text-sm text-gray-600">Daily revenue from completed appointments</p>
+                <h2 className="text-xl font-semibold text-gray-900">Revenue Last 7 Days</h2>
+                <p className="text-sm text-gray-500">Updated from live appointment data</p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-gray-900">
-                  ${revenueData.reduce((sum, day) => sum + day.revenue, 0).toFixed(2)}
+                  {formatMoney(revenueData.reduce((sum, item) => sum + item.revenue, 0))}
                 </p>
-                <p className="text-sm text-green-600">+15% from last week</p>
+                <p className="text-sm text-gray-500">7-day total</p>
               </div>
             </div>
-            <div className="h-64">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="date" stroke="#6B7280" fontSize={12} />
-                  <YAxis stroke="#6B7280" fontSize={12} />
-                  <Tooltip 
-                    formatter={(value) => [`$${value.toFixed(2)}`, 'Revenue']}
-                    labelFormatter={(label) => `Date: ${label}`}
-                  />
+                  <CartesianGrid stroke="#edf2f7" strokeDasharray="3 3" />
+                  <XAxis dataKey="label" stroke="#64748b" fontSize={12} />
+                  <YAxis stroke="#64748b" fontSize={12} />
+                  <Tooltip formatter={(value) => [formatMoney(value), 'Revenue']} />
                   <Area
-                    type="monotone"
                     dataKey="revenue"
-                    stroke="#3B82F6"
-                    fill="#3B82F6"
-                    fillOpacity={0.1}
-                    strokeWidth={2}
+                    type="monotone"
+                    stroke="#4a90b0"
+                    fill="#4a90b0"
+                    fillOpacity={0.15}
+                    strokeWidth={3}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Appointment Status Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Appointment Status</h3>
-                <p className="text-sm text-gray-600">Distribution of appointment statuses</p>
-              </div>
+          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Booking Status Mix</h2>
+              <p className="text-sm text-gray-500">Distribution of all current statuses</p>
             </div>
-            <div className="h-64">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={appointmentStatusData}
+                    dataKey="value"
+                    nameKey="name"
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
+                    outerRadius={90}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
-                    {appointmentStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    {appointmentStatusData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value) => [value, 'Appointments']} />
@@ -335,98 +308,55 @@ const BusinessDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Appointments */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Recent Appointments</h3>
-              <p className="text-sm text-gray-600">Latest appointments and their status</p>
+              <h2 className="text-xl font-semibold text-gray-900">Recent Appointments</h2>
+              <p className="text-sm text-gray-500">Latest customer bookings for your services</p>
             </div>
-            <Link
-              to="/dashboard/appointments"
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center"
-            >
+            <Link to="/dashboard/appointments" className="inline-flex items-center text-sm font-semibold text-[#4a90b0]">
               View all
-              <ChevronRightIcon className="h-4 w-4 ml-1" />
+              <ChevronRightIcon className="ml-1 h-4 w-4" />
             </Link>
           </div>
 
           {recentAppointments.length === 0 ? (
-            <div className="text-center py-12">
-              <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No appointments yet</p>
-              <Link
-                to="/dashboard/services"
-                className="inline-block mt-4 text-primary-600 hover:text-primary-700 font-medium"
-              >
-                Add Services to Get Started
-              </Link>
+            <div className="rounded-2xl bg-gray-50 p-10 text-center text-gray-500">
+              No bookings yet. Publish services to start receiving appointments.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Service
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
+                  <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
+                    <th className="px-4 py-3">Customer</th>
+                    <th className="px-4 py-3">Service</th>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {recentAppointments.map((appointment) => (
-                    <tr key={appointment.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-900">
-                              {appointment.customer_details?.first_name?.charAt(0)}
-                              {appointment.customer_details?.last_name?.charAt(0)}
-                            </span>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {appointment.customer_details?.email}
-                            </div>
-                          </div>
+                    <tr key={appointment.id}>
+                      <td className="px-4 py-4">
+                        <div className="font-medium text-gray-900">
+                          {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
                         </div>
+                        <div className="text-sm text-gray-500">{appointment.customer_details?.email}</div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{appointment.service_details?.name}</div>
-                        <div className="text-sm text-gray-500">
-                          {appointment.duration} min
-                        </div>
+                      <td className="px-4 py-4 text-sm text-gray-700">
+                        <div className="font-medium text-gray-900">{appointment.service_details?.name}</div>
+                        <div>{appointment.duration} min</div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {format(new Date(appointment.date), 'MMM dd, yyyy')}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {appointment.start_time}
-                        </div>
+                      <td className="px-4 py-4 text-sm text-gray-700">
+                        <div>{format(new Date(appointment.date), 'MMM dd, yyyy')}</div>
+                        <div className="text-gray-500">{appointment.start_time}</div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          ${parseFloat(appointment.total_amount || 0).toFixed(2)}
-                        </div>
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-900">
+                        {formatMoney(appointment.total_amount)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        {getStatusBadge(appointment.status)}
-                      </td>
+                      <td className="px-4 py-4">{getStatusBadge(appointment.status)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -435,66 +365,50 @@ const BusinessDashboard = () => {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link
-              to="/dashboard/services"
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <ChartBarIcon className="h-6 w-6 text-blue-600" />
-                </div>
-                <span className="text-blue-600 text-sm font-medium">{stats.activeServices} Services</span>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Link to="/dashboard/services" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
+                <BriefcaseIcon className="h-6 w-6" />
               </div>
-              <h4 className="font-medium text-gray-900">Manage Services</h4>
-              <p className="text-sm text-gray-600 mt-2">Add, edit, or remove services</p>
-            </Link>
+              <span className="text-sm font-medium text-blue-700">{stats.activeServices} active</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Manage Services</h3>
+            <p className="mt-2 text-sm text-gray-500">Create, edit, and pause services.</p>
+          </Link>
 
-            <Link
-              to="/dashboard/appointments"
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <CalendarIcon className="h-6 w-6 text-green-600" />
-                </div>
-                <span className="text-green-600 text-sm font-medium">{stats.todayAppointments} Today</span>
+          <Link to="/dashboard/appointments" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+                <CalendarIcon className="h-6 w-6" />
               </div>
-              <h4 className="font-medium text-gray-900">View Appointments</h4>
-              <p className="text-sm text-gray-600 mt-2">Manage all appointments</p>
-            </Link>
+              <span className="text-sm font-medium text-emerald-700">{stats.todayAppointments} today</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Manage Appointments</h3>
+            <p className="mt-2 text-sm text-gray-500">Confirm, complete, or cancel bookings.</p>
+          </Link>
 
-            <Link
-              to="/dashboard/employees"
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-purple-50 rounded-lg">
-                  <UserGroupIcon className="h-6 w-6 text-purple-600" />
-                </div>
-                <span className="text-purple-600 text-sm font-medium">{stats.totalEmployees} Employees</span>
+          <Link to="/dashboard/employees" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-2xl bg-violet-50 p-3 text-violet-600">
+                <UserGroupIcon className="h-6 w-6" />
               </div>
-              <h4 className="font-medium text-gray-900">Manage Employees</h4>
-              <p className="text-sm text-gray-600 mt-2">Add or manage staff</p>
-            </Link>
+              <span className="text-sm font-medium text-violet-700">{stats.totalEmployees} active</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Manage Employees</h3>
+            <p className="mt-2 text-sm text-gray-500">Add staff and assign services.</p>
+          </Link>
 
-            <Link
-              to="/dashboard/schedule"
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-yellow-50 rounded-lg">
-                  <ClockIcon className="h-6 w-6 text-yellow-600" />
-                </div>
-                <span className="text-yellow-600 text-sm font-medium">Set Hours</span>
+          <Link to="/dashboard/schedule" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-2xl bg-amber-50 p-3 text-amber-600">
+                <ClockIcon className="h-6 w-6" />
               </div>
-              <h4 className="font-medium text-gray-900">Set Schedule</h4>
-              <p className="text-sm text-gray-600 mt-2">Configure business hours</p>
-            </Link>
-          </div>
+              <span className="text-sm font-medium text-amber-700">7-day setup</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Business Hours</h3>
+            <p className="mt-2 text-sm text-gray-500">Control when customers can book.</p>
+          </Link>
         </div>
       </div>
     </div>

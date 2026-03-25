@@ -15,19 +15,18 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Services from './pages/Services';
 import BusinessDetail from './pages/BusinessDetail';
+import BookAppointment from './pages/BookAppointment';
+import CustomerProfile from './pages/CustomerProfile';
+import MyAppointments from './pages/MyAppointments';
 // import ServiceDetail from './pages/ServiceDetail';
 import BusinessDashboard from './pages/BusinessDashboard';
-// import CustomerProfile from './pages/CustomerProfile';
+import BusinessServices from './pages/business/Services';
+import BusinessAppointments from './pages/business/Appointments';
+import BusinessEmployees from './pages/business/Employees';
+import BusinessSchedule from './pages/business/Schedule';
 // import BookAppointment from './pages/BookAppointment';
-// import MyAppointments from './pages/MyAppointments';
 // import About from './pages/About';
 // import Contact from './pages/Contact';
-
-// Business Pages
-// import BusinessServices from './pages/business/Services';
-// import BusinessAppointments from './pages/business/Appointments';
-// import BusinessEmployees from './pages/business/Employees';
-// import BusinessSchedule from './pages/business/Schedule';
 
 function App() {
   return (
@@ -66,30 +65,30 @@ function App() {
             {/* <Route path="/contact" element={<Contact />} /> */}
 
             {/* Customer Routes - Protected for logged-in customers */}
-            {/* <Route 
-              path="/appointments" 
+            <Route
+              path="/appointments"
               element={
-                <ProtectedRoute allowedUserTypes={['customer']}>
+                <ProtectedRoute>
                   <MyAppointments />
                 </ProtectedRoute>
-              } 
-            /> */}
-            {/* <Route 
-              path="/profile" 
+              }
+            />
+            <Route
+              path="/profile"
               element={
                 <ProtectedRoute>
                   <CustomerProfile />
                 </ProtectedRoute>
-              } 
-            /> */}
-            {/* <Route 
-              path="/book/:serviceId" 
+              }
+            />
+            <Route
+              path="/book/:serviceId"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedUserTypes={['customer']} redirectTo="/appointments">
                   <BookAppointment />
                 </ProtectedRoute>
-              } 
-            /> */}
+              }
+            />
 
             {/* Business Routes - Protected for business owners only */}
             <Route
@@ -100,38 +99,38 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* <Route 
-              path="/dashboard/services" 
+            <Route
+              path="/dashboard/services"
               element={
                 <ProtectedRoute allowedUserTypes={['business_owner']}>
                   <BusinessServices />
                 </ProtectedRoute>
-              } 
-            /> */}
-            {/* <Route 
-              path="/dashboard/appointments" 
+              }
+            />
+            <Route
+              path="/dashboard/appointments"
               element={
                 <ProtectedRoute allowedUserTypes={['business_owner']}>
                   <BusinessAppointments />
                 </ProtectedRoute>
-              } 
-            /> */}
-            {/* <Route 
-              path="/dashboard/employees" 
+              }
+            />
+            <Route
+              path="/dashboard/employees"
               element={
                 <ProtectedRoute allowedUserTypes={['business_owner']}>
                   <BusinessEmployees />
                 </ProtectedRoute>
-              } 
-            /> */}
-            {/* <Route 
-              path="/dashboard/schedule" 
+              }
+            />
+            <Route
+              path="/dashboard/schedule"
               element={
                 <ProtectedRoute allowedUserTypes={['business_owner']}>
                   <BusinessSchedule />
                 </ProtectedRoute>
-              } 
-            /> */}
+              }
+            />
 
             {/* Fallback route */}
             <Route path="*" element={<Navigate to="/" replace />} />

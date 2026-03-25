@@ -36,6 +36,8 @@ const Navbar = () => {
 
   const businessNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+    { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'My Appointments', href: '/appointments', icon: ClipboardDocumentListIcon },
     { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
     { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
   ];

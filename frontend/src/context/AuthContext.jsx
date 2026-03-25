@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api';
+import { authService, userService } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -15,16 +15,24 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  const checkAuthStatus = () => {
+  const checkAuthStatus = async () => {
     try {
-      const currentUser = authService.getCurrentUser();
       const token = localStorage.getItem('access_token');
+      const currentUser = authService.getCurrentUser();
 
-      if (currentUser && token) {
+      if (!token) {
+        clearAuthData();
+        return;
+      }
+
+      if (currentUser?.id && currentUser?.user_type) {
         setUser(currentUser);
         setIsAuthenticated(true);
       } else {
-        clearAuthData();
+        const response = await userService.getMe();
+        localStorage.setItem('user_data', JSON.stringify(response.data));
+        setUser(response.data);
+        setIsAuthenticated(true);
       }
     } catch {
       clearAuthData();

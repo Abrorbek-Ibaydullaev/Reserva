@@ -63,6 +63,14 @@ class ServiceDetailView(generics.RetrieveAPIView):
     lookup_field = 'slug'
 
 
+class ServiceDetailByIdView(generics.RetrieveAPIView):
+    """Retrieve a specific service by numeric id."""
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    permission_classes = [permissions.AllowAny]
+    lookup_field = 'pk'
+
+
 class BusinessOwnerServiceListView(generics.ListCreateAPIView):
     """List and create services for a business owner."""
     serializer_class = ServiceSerializer

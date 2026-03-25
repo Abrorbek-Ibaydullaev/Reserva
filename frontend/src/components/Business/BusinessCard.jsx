@@ -228,7 +228,7 @@ const BusinessCard = ({ business }) => {
                           </span>
                         )}
                         <span className="block text-gray-900 dark:text-white font-bold text-sm">
-                          {discountedPrice} zł
+                          {discountedPrice} $
                         </span>
                         <span className="block text-[10px] text-gray-500 mt-1">
                           {service.duration}min
