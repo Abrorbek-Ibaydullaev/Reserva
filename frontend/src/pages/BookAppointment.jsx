@@ -7,9 +7,6 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ClockIcon,
-  MapPinIcon,
-  PencilSquareIcon,
   UserGroupIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -109,7 +106,6 @@ const BookAppointment = () => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState('none');
-  const [customerNotes, setCustomerNotes] = useState('');
   const [loading, setLoading] = useState(true);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [staffLoading, setStaffLoading] = useState(false);
@@ -356,14 +352,12 @@ const BookAppointment = () => {
         date: selectedDate,
         start_time: selectedTime,
         duration: service.duration,
-        customer_notes: customerNotes.trim(),
       });
 
       clearDraft();
       setDraftServices([]);
       setSelectedTime('');
       setSelectedEmployee('none');
-      setCustomerNotes('');
       setConfirmedBooking({
         date: selectedDate,
         time: selectedTime,
@@ -564,7 +558,7 @@ const BookAppointment = () => {
         </button>
       </div>
 
-      <div className="mx-auto grid max-w-[1280px] gap-8 xl:grid-cols-[1.35fr_0.85fr]">
+      <div className="mx-auto grid max-w-[1280px] items-start gap-8 xl:grid-cols-[1.35fr_0.85fr]">
         <section>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Select Date & Time</h1>
 
@@ -613,18 +607,18 @@ const BookAppointment = () => {
           </div>
 
           {calendarOpen ? (
-            <div className="mt-8 max-w-[980px] rounded-[28px] bg-white/60 p-1">
-              <div className="flex flex-wrap gap-3">
+            <div className="mt-8 max-w-[860px] rounded-[24px] bg-white/60 p-1">
+              <div className="flex flex-wrap gap-2.5">
                 {['Morning', 'Afternoon', 'Evening'].map((label) => (
-                  <div key={label} className="rounded-full bg-[#efefee] px-5 py-2.5 text-base text-gray-900">
+                  <div key={label} className="rounded-full bg-[#efefee] px-4 py-2 text-sm text-gray-900">
                     {label}
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 grid grid-cols-7 gap-y-4">
+              <div className="mt-6 grid grid-cols-7 gap-y-3">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-lg text-gray-500">
+                  <div key={day} className="text-center text-base text-gray-500">
                     {day}
                   </div>
                 ))}
@@ -645,10 +639,10 @@ const BookAppointment = () => {
                       type="button"
                       onClick={() => !disabled && handleSelectDate(day)}
                       disabled={disabled}
-                      className="flex flex-col items-center justify-center py-1.5"
+                      className="flex flex-col items-center justify-center py-1"
                     >
                       <div
-                        className={`flex h-16 w-16 items-center justify-center rounded-full border text-xl font-medium transition ${
+                        className={`flex h-14 w-14 items-center justify-center rounded-full border text-lg font-medium transition ${
                           active
                             ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
                             : inMonth
@@ -659,10 +653,10 @@ const BookAppointment = () => {
                         <span className="relative">
                           {format(day, 'd')}
                           {isPastDay ? (
-                            <span className="absolute left-1/2 top-1/2 h-[2px] w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300" />
+                            <span className="absolute left-1/2 top-1/2 h-[2px] w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300" />
                           ) : null}
                           {inMonth && !isPastDay ? (
-                            <span className={`absolute -bottom-3 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#f7eed2]' : availabilityTone}`} />
+                            <span className={`absolute -bottom-2.5 left-1/2 h-1.5 w-6 -translate-x-1/2 rounded-full ${active ? 'bg-[#f7eed2]' : availabilityTone}`} />
                           ) : null}
                         </span>
                       </div>
@@ -671,18 +665,18 @@ const BookAppointment = () => {
                 })}
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-gray-500">
                 <span>Available slots:</span>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-8 rounded-full bg-[#7cc089]" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#7cc089]" />
                   <span>+10</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-8 rounded-full bg-[#f3c400]" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#f3c400]" />
                   <span>6-10</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-8 rounded-full bg-[#e79a21]" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#e79a21]" />
                   <span>1-5</span>
                 </div>
               </div>
@@ -761,7 +755,7 @@ const BookAppointment = () => {
           </div>
         </section>
 
-        <aside className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+        <aside className="h-fit self-start rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">Your order</h2>
 
           <div className="mt-6 space-y-3">
@@ -910,36 +904,6 @@ const BookAppointment = () => {
           >
             {submitting ? 'Booking...' : 'Continue'}
           </button>
-
-          <div className="mt-5 rounded-2xl bg-[#f8fafb] p-4">
-            <div className="flex items-start gap-3">
-              <ClockIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
-              <div className="text-sm text-gray-600">
-                <p className="font-semibold text-gray-900">
-                  {selectedSlot
-                    ? `${format(parseISO(selectedDate), 'EEE, dd MMM')} at ${formatSlotTime(selectedTime)}`
-                    : 'Select a date and time'}
-                </p>
-                <p className="mt-1">{selectedEmployee === 'none' ? 'No staff preference' : 'Selected staff member'}</p>
-              </div>
-            </div>
-            {business?.profile?.location ? (
-              <div className="mt-4 flex items-start gap-3">
-                <MapPinIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
-                <p className="text-sm text-gray-600">{business.profile.location}</p>
-              </div>
-            ) : null}
-            <div className="mt-4 flex items-start gap-3">
-              <PencilSquareIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
-              <textarea
-                rows={4}
-                value={customerNotes}
-                onChange={(event) => setCustomerNotes(event.target.value)}
-                placeholder="Add a note"
-                className="w-full resize-none rounded-2xl border border-gray-300 bg-white px-4 py-3 outline-none focus:border-[#4a90b0]"
-              />
-            </div>
-          </div>
         </aside>
       </div>
     </div>
