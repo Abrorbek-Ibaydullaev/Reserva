@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
@@ -8,6 +8,7 @@ import Layout from './components/Layout/Layout';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import { useAuth } from './context/AuthContext';
 
 // Pages
 import Home from './pages/Home';
@@ -18,15 +19,39 @@ import BusinessDetail from './pages/BusinessDetail';
 import BookAppointment from './pages/BookAppointment';
 import CustomerProfile from './pages/CustomerProfile';
 import MyAppointments from './pages/MyAppointments';
+import EmployeeDashboard from './pages/EmployeeDashboard';
 // import ServiceDetail from './pages/ServiceDetail';
 import BusinessDashboard from './pages/BusinessDashboard';
 import BusinessServices from './pages/business/Services';
 import BusinessAppointments from './pages/business/Appointments';
 import BusinessEmployees from './pages/business/Employees';
 import BusinessSchedule from './pages/business/Schedule';
+import NotFound from './pages/NotFound';
 // import BookAppointment from './pages/BookAppointment';
 // import About from './pages/About';
 // import Contact from './pages/Contact';
+
+const ServicesRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600" />
+      </div>
+    );
+  }
+
+  if (user?.user_type === 'business_owner') {
+    return <NotFound />;
+  }
+
+  if (user?.user_type === 'employee') {
+    return <NotFound />;
+  }
+
+  return <Services />;
+};
 
 function App() {
   return (
@@ -58,7 +83,7 @@ function App() {
             />
 
             {/* <Route path="/services" element={<Services />} /> */}
-            <Route path="/services" element={<Services />} />
+            <Route path="/services" element={<ServicesRoute />} />
             <Route path="/business/:businessId" element={<BusinessDetail />} />
             {/* <Route path="/services/:id" element={<ServiceDetail />} /> */}
             {/* <Route path="/about" element={<About />} /> */}
@@ -68,7 +93,7 @@ function App() {
             <Route
               path="/appointments"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedUserTypes={['customer', 'business_owner', 'employee']}>
                   <MyAppointments />
                 </ProtectedRoute>
               }
@@ -131,9 +156,25 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/employee/dashboard"
+              element={
+                <ProtectedRoute allowedUserTypes={['employee']}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employee/appointments"
+              element={
+                <ProtectedRoute allowedUserTypes={['employee']}>
+                  <MyAppointments />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
         <ToastContainer

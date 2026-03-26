@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   CalendarDaysIcon,
@@ -42,10 +42,13 @@ const statusClasses = {
 
 const MyAppointments = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
+  const [statusBusyId, setStatusBusyId] = useState(null);
   const isBusinessOwner = user?.user_type === 'business_owner';
+  const isEmployee = user?.user_type === 'employee';
 
   useEffect(() => {
     loadAppointments();
@@ -88,6 +91,20 @@ const MyAppointments = () => {
     }
   };
 
+  const handleStatusUpdate = async (appointmentId, status) => {
+    try {
+      setStatusBusyId(appointmentId);
+      await appointmentService.updateAppointmentStatus(appointmentId, { status });
+      toast.success(`Appointment marked as ${status}.`);
+      await loadAppointments();
+    } catch (error) {
+      console.error('Failed to update appointment status:', error);
+      toast.error('Failed to update appointment status.');
+    } finally {
+      setStatusBusyId(null);
+    }
+  };
+
   const now = new Date();
 
   const upcomingAppointments = appointments.filter(
@@ -113,12 +130,17 @@ const MyAppointments = () => {
       appointment.customer_details?.first_name || appointment.customer_details?.last_name
         ? `${appointment.customer_details?.first_name || ''} ${appointment.customer_details?.last_name || ''}`.trim()
         : appointment.customer_details?.email || 'Customer';
-    const counterpartName = isBusinessOwner ? customerName : businessName;
+    const employeeName =
+      appointment.employee_details?.user_details?.first_name || appointment.employee_details?.user_details?.last_name
+        ? `${appointment.employee_details?.user_details?.first_name || ''} ${appointment.employee_details?.user_details?.last_name || ''}`.trim()
+        : appointment.employee_details?.user_details?.email || 'Assigned staff';
+    const counterpartName = isBusinessOwner ? customerName : isEmployee ? customerName : businessName;
 
     return (
       <div
         key={appointment.id}
-        className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
+        className={`bg-white rounded-2xl border border-gray-200 shadow-sm p-6 ${isEmployee ? 'cursor-pointer transition hover:border-[#4a90b0] hover:shadow-md' : ''}`}
+        onClick={isEmployee ? () => navigate('/employee/appointments') : undefined}
       >
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
@@ -150,16 +172,26 @@ const MyAppointments = () => {
                 <MapPinIcon className="h-5 w-5 mr-2" />
                 <span>{counterpartName}</span>
               </div>
-              {isBusinessOwner && appointment.customer_details?.email && (
+              {(isBusinessOwner || isEmployee) && appointment.customer_details?.email && (
                 <div className="pl-7 text-sm text-gray-500">
                   {appointment.customer_details.email}
                 </div>
               )}
+              {isEmployee ? (
+                <div className="pl-7 text-sm text-gray-500">
+                  Business: {businessName}
+                </div>
+              ) : null}
+              {!isEmployee && !isBusinessOwner && appointment.employee_details ? (
+                <div className="pl-7 text-sm text-gray-500">
+                  Staff: {employeeName}
+                </div>
+              ) : null}
             </div>
 
             {appointment.customer_notes && (
               <p className="mt-4 text-sm text-gray-500">
-                {isBusinessOwner ? `Customer note: ${appointment.customer_notes}` : appointment.customer_notes}
+                {isBusinessOwner || isEmployee ? `Customer note: ${appointment.customer_notes}` : appointment.customer_notes}
               </p>
             )}
           </div>
@@ -168,7 +200,38 @@ const MyAppointments = () => {
             <div className="text-2xl font-bold text-gray-900">
               ${Number(appointment.total_amount || 0).toFixed(2)}
             </div>
+            {isEmployee && ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) ? (
+              <div className="mt-4 flex flex-wrap justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+                {appointment.status === 'pending' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleStatusUpdate(appointment.id, 'confirmed')}
+                    disabled={statusBusyId === appointment.id}
+                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                  >
+                    Confirm
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => handleStatusUpdate(appointment.id, 'completed')}
+                  disabled={statusBusyId === appointment.id}
+                  className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  Complete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCancel(appointment.id)}
+                  disabled={cancellingId === appointment.id}
+                  className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 disabled:opacity-60"
+                >
+                  {cancellingId === appointment.id ? 'Cancelling...' : 'Cancel'}
+                </button>
+              </div>
+            ) : null}
             {!isBusinessOwner &&
+              !isEmployee &&
               ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) &&
               getAppointmentStart(appointment) > now && (
               <button
@@ -192,11 +255,13 @@ const MyAppointments = () => {
       <div className="max-w-5xl mx-auto">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-gray-900">
-            {isBusinessOwner ? 'Service Bookings' : 'My Appointments'}
+            {isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments'}
           </h1>
           <p className="text-gray-600 mt-2">
             {isBusinessOwner
               ? 'Review bookings made by customers for your services.'
+              : isEmployee
+                ? 'See your assigned bookings, upcoming schedule, and finished work.'
               : 'View upcoming bookings, review past visits, and cancel if needed.'}
           </p>
         </div>
@@ -207,15 +272,17 @@ const MyAppointments = () => {
           </div>
         ) : appointments.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              {isBusinessOwner ? 'No customer bookings yet' : 'No appointments yet'}
-            </h2>
-            <p className="text-gray-600 mt-3">
+              <h2 className="text-2xl font-semibold text-gray-900">
+              {isBusinessOwner ? 'No customer bookings yet' : isEmployee ? 'No assigned appointments yet' : 'No appointments yet'}
+              </h2>
+              <p className="text-gray-600 mt-3">
               {isBusinessOwner
                 ? 'Bookings for your services will appear here.'
+                : isEmployee
+                  ? 'Appointments assigned to you will appear here.'
                 : 'Book a service to see it here.'}
-            </p>
-            {!isBusinessOwner && (
+              </p>
+            {!isBusinessOwner && !isEmployee && (
               <Link
                 to="/services"
                 className="inline-flex mt-6 rounded-xl bg-primary-600 px-5 py-3 text-white font-semibold hover:bg-primary-700"

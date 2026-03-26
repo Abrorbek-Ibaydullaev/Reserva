@@ -41,9 +41,22 @@ class EmployeeListView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Employee.objects.filter(business_owner=self.request.user).select_related(
-            'user'
-        ).prefetch_related('services')
+        queryset = Employee.objects.select_related('user').prefetch_related('services')
+        user = self.request.user
+        business_owner_id = self.request.query_params.get('business_owner')
+
+        if self.request.method == 'GET':
+            if user.user_type == 'business_owner':
+                queryset = queryset.filter(business_owner=user)
+            elif user.user_type == 'employee':
+                queryset = queryset.filter(business_owner__employees__user=user).distinct()
+            else:
+                if not business_owner_id:
+                    return Employee.objects.none()
+                queryset = queryset.filter(business_owner_id=business_owner_id, is_active=True)
+        else:
+            queryset = queryset.filter(business_owner=user)
+
         is_active = self.request.query_params.get('is_active')
         if is_active is not None:
             queryset = queryset.filter(is_active=is_active.lower() == 'true')
@@ -265,6 +278,12 @@ class AvailableTimeSlotsView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         employee = None
+        service_has_explicit_staff = Employee.objects.filter(
+            business_owner=service.business_owner,
+            is_active=True,
+            services=service,
+        ).exists()
+
         if employee_id:
             try:
                 employee = Employee.objects.get(
@@ -278,7 +297,7 @@ class AvailableTimeSlotsView(APIView):
                     'reason': 'The selected staff member is unavailable.',
                 }, status=status.HTTP_200_OK)
 
-            if employee.services.exists() and not employee.services.filter(id=service.id).exists():
+            if service_has_explicit_staff and not employee.services.filter(id=service.id).exists():
                 return Response({
                     'slots': [],
                     'reason': 'The selected staff member does not provide this service.',

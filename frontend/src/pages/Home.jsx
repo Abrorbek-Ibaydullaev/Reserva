@@ -122,6 +122,13 @@ const Home = () => {
                   >
                     Go to Dashboard
                   </Link>
+                ) : user?.user_type === 'employee' ? (
+                  <Link
+                    to="/employee/dashboard"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-500 shadow-sm transition-colors"
+                  >
+                    Go to Staff Dashboard
+                  </Link>
                 ) : (
                   <Link
                     to="/services"

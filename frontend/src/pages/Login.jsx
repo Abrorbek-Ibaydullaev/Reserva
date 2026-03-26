@@ -26,7 +26,13 @@ const Login = () => {
       setError('');
       const result = await login(data.email, data.password);
       if (result.success) {
-        navigate(from, { replace: true });
+        const fallbackRoute =
+          result.user?.user_type === 'business_owner'
+            ? '/dashboard'
+            : result.user?.user_type === 'employee'
+              ? '/employee/dashboard'
+              : '/';
+        navigate(from === '/' ? fallbackRoute : from, { replace: true });
       } else {
         setError('Invalid email or password');
       }

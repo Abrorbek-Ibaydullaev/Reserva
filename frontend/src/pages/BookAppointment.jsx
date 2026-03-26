@@ -88,6 +88,13 @@ const isPastSlotForDate = (dateValue, timeValue, now) => {
   return slotDate <= now;
 };
 
+const getAvailabilityTone = (count) => {
+  if (count >= 10) return 'bg-[#7cc089]';
+  if (count >= 6) return 'bg-[#f3c400]';
+  if (count >= 1) return 'bg-[#e79a21]';
+  return 'bg-transparent';
+};
+
 const BookAppointment = () => {
   const { serviceId } = useParams();
   const navigate = useNavigate();
@@ -189,12 +196,23 @@ const BookAppointment = () => {
     return `${firstLabel} - ${lastLabel}`;
   }, [visibleDays]);
 
+  const selectedDateObject = useMemo(() => parseISO(selectedDate), [selectedDate]);
+  const todayDate = useMemo(() => startOfToday(), []);
+  const headerLabel = calendarOpen ? format(calendarMonth, 'MMMM yyyy') : monthLabel;
+
   const filteredEmployees = useMemo(() => {
     if (!service) return [];
-    return employees.filter((employee) => {
-      const assignedServices = employee.services_details || [];
-      return assignedServices.length === 0 || assignedServices.some((item) => item.id === service.id);
-    });
+    const hasExplicitAssignments = employees.some((employee) =>
+      (employee.services_details || []).some((item) => item.id === service.id)
+    );
+
+    if (!hasExplicitAssignments) {
+      return employees;
+    }
+
+    return employees.filter((employee) =>
+      (employee.services_details || []).some((item) => item.id === service.id)
+    );
   }, [employees, service]);
 
   const totalAmount = useMemo(
@@ -252,7 +270,10 @@ const BookAppointment = () => {
 
       const [businessesResponse, employeesResponse] = await Promise.all([
         userService.getBusinesses(),
-        scheduleService.getEmployees({ is_active: true }),
+        scheduleService.getEmployees({
+          business_owner: serviceData.business_owner,
+          is_active: true,
+        }),
       ]);
 
       const businesses = normalizeList(businessesResponse);
@@ -548,8 +569,8 @@ const BookAppointment = () => {
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Select Date & Time</h1>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-            <div className="relative flex items-center gap-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">{monthLabel}</h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">{headerLabel}</h2>
               <button
                 type="button"
                 onClick={() => setCalendarOpen((prev) => !prev)}
@@ -558,81 +579,16 @@ const BookAppointment = () => {
                 <CalendarDaysIcon className="h-5 w-5" />
                 <ChevronRightIcon className={`h-4 w-4 transition-transform ${calendarOpen ? '-rotate-90' : 'rotate-90'}`} />
               </button>
-
-              {calendarOpen ? (
-                <div className="absolute left-0 top-full z-20 mt-4 w-[min(100vw-2rem,680px)] rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {format(calendarMonth, 'MMMM yyyy')}
-                    </h3>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setCalendarMonth((prev) => subMonths(prev, 1))}
-                        className="rounded-2xl border border-gray-200 p-2.5 text-gray-400"
-                      >
-                        <ChevronLeftIcon className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCalendarMonth((prev) => addMonths(prev, 1))}
-                        className="rounded-2xl border border-gray-300 p-2.5 text-gray-900"
-                      >
-                        <ChevronRightIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-7 gap-y-3">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                      <div key={day} className="text-center text-sm text-gray-500">
-                        {day}
-                      </div>
-                    ))}
-
-                    {monthGridDays.map((day) => {
-                      const isoDate = format(day, 'yyyy-MM-dd');
-                      const active = isSameDay(day, parseISO(selectedDate));
-                      const inMonth = isSameMonth(day, calendarMonth);
-                      const disabled = isoDate < getToday() || !inMonth;
-                      const hasAvailability = isoDate >= getToday();
-
-                      return (
-                        <button
-                          key={isoDate}
-                          type="button"
-                          onClick={() => !disabled && handleSelectDate(day)}
-                          disabled={disabled}
-                          className="flex flex-col items-center justify-center py-1.5"
-                        >
-                          <div
-                            className={`flex h-14 w-14 items-center justify-center rounded-full border text-base font-medium transition ${
-                              active
-                                ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
-                                : inMonth
-                                  ? 'border-gray-200 bg-[#f2f2f1] text-gray-900'
-                                  : 'border-gray-200 bg-white text-gray-300'
-                            } ${disabled ? 'opacity-70' : ''}`}
-                          >
-                            <span className="relative">
-                              {format(day, 'd')}
-                              {hasAvailability ? (
-                                <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cc089]'}`} />
-                              ) : null}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => {
+                  if (calendarOpen) {
+                    setCalendarMonth((prev) => subMonths(prev, 1));
+                    return;
+                  }
                   const nextStart = format(addDays(parseISO(visibleStart), -7), 'yyyy-MM-dd');
                   setVisibleStart(nextStart < getToday() ? getToday() : nextStart);
                 }}
@@ -642,7 +598,13 @@ const BookAppointment = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setVisibleStart(format(addDays(parseISO(visibleStart), 7), 'yyyy-MM-dd'))}
+                onClick={() => {
+                  if (calendarOpen) {
+                    setCalendarMonth((prev) => addMonths(prev, 1));
+                    return;
+                  }
+                  setVisibleStart(format(addDays(parseISO(visibleStart), 7), 'yyyy-MM-dd'));
+                }}
                 className="rounded-2xl border border-gray-300 p-3 text-gray-900"
               >
                 <ChevronRightIcon className="h-4 w-4" />
@@ -650,33 +612,110 @@ const BookAppointment = () => {
             </div>
           </div>
 
-          <div className="mt-8 flex gap-4 overflow-x-auto pb-3">
-            {visibleDays.map((day) => {
-              const active = isSameDay(day, parseISO(selectedDate));
-              return (
-                <button
-                  key={format(day, 'yyyy-MM-dd')}
-                  type="button"
-                  onClick={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
-                  className="min-w-[76px] text-center"
-                >
-                  <div
-                    className={`mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full border text-base md:text-xl font-medium transition ${
-                      active
-                        ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
-                        : 'border-gray-200 bg-[#f2f2f1] text-gray-900'
-                    }`}
-                  >
-                    <span className="relative">
-                      {format(day, 'd')}
-                      <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
-                    </span>
+          {calendarOpen ? (
+            <div className="mt-8 max-w-[980px] rounded-[28px] bg-white/60 p-1">
+              <div className="flex flex-wrap gap-3">
+                {['Morning', 'Afternoon', 'Evening'].map((label) => (
+                  <div key={label} className="rounded-full bg-[#efefee] px-5 py-2.5 text-base text-gray-900">
+                    {label}
                   </div>
-                  <div className="mt-2 text-sm md:text-base text-gray-800">{format(day, 'EEE')}</div>
-                </button>
-              );
-            })}
-          </div>
+                ))}
+              </div>
+
+              <div className="mt-8 grid grid-cols-7 gap-y-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                  <div key={day} className="text-center text-lg text-gray-500">
+                    {day}
+                  </div>
+                ))}
+
+                {monthGridDays.map((day) => {
+                  const isoDate = format(day, 'yyyy-MM-dd');
+                  const active = isSameDay(day, selectedDateObject);
+                  const inMonth = isSameMonth(day, calendarMonth);
+                  const isPastDay = day < todayDate;
+                  const disabled = isPastDay || !inMonth;
+                  const isTodayOrFuture = day >= todayDate;
+                  const availabilityCount = active && isTodayOrFuture ? filteredAvailableSlots.length : isTodayOrFuture ? 10 : 0;
+                  const availabilityTone = getAvailabilityTone(availabilityCount);
+
+                  return (
+                    <button
+                      key={isoDate}
+                      type="button"
+                      onClick={() => !disabled && handleSelectDate(day)}
+                      disabled={disabled}
+                      className="flex flex-col items-center justify-center py-1.5"
+                    >
+                      <div
+                        className={`flex h-16 w-16 items-center justify-center rounded-full border text-xl font-medium transition ${
+                          active
+                            ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
+                            : inMonth
+                              ? 'border-gray-200 bg-[#f2f2f1] text-gray-900'
+                              : 'border-gray-200 bg-white text-gray-300'
+                        } ${disabled ? 'bg-white text-gray-300' : ''}`}
+                      >
+                        <span className="relative">
+                          {format(day, 'd')}
+                          {isPastDay ? (
+                            <span className="absolute left-1/2 top-1/2 h-[2px] w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300" />
+                          ) : null}
+                          {inMonth && !isPastDay ? (
+                            <span className={`absolute -bottom-3 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#f7eed2]' : availabilityTone}`} />
+                          ) : null}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                <span>Available slots:</span>
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-8 rounded-full bg-[#7cc089]" />
+                  <span>+10</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-8 rounded-full bg-[#f3c400]" />
+                  <span>6-10</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-8 rounded-full bg-[#e79a21]" />
+                  <span>1-5</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-8 flex gap-4 overflow-x-auto pb-3">
+              {visibleDays.map((day) => {
+                const active = isSameDay(day, selectedDateObject);
+                return (
+                  <button
+                    key={format(day, 'yyyy-MM-dd')}
+                    type="button"
+                    onClick={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
+                    className="min-w-[76px] text-center"
+                  >
+                    <div
+                      className={`mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full border text-base md:text-xl font-medium transition ${
+                        active
+                          ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
+                          : 'border-gray-200 bg-[#f2f2f1] text-gray-900'
+                      }`}
+                    >
+                      <span className="relative">
+                        {format(day, 'd')}
+                        <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
+                      </span>
+                    </div>
+                    <div className="mt-2 text-sm md:text-base text-gray-800">{format(day, 'EEE')}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="mt-8 border-t border-gray-200 pt-8">
             <div className="grid gap-6 lg:grid-cols-3">
@@ -795,15 +834,17 @@ const BookAppointment = () => {
                 </div>
               </div>
 
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-4 overflow-x-auto pb-2">
                 <button
                   type="button"
                   onClick={() => setSelectedEmployee('none')}
-                  className="min-w-[74px] text-center"
+                  className="flex min-w-[92px] flex-col items-center text-center"
                 >
+                  <div className="mb-1 h-6" />
                   <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] ${selectedEmployee === 'none' ? 'border-[#4a90b0]' : 'border-gray-300'} bg-white text-gray-500`}>
                     <UserGroupIcon className="h-7 w-7" />
                   </div>
+                  <div className="mt-2 h-2.5 w-2.5 rounded-full bg-green-500" />
                   <p className="mt-2 text-sm text-gray-800">No</p>
                   <p className="text-sm text-gray-800">preference</p>
                 </button>
@@ -818,9 +859,9 @@ const BookAppointment = () => {
                       key={employee.id}
                       type="button"
                       onClick={() => setSelectedEmployee(String(employee.id))}
-                      className="min-w-[74px] text-center"
+                      className="flex min-w-[92px] flex-col items-center text-center"
                     >
-                      <div className="mb-1 h-6 text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
+                      <div className="mb-1 h-6 text-center text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
                         {staffLoading ? '' : label ? `From ${formatSlotTime(label)}` : ''}
                       </div>
                       <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-[#4a90b0]' : 'border-transparent'} bg-[#e9ecef] text-xs font-semibold text-gray-700`}>
@@ -835,7 +876,7 @@ const BookAppointment = () => {
                         )}
                       </div>
                       <div className={`mx-auto mt-2 h-2.5 w-2.5 rounded-full ${label ? 'bg-green-500' : 'bg-orange-500'}`} />
-                      <p className="mt-1.5 text-sm text-gray-800">
+                      <p className="mt-2 max-w-[92px] text-sm text-gray-800">
                         {employee.user_details?.first_name || employee.user_details?.email}
                       </p>
                     </button>

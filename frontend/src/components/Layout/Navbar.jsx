@@ -21,9 +21,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  const navigation = [
+  const publicNavigation = [
     { name: 'Home', href: '/', current: true },
     { name: 'Services', href: '/services', current: false },
+    { name: 'About', href: '/about', current: false },
+    { name: 'Contact', href: '/contact', current: false },
+  ];
+
+  const staffFacingNavigation = [
+    { name: 'Home', href: '/', current: true },
     { name: 'About', href: '/about', current: false },
     { name: 'Contact', href: '/contact', current: false },
   ];
@@ -42,6 +48,12 @@ const Navbar = () => {
     { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
   ];
 
+  const employeeNavigation = [
+    { name: 'Dashboard', href: '/employee/dashboard', icon: HomeIcon },
+    { name: 'My Appointments', href: '/employee/appointments', icon: CalendarIcon },
+    { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+  ];
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -49,9 +61,17 @@ const Navbar = () => {
 
   const getNavigationItems = () => {
     if (!isAuthenticated) return userNavigation;
-    return user?.user_type === 'business_owner' 
-      ? businessNavigation 
-      : userNavigation;
+    if (user?.user_type === 'business_owner') return businessNavigation;
+    if (user?.user_type === 'employee') return employeeNavigation;
+    return userNavigation;
+  };
+
+  const getTopNavigation = () => {
+    if (user?.user_type === 'business_owner' || user?.user_type === 'employee') {
+      return staffFacingNavigation;
+    }
+
+    return publicNavigation;
   };
 
   return (
@@ -71,7 +91,7 @@ const Navbar = () => {
                 
                 {/* Desktop Navigation Links */}
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  {navigation.map((item) => (
+                  {getTopNavigation().map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
@@ -192,7 +212,7 @@ const Navbar = () => {
           {/* Mobile menu */}
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 pb-3 pt-2">
-              {navigation.map((item) => (
+              {getTopNavigation().map((item) => (
                 <Disclosure.Button
                   key={item.name}
                   as={Link}
