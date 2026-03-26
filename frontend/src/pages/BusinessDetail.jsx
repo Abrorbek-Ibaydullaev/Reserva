@@ -396,7 +396,7 @@ const BusinessDetail = () => {
                   >
                     {/* Column 1: Service Details */}
                     <div className="pr-4">
-                      <div className="text-lg font-bold text-gray-900">
+                      <div className="text-md font-bold text-gray-900">
                         {service.name}
                       </div>
                       {service.description && (

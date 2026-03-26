@@ -37,10 +37,10 @@ class ServiceReviewSerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     business_owner_name = serializers.CharField(
-        source='business_owner.get_full_name', read_only=True)
+    source='business_owner.get_full_name', read_only=True)
     category_name = serializers.CharField(
-        source='category.name', read_only=True)
-    images = ServiceImageSerializer(many=True, read_only=True)
+    source='category.name', read_only=True)
+    service_images = ServiceImageSerializer(many=True, read_only=True)
     addons = ServiceAddonSerializer(many=True, read_only=True)
     reviews = ServiceReviewSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
@@ -64,9 +64,9 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class ServiceListSerializer(serializers.ModelSerializer):
     business_owner_name = serializers.CharField(
-        source='business_owner.get_full_name', read_only=True)
+    source='business_owner.get_full_name', read_only=True)
     category_name = serializers.CharField(
-        source='category.name', read_only=True)
+    source='category.name', read_only=True)
     average_rating = serializers.SerializerMethodField()
     review_count = serializers.IntegerField(
         source='reviews.count', read_only=True)
@@ -74,6 +74,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ('id', 'name', 'description', 'price', 'duration', 'thumbnail',
+                  'category',
                   'business_owner_name', 'category_name', 'average_rating',
                   'review_count', 'is_active', 'slug')
 

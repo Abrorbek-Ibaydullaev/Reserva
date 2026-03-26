@@ -5,22 +5,22 @@ urlpatterns = [
     # Categories
     path('categories/', views.CategoryListView.as_view(), name='category-list'),
 
-    # Services
-    path('', views.ServiceListView.as_view(), name='service-list'),
-    path('id/<int:pk>/', views.ServiceDetailByIdView.as_view(), name='service-detail-by-id'),
-    path('<slug:slug>/', views.ServiceDetailView.as_view(), name='service-detail'),
-
     # Business owner services
     path('my-services/', views.BusinessOwnerServiceListView.as_view(),
          name='business-owner-service-list'),
     path('my-services/<int:pk>/', views.BusinessOwnerServiceDetailView.as_view(),
          name='business-owner-service-detail'),
 
-    # Reviews
-    path('<slug:slug>/reviews/', views.ServiceReviewListView.as_view(),
-         name='service-review-list'),
-
     # Addons
     path('<int:service_id>/addons/',
          views.ServiceAddonListView.as_view(), name='service-addon-list'),
+
+    # Services
+    path('', views.ServiceListView.as_view(), name='service-list'),
+    path('id/<int:pk>/', views.ServiceDetailByIdView.as_view(), name='service-detail-by-id'),
+
+    # Reviews
+    path('<slug:slug>/reviews/', views.ServiceReviewListView.as_view(),
+         name='service-review-list'),
+    path('<slug:slug>/', views.ServiceDetailView.as_view(), name='service-detail'),
 ]

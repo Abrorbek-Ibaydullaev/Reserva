@@ -4,6 +4,14 @@ import { appointmentService } from '../../services/api';
 
 const normalizeList = (response) => response.data?.results || response.data || [];
 const activeStatuses = ['pending', 'confirmed', 'rescheduled'];
+const statusBadgeClasses = {
+  pending: 'bg-amber-100 text-amber-800',
+  confirmed: 'bg-blue-100 text-blue-800',
+  completed: 'bg-emerald-100 text-emerald-800',
+  cancelled: 'bg-red-100 text-red-800',
+  no_show: 'bg-slate-100 text-slate-700',
+  rescheduled: 'bg-violet-100 text-violet-800',
+};
 
 const BusinessAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -103,8 +111,12 @@ const BusinessAppointments = () => {
                       <h2 className="text-lg font-semibold text-gray-900">
                         {appointment.service_details?.name}
                       </h2>
-                      <span className="rounded-full bg-[#e8f2f6] px-3 py-1 text-xs font-semibold text-[#326e88]">
-                        {appointment.status}
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          statusBadgeClasses[appointment.status] || 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {appointment.status.replace('_', ' ')}
                       </span>
                     </div>
                     <div className="mt-3 grid gap-2 text-sm text-gray-600 md:grid-cols-2">
