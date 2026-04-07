@@ -112,6 +112,7 @@ const BookAppointment = () => {
   const [submitting, setSubmitting] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [staffPreviewSlots, setStaffPreviewSlots] = useState({});
+  const [staffAvailableSlots, setStaffAvailableSlots] = useState({});
   const [slotsMessage, setSlotsMessage] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
@@ -162,11 +163,37 @@ const BookAppointment = () => {
     return buckets;
   }, [filteredAvailableSlots]);
 
+  const staffAvailabilityByTime = useMemo(() => {
+    const map = {};
+
+    Object.entries(staffAvailableSlots).forEach(([employeeId, slots]) => {
+      (slots || []).forEach((slot) => {
+        const key = slot.start_time;
+        if (!map[key]) {
+          map[key] = new Set();
+        }
+        map[key].add(String(employeeId));
+      });
+    });
+
+    return map;
+  }, [staffAvailableSlots]);
+
   useEffect(() => {
     if (selectedTime && !selectedSlot) {
       setSelectedTime('');
     }
   }, [selectedTime, selectedSlot]);
+
+  useEffect(() => {
+    if (
+      selectedEmployee !== 'none' &&
+      selectedTime &&
+      !staffAvailabilityByTime[selectedTime]?.has(String(selectedEmployee))
+    ) {
+      setSelectedEmployee('none');
+    }
+  }, [selectedEmployee, selectedTime, staffAvailabilityByTime]);
 
   const visibleDays = useMemo(() => {
     const startDate = parseISO(visibleStart);
@@ -315,24 +342,29 @@ const BookAppointment = () => {
       setStaffLoading(true);
 
       const previews = {};
+      const availability = {};
       const requests = filteredEmployees.map(async (employee) => {
         const response = await appointmentService.getAvailableSlots({
           service_id: serviceId,
           date: selectedDate,
           employee_id: employee.id,
         });
-        const slots = response.data?.slots || [];
+        const payload = response.data || {};
+        const slots = Array.isArray(payload) ? payload : payload.slots || [];
         const nextSlot = slots.find(
           (slot) => !isPastSlotForDate(selectedDate, slot.start_time, new Date())
         );
         previews[employee.id] = nextSlot?.start_time || null;
+        availability[employee.id] = slots;
       });
 
       await Promise.all(requests);
       setStaffPreviewSlots(previews);
+      setStaffAvailableSlots(availability);
     } catch (err) {
       console.error('Failed to load staff previews:', err);
       setStaffPreviewSlots({});
+      setStaffAvailableSlots({});
     } finally {
       setStaffLoading(false);
     }
@@ -847,16 +879,25 @@ const BookAppointment = () => {
                   const active = String(selectedEmployee) === String(employee.id);
                   const label = staffPreviewSlots[employee.id];
                   const initials = `${employee.user_details?.first_name?.[0] || ''}${employee.user_details?.last_name?.[0] || ''}`.trim() || 'E';
+                  const isBlockedForSelectedTime =
+                    !!selectedTime && !staffAvailabilityByTime[selectedTime]?.has(String(employee.id));
 
                   return (
                     <button
                       key={employee.id}
                       type="button"
-                      onClick={() => setSelectedEmployee(String(employee.id))}
-                      className="flex min-w-[92px] flex-col items-center text-center"
+                      onClick={() => {
+                        if (!isBlockedForSelectedTime) {
+                          setSelectedEmployee(String(employee.id));
+                        }
+                      }}
+                      disabled={isBlockedForSelectedTime}
+                      className={`flex min-w-[92px] flex-col items-center text-center ${
+                        isBlockedForSelectedTime ? 'cursor-not-allowed opacity-40' : ''
+                      }`}
                     >
                       <div className="mb-1 h-6 text-center text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
-                        {staffLoading ? '' : label ? `From ${formatSlotTime(label)}` : ''}
+                        {staffLoading ? '' : isBlockedForSelectedTime ? 'Unavailable' : label ? `From ${formatSlotTime(label)}` : ''}
                       </div>
                       <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-[#4a90b0]' : 'border-transparent'} bg-[#e9ecef] text-xs font-semibold text-gray-700`}>
                         {employee.user_details?.profile_picture ? (

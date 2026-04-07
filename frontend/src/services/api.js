@@ -20,6 +20,15 @@ const api = axios.create({
     timeout: 10000,
 });
 
+const withPayloadConfig = (data) =>
+    data instanceof FormData
+        ? {
+              headers: {
+                  'Content-Type': 'multipart/form-data',
+              },
+          }
+        : undefined;
+
 /**
  * Request interceptor – attach access token
  */
@@ -124,7 +133,7 @@ export const authService = {
     },
 
     updateProfile: async (userData) => {
-        const response = await api.put('/users/me/', userData);
+        const response = await api.put('/users/me/', userData, withPayloadConfig(userData));
         localStorage.setItem('user_data', JSON.stringify(response.data));
         return response;
     },
@@ -181,7 +190,7 @@ export const appointmentService = {
  * =========================
  */
 export const scheduleService = {
-    getBusinessHours: () => api.get('/schedules/business-hours/'),
+    getBusinessHours: (params) => api.get('/schedules/business-hours/', { params }),
     createBusinessHours: (data) => api.post('/schedules/business-hours/', data),
     updateBusinessHours: (id, data) => api.put(`/schedules/business-hours/${id}/`, data),
     getEmployees: (params) => api.get('/schedules/employees/', { params }),
@@ -190,6 +199,22 @@ export const scheduleService = {
     deleteEmployee: (id) => api.delete(`/schedules/employees/${id}/`),
     getEmployeeSchedules: (employeeId) => api.get(`/schedules/employees/${employeeId}/schedules/`),
     createEmployeeSchedule: (employeeId, data) => api.post(`/schedules/employees/${employeeId}/schedules/`, data),
+    updateEmployeeSchedule: (employeeId, scheduleId, data) =>
+        api.put(`/schedules/employees/${employeeId}/schedules/${scheduleId}/`, data),
+    deleteEmployeeSchedule: (employeeId, scheduleId) =>
+        api.delete(`/schedules/employees/${employeeId}/schedules/${scheduleId}/`),
+    getMyEmployeeProfile: () => api.get('/schedules/me/employee-profile/'),
+    updateMyEmployeeProfile: (data) => api.put('/schedules/me/employee-profile/', data),
+    getMyWeeklyHours: () => api.get('/schedules/me/weekly-hours/'),
+    updateMyWeeklyHour: (id, data) => api.put(`/schedules/me/weekly-hours/${id}/`, data),
+    getMySchedules: () => api.get('/schedules/me/schedules/'),
+    createMySchedule: (data) => api.post('/schedules/me/schedules/', data),
+    updateMySchedule: (id, data) => api.put(`/schedules/me/schedules/${id}/`, data),
+    deleteMySchedule: (id) => api.delete(`/schedules/me/schedules/${id}/`),
+    getMyTimeOff: () => api.get('/schedules/me/time-off/'),
+    createMyTimeOff: (data) => api.post('/schedules/me/time-off/', data),
+    updateMyTimeOff: (id, data) => api.put(`/schedules/me/time-off/${id}/`, data),
+    deleteMyTimeOff: (id) => api.delete(`/schedules/me/time-off/${id}/`),
     getTimeOffRequests: () => api.get('/schedules/time-off/'),
     createTimeOffRequest: (data) => api.post('/schedules/time-off/', data),
     updateTimeOffRequest: (id, data) => api.put(`/schedules/time-off/${id}/`, data),
@@ -207,9 +232,12 @@ export const scheduleService = {
  */
 export const userService = {
     getMe: () => api.get('/users/me/'),
-    updateMe: (data) => api.put('/users/me/', data),
+    updateMe: (data) => api.put('/users/me/', data, withPayloadConfig(data)),
     getProfile: () => api.get('/users/profile/'),
-    updateProfile: (data) => api.put('/users/profile/', data),
+    updateProfile: (data) => api.put('/users/profile/', data, withPayloadConfig(data)),
+    getGalleryImages: () => api.get('/users/gallery/'),
+    uploadGalleryImage: (data) => api.post('/users/gallery/', data, withPayloadConfig(data)),
+    deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
     getNotifications: () => api.get('/users/notifications/'),
     markNotificationAsRead: (id) =>
         api.put(`/users/notifications/${id}/read/`),

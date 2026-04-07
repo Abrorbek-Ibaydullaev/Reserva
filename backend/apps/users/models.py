@@ -88,6 +88,8 @@ class UserProfile(models.Model):
     state = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
     # For business owners
     business_name = models.CharField(max_length=255, blank=True, null=True)
@@ -108,6 +110,29 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email}'s Profile"
+
+
+class BusinessGalleryImage(models.Model):
+    """Gallery images uploaded by business owners for their public page."""
+
+    IMAGE_TYPE_CHOICES = (
+        ('space', 'The Space'),
+        ('portfolio', 'Portfolio'),
+    )
+
+    business_owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(upload_to='business_gallery/')
+    image_type = models.CharField(max_length=20, choices=IMAGE_TYPE_CHOICES, default='space')
+    caption = models.CharField(max_length=200, blank=True, null=True)
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f"Gallery image for {self.business_owner.email}"
 
 
 class Notification(models.Model):

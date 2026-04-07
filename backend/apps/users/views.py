@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.db import models
-from .models import UserProfile, Notification
+from .models import UserProfile, Notification, BusinessGalleryImage
 from apps.services.models import Service
 from .serializers import (
     UserRegistrationSerializer,
@@ -13,7 +13,8 @@ from .serializers import (
     UserProfileSerializer,
     ChangePasswordSerializer,
     NotificationSerializer,
-    BusinessSerializer
+    BusinessSerializer,
+    BusinessGalleryImageSerializer,
 )
 
 User = get_user_model()
@@ -125,10 +126,32 @@ class BusinessListView(generics.ListAPIView):
         return User.objects.filter(user_type='business_owner').annotate(
             services_count=models.Count('services', filter=models.Q(services__is_active=True))
         ).filter(services_count__gt=0).order_by('-services_count').prefetch_related(
-            models.Prefetch('services', queryset=Service.objects.filter(is_active=True)[:3], to_attr='services_active')
+            models.Prefetch('services', queryset=Service.objects.filter(is_active=True), to_attr='services_active'),
+            'gallery_images',
         )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return BusinessSerializer
         return UserSerializer
+
+
+class BusinessGalleryImageListCreateView(generics.ListCreateAPIView):
+    """List and create gallery images for the authenticated business owner."""
+    serializer_class = BusinessGalleryImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return BusinessGalleryImage.objects.filter(business_owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(business_owner=self.request.user)
+
+
+class BusinessGalleryImageDetailView(generics.DestroyAPIView):
+    """Delete a gallery image for the authenticated business owner."""
+    serializer_class = BusinessGalleryImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return BusinessGalleryImage.objects.filter(business_owner=self.request.user)

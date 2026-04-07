@@ -18,6 +18,8 @@ import Services from './pages/Services';
 import BusinessDetail from './pages/BusinessDetail';
 import BookAppointment from './pages/BookAppointment';
 import CustomerProfile from './pages/CustomerProfile';
+import BusinessProfile from './pages/BusinessProfile';
+import EmployeeProfile from './pages/EmployeeProfile';
 import MyAppointments from './pages/MyAppointments';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 // import ServiceDetail from './pages/ServiceDetail';
@@ -51,6 +53,28 @@ const ServicesRoute = () => {
   }
 
   return <Services />;
+};
+
+const ProfileRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600" />
+      </div>
+    );
+  }
+
+  if (user?.user_type === 'business_owner') {
+    return <BusinessProfile />;
+  }
+
+  if (user?.user_type === 'employee') {
+    return <EmployeeProfile />;
+  }
+
+  return <CustomerProfile />;
 };
 
 function App() {
@@ -102,7 +126,7 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <CustomerProfile />
+                  <ProfileRoute />
                 </ProtectedRoute>
               }
             />

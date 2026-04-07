@@ -62,7 +62,9 @@ const BusinessSchedule = () => {
     <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
       <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900">Business Hours</h1>
-        <p className="mt-2 text-gray-500">Control which dates and times are available for booking.</p>
+        <p className="mt-2 text-gray-500">
+          These are the public business hours shown on your business page and used as the main booking window. Staff schedules are separate.
+        </p>
 
         <div className="mt-8 space-y-4">
           {loading ? (

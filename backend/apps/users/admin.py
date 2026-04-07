@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
-from .models import UserProfile, Notification
+from .models import UserProfile, Notification, BusinessGalleryImage
 
 User = get_user_model()
 
@@ -9,6 +9,24 @@ User = get_user_model()
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
+    fieldsets = (
+        ('Profile', {
+            'fields': ('bio', 'address', 'city', 'state', 'country', 'postal_code'),
+        }),
+        ('Business Details', {
+            'fields': (
+                'business_name',
+                'business_address',
+                'business_phone',
+                'business_email',
+                'business_website',
+                'business_description',
+            ),
+        }),
+        ('Social Links', {
+            'fields': ('instagram', 'facebook', 'twitter', 'linkedin'),
+        }),
+    )
 
 
 class UserAdmin(BaseUserAdmin):
@@ -50,5 +68,13 @@ class NotificationAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
 
 
+class BusinessGalleryImageAdmin(admin.ModelAdmin):
+    list_display = ('business_owner', 'image_type', 'caption', 'order', 'created_at')
+    list_filter = ('image_type', 'created_at')
+    search_fields = ('business_owner__email', 'business_owner__first_name', 'business_owner__last_name', 'caption')
+    ordering = ('business_owner', 'order', 'created_at')
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Notification, NotificationAdmin)
+admin.site.register(BusinessGalleryImage, BusinessGalleryImageAdmin)

@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   MapPinIcon,
   SparklesIcon
@@ -161,9 +161,27 @@ import { StarIcon } from '@heroicons/react/24/solid';
 // };
 const BusinessCard = ({ business }) => {
   const services = business.services || [];
+  const navigate = useNavigate();
+
+  const openBusiness = () => {
+    navigate(`/business/${business.id}`);
+  };
+
+  const handleCardKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openBusiness();
+    }
+  };
 
   return (
-    <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={openBusiness}
+      onKeyDown={handleCardKeyDown}
+      className="group cursor-pointer bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+    >
       {/* MAIN HORIZONTAL CONTAINER */}
       <div className="flex flex-col md:flex-row">
 
@@ -237,6 +255,7 @@ const BusinessCard = ({ business }) => {
 
                       <Link
                         to={`/business/${business.id}?service=${service.id}`}
+                        onClick={(event) => event.stopPropagation()}
                         className="px-5 py-2 bg-[#1B809E] text-white text-xs font-bold rounded hover:bg-opacity-90 transition-all"
                       >
                         Book

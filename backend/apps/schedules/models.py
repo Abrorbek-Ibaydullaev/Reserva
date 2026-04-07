@@ -93,6 +93,52 @@ class Employee(models.Model):
         return f"{self.user.get_full_name()} - {self.business_owner.email}"
 
 
+def ensure_default_employee_weekly_hours(employee):
+    """Bootstrap an editable weekly schedule for employees."""
+    existing_hours = EmployeeWeeklyHours.objects.filter(employee=employee)
+    if existing_hours.exists():
+        return
+
+    defaults = {
+        0: (True, time(9, 0), time(18, 0)),
+        1: (True, time(9, 0), time(18, 0)),
+        2: (True, time(9, 0), time(18, 0)),
+        3: (True, time(9, 0), time(18, 0)),
+        4: (True, time(9, 0), time(18, 0)),
+        5: (True, time(9, 0), time(18, 0)),
+        6: (False, None, None),
+    }
+
+    for day_of_week, (is_working, start_time, end_time) in defaults.items():
+        EmployeeWeeklyHours.objects.create(
+            employee=employee,
+            day_of_week=day_of_week,
+            is_working=is_working,
+            start_time=start_time,
+            end_time=end_time,
+        )
+
+
+class EmployeeWeeklyHours(models.Model):
+    """Recurring weekly working hours for an employee."""
+
+    DAYS_OF_WEEK = BusinessHours.DAYS_OF_WEEK
+
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name='weekly_hours')
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
+    is_working = models.BooleanField(default=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['day_of_week']
+        unique_together = ['employee', 'day_of_week']
+
+    def __str__(self):
+        return f"{self.employee.user.get_full_name()} - {self.get_day_of_week_display()}"
+
+
 class EmployeeSchedule(models.Model):
     """Employee working schedule."""
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import BusinessHours, Employee, EmployeeSchedule, EmployeeTimeOff, Resource
+from .models import BusinessHours, Employee, EmployeeWeeklyHours, EmployeeSchedule, EmployeeTimeOff, Resource
 from apps.users.serializers import UserSerializer
 from apps.services.serializers import ServiceListSerializer
 
@@ -105,6 +105,16 @@ class EmployeeScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeSchedule
         fields = '__all__'
+
+
+class EmployeeWeeklyHoursSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(
+        source='employee.user.get_full_name', read_only=True)
+
+    class Meta:
+        model = EmployeeWeeklyHours
+        fields = '__all__'
+        read_only_fields = ('employee',)
 
 
 class EmployeeTimeOffSerializer(serializers.ModelSerializer):

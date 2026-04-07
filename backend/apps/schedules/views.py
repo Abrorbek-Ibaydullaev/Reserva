@@ -4,11 +4,12 @@ from rest_framework.views import APIView
 from django.utils import timezone
 from datetime import datetime, timedelta, date, time
 from django.db.models import Q
-from .models import BusinessHours, Employee, EmployeeSchedule, EmployeeTimeOff, Resource
-from .models import ensure_default_business_hours
+from .models import BusinessHours, Employee, EmployeeWeeklyHours, EmployeeSchedule, EmployeeTimeOff, Resource
+from .models import ensure_default_business_hours, ensure_default_employee_weekly_hours
 from .serializers import (
     BusinessHoursSerializer,
     EmployeeSerializer,
+    EmployeeWeeklyHoursSerializer,
     EmployeeScheduleSerializer,
     EmployeeTimeOffSerializer,
     ResourceSerializer,
@@ -22,12 +23,74 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+def has_time_off_overlap(time_off_entries, slot_start, slot_end):
+    for entry in time_off_entries:
+        if entry.is_all_day:
+            return True
+
+        if not entry.start_time or not entry.end_time:
+            return True
+
+        if entry.start_time < slot_end and entry.end_time > slot_start:
+            return True
+
+    return False
+
+
+def employee_matches_slot(employee, target_date, slot_start, slot_end):
+    date_specific_schedule_exists = EmployeeSchedule.objects.filter(
+        employee=employee,
+        date=target_date,
+    ).exists()
+
+    if date_specific_schedule_exists:
+        return EmployeeSchedule.objects.filter(
+            employee=employee,
+            date=target_date,
+            start_time__lte=slot_start,
+            end_time__gte=slot_end,
+            is_available=True,
+        ).exists()
+
+    ensure_default_employee_weekly_hours(employee)
+    weekly_hours = EmployeeWeeklyHours.objects.filter(
+        employee=employee,
+        day_of_week=target_date.weekday(),
+    ).first()
+
+    if not weekly_hours or not weekly_hours.is_working:
+        return False
+
+    if not weekly_hours.start_time or not weekly_hours.end_time:
+        return False
+
+    return weekly_hours.start_time <= slot_start and weekly_hours.end_time >= slot_end
+
+
 class BusinessHoursView(generics.ListCreateAPIView):
     """Manage business hours."""
     serializer_class = BusinessHoursSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
+        if self.request.method == 'GET':
+            business_owner_id = self.request.query_params.get('business_owner')
+
+            if business_owner_id:
+                try:
+                    business_owner = User.objects.get(id=business_owner_id, user_type='business_owner')
+                except User.DoesNotExist:
+                    return BusinessHours.objects.none()
+
+                ensure_default_business_hours(business_owner)
+                return BusinessHours.objects.filter(business_owner=business_owner)
+
+            if self.request.user.is_authenticated:
+                ensure_default_business_hours(self.request.user)
+                return BusinessHours.objects.filter(business_owner=self.request.user)
+
+            return BusinessHours.objects.none()
+
         ensure_default_business_hours(self.request.user)
         return BusinessHours.objects.filter(business_owner=self.request.user)
 
@@ -97,6 +160,19 @@ class EmployeeScheduleView(generics.ListCreateAPIView):
         return EmployeeSchedule.objects.filter(employee_id=employee_id, employee__business_owner=self.request.user)
 
 
+class EmployeeScheduleDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Manage a single employee schedule."""
+    serializer_class = EmployeeScheduleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        employee_id = self.kwargs.get('employee_id')
+        return EmployeeSchedule.objects.filter(
+            employee_id=employee_id,
+            employee__business_owner=self.request.user,
+        )
+
+
 class EmployeeTimeOffListView(generics.ListCreateAPIView):
     """List and create time off requests."""
     serializer_class = EmployeeTimeOffSerializer
@@ -118,6 +194,84 @@ class EmployeeTimeOffDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return EmployeeTimeOff.objects.filter(employee__business_owner=self.request.user)
+
+
+class EmployeeSelfProfileView(generics.RetrieveUpdateAPIView):
+    """Allow employees to manage their own employee profile."""
+    serializer_class = EmployeeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return Employee.objects.select_related('user').prefetch_related('services').get(user=self.request.user)
+
+
+class EmployeeSelfWeeklyHoursListView(generics.ListAPIView):
+    """Allow employees to view their weekly working hours."""
+    serializer_class = EmployeeWeeklyHoursSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        employee = Employee.objects.get(user=self.request.user)
+        ensure_default_employee_weekly_hours(employee)
+        return EmployeeWeeklyHours.objects.filter(employee=employee)
+
+
+class EmployeeSelfWeeklyHoursDetailView(generics.RetrieveUpdateAPIView):
+    """Allow employees to update one weekly working-hours row."""
+    serializer_class = EmployeeWeeklyHoursSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        employee = Employee.objects.get(user=self.request.user)
+        ensure_default_employee_weekly_hours(employee)
+        return EmployeeWeeklyHours.objects.filter(employee=employee)
+
+
+class EmployeeSelfScheduleListCreateView(generics.ListCreateAPIView):
+    """Allow employees to manage their own schedules."""
+    serializer_class = EmployeeScheduleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return EmployeeSchedule.objects.filter(employee__user=self.request.user).select_related('employee')
+
+    def perform_create(self, serializer):
+        employee = Employee.objects.get(user=self.request.user)
+        serializer.save(employee=employee)
+
+
+class EmployeeSelfScheduleDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Allow employees to update their own schedules."""
+    serializer_class = EmployeeScheduleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return EmployeeSchedule.objects.filter(employee__user=self.request.user).select_related('employee')
+
+
+class EmployeeSelfTimeOffListCreateView(generics.ListCreateAPIView):
+    """Allow employees to set their own personal duty / unavailable periods."""
+    serializer_class = EmployeeTimeOffSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return EmployeeTimeOff.objects.filter(employee__user=self.request.user).select_related('employee')
+
+    def perform_create(self, serializer):
+        employee = Employee.objects.get(user=self.request.user)
+        serializer.save(employee=employee, status='approved')
+
+
+class EmployeeSelfTimeOffDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Allow employees to update their own personal duty / unavailable periods."""
+    serializer_class = EmployeeTimeOffSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return EmployeeTimeOff.objects.filter(employee__user=self.request.user).select_related('employee')
+
+    def perform_update(self, serializer):
+        serializer.save(status='approved')
 
 
 class ResourceListView(generics.ListCreateAPIView):
@@ -187,29 +341,21 @@ class CheckAvailabilityView(APIView):
                 employee = Employee.objects.get(id=employee_id)
 
                 # Check employee schedule
-                employee_schedule = EmployeeSchedule.objects.filter(
-                    employee=employee,
-                    date=date,
-                    start_time__lte=start_time,
-                    end_time__gte=end_time,
-                    is_available=True
-                ).exists()
-
-                if not employee_schedule:
+                if not employee_matches_slot(employee, date, start_time, end_time):
                     return Response({
                         'available': False,
                         'message': 'Employee not available at this time'
                     }, status=status.HTTP_200_OK)
 
                 # Check employee time off
-                time_off = EmployeeTimeOff.objects.filter(
+                time_off_entries = EmployeeTimeOff.objects.filter(
                     employee=employee,
                     start_date__lte=date,
                     end_date__gte=date,
                     status='approved'
-                ).exists()
+                )
 
-                if time_off:
+                if has_time_off_overlap(time_off_entries, start_time, end_time):
                     return Response({
                         'available': False,
                         'message': 'Employee is on time off'
@@ -278,11 +424,18 @@ class AvailableTimeSlotsView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         employee = None
+        available_employee_pool = Employee.objects.filter(
+            business_owner=service.business_owner,
+            is_active=True,
+        ).prefetch_related('services')
         service_has_explicit_staff = Employee.objects.filter(
             business_owner=service.business_owner,
             is_active=True,
             services=service,
         ).exists()
+
+        if service_has_explicit_staff:
+            available_employee_pool = available_employee_pool.filter(services=service).distinct()
 
         if employee_id:
             try:
@@ -358,32 +511,8 @@ class AvailableTimeSlotsView(APIView):
         # Filter out unavailable slots
         available_slots = []
         for slot in time_slots:
-            # Check for conflicts
-            conflicts = Appointment.objects.filter(
-                service=service,
-                date=date,
-                status__in=['confirmed', 'pending'],
-                start_time__lt=slot['end_time'],
-                end_time__gt=slot['start_time']
-            ).exists()
-
-            if conflicts:
-                continue
-
             if employee:
-                employee_schedule_exists = EmployeeSchedule.objects.filter(
-                    employee=employee,
-                    date=date,
-                    start_time__lte=slot['start_time'],
-                    end_time__gte=slot['end_time'],
-                    is_available=True,
-                ).exists()
-                employee_has_custom_schedule = EmployeeSchedule.objects.filter(
-                    employee=employee,
-                    date=date,
-                ).exists()
-
-                if employee_has_custom_schedule and not employee_schedule_exists:
+                if not employee_matches_slot(employee, date, slot['start_time'], slot['end_time']):
                     continue
 
                 employee_time_off = EmployeeTimeOff.objects.filter(
@@ -391,9 +520,9 @@ class AvailableTimeSlotsView(APIView):
                     start_date__lte=date,
                     end_date__gte=date,
                     status='approved',
-                ).exists()
+                )
 
-                if employee_time_off:
+                if has_time_off_overlap(employee_time_off, slot['start_time'], slot['end_time']):
                     continue
 
                 employee_conflict = Appointment.objects.filter(
@@ -409,6 +538,37 @@ class AvailableTimeSlotsView(APIView):
 
                 slot['employee_id'] = employee.id
                 slot['employee_name'] = employee.user.get_full_name() or employee.user.email
+            else:
+                matching_employee_found = False
+
+                for candidate in available_employee_pool:
+                    if not employee_matches_slot(candidate, date, slot['start_time'], slot['end_time']):
+                        continue
+
+                    candidate_time_off = EmployeeTimeOff.objects.filter(
+                        employee=candidate,
+                        start_date__lte=date,
+                        end_date__gte=date,
+                        status='approved',
+                    )
+                    if has_time_off_overlap(candidate_time_off, slot['start_time'], slot['end_time']):
+                        continue
+
+                    employee_conflict = Appointment.objects.filter(
+                        employee=candidate,
+                        date=date,
+                        status__in=['confirmed', 'pending'],
+                        start_time__lt=slot['end_time'],
+                        end_time__gt=slot['start_time'],
+                    ).exists()
+                    if employee_conflict:
+                        continue
+
+                    matching_employee_found = True
+                    break
+
+                if not matching_employee_found and available_employee_pool.exists():
+                    continue
 
             available_slots.append(slot)
 

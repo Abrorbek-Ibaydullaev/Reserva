@@ -5,6 +5,14 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+def build_absolute_media_url(request, value):
+    if not value:
+        return value
+    if request:
+        return request.build_absolute_uri(value)
+    return value
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -15,6 +23,14 @@ class ServiceImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceImage
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image'] = build_absolute_media_url(
+            self.context.get('request'),
+            data.get('image'),
+        )
+        return data
 
 
 class ServiceAddonSerializer(serializers.ModelSerializer):
@@ -61,6 +77,18 @@ class ServiceSerializer(serializers.ModelSerializer):
     def get_review_count(self, obj):
         return obj.reviews.count()
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['thumbnail'] = build_absolute_media_url(
+            self.context.get('request'),
+            data.get('thumbnail'),
+        )
+        data['images'] = [
+            build_absolute_media_url(self.context.get('request'), value)
+            for value in (data.get('images') or [])
+        ]
+        return data
+
 
 class ServiceListSerializer(serializers.ModelSerializer):
     business_owner_name = serializers.CharField(
@@ -70,11 +98,12 @@ class ServiceListSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
     review_count = serializers.IntegerField(
         source='reviews.count', read_only=True)
+    service_images = ServiceImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
         fields = ('id', 'name', 'description', 'price', 'duration', 'thumbnail',
-                  'category',
+                  'images', 'service_images', 'category',
                   'business_owner_name', 'category_name', 'average_rating',
                   'review_count', 'is_active', 'slug')
 
@@ -83,3 +112,15 @@ class ServiceListSerializer(serializers.ModelSerializer):
         if reviews:
             return sum(review.rating for review in reviews) / len(reviews)
         return 0
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['thumbnail'] = build_absolute_media_url(
+            self.context.get('request'),
+            data.get('thumbnail'),
+        )
+        data['images'] = [
+            build_absolute_media_url(self.context.get('request'), value)
+            for value in (data.get('images') or [])
+        ]
+        return data

@@ -16,7 +16,6 @@ const CustomerProfile = () => {
     last_name: '',
     email: '',
     phone_number: '',
-    bio: '',
     address: '',
     city: '',
     state: '',
@@ -46,7 +45,6 @@ const CustomerProfile = () => {
         last_name: me.last_name || '',
         email: me.email || '',
         phone_number: me.phone_number || '',
-        bio: profile.bio || '',
         address: profile.address || '',
         city: profile.city || '',
         state: profile.state || '',
@@ -80,7 +78,6 @@ const CustomerProfile = () => {
           phone_number: formData.phone_number,
         }),
         userService.updateProfile({
-          bio: formData.bio,
           address: formData.address,
           city: formData.city,
           state: formData.state,
@@ -154,14 +151,6 @@ const CustomerProfile = () => {
               </div>
             </div>
 
-            <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-6">
-              <p className="text-sm uppercase tracking-[0.18em] text-[#99d4db]">
-                About
-              </p>
-              <p className="mt-4 text-lg leading-8 text-white/85">
-                {formData.bio || 'Add a short bio, preferences, or helpful booking notes here.'}
-              </p>
-            </div>
           </section>
 
           <section>
@@ -220,19 +209,6 @@ const CustomerProfile = () => {
                   <input
                     name="phone_number"
                     value={formData.phone_number}
-                    onChange={handleChange}
-                    className="w-full rounded-2xl border border-gray-300 px-4 py-3"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                    Bio
-                  </label>
-                  <textarea
-                    name="bio"
-                    rows={4}
-                    value={formData.bio}
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-gray-300 px-4 py-3"
                   />

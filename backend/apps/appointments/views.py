@@ -17,12 +17,64 @@ from .serializers import (
     CancellationReasonSerializer,
     AppointmentCancellationSerializer
 )
-from apps.schedules.models import BusinessHours, EmployeeTimeOff, ensure_default_business_hours
+from apps.schedules.models import (
+    BusinessHours,
+    Employee,
+    EmployeeSchedule,
+    EmployeeTimeOff,
+    EmployeeWeeklyHours,
+    ensure_default_business_hours,
+    ensure_default_employee_weekly_hours,
+)
 from apps.services.models import Service
 from apps.users.models import Notification
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+
+def has_time_off_overlap(time_off_entries, slot_start, slot_end):
+    for entry in time_off_entries:
+        if entry.is_all_day:
+            return True
+
+        if not entry.start_time or not entry.end_time:
+            return True
+
+        if entry.start_time < slot_end and entry.end_time > slot_start:
+            return True
+
+    return False
+
+
+def employee_matches_slot(employee, target_date, slot_start, slot_end):
+    date_specific_schedule_exists = EmployeeSchedule.objects.filter(
+        employee=employee,
+        date=target_date,
+    ).exists()
+
+    if date_specific_schedule_exists:
+        return EmployeeSchedule.objects.filter(
+            employee=employee,
+            date=target_date,
+            start_time__lte=slot_start,
+            end_time__gte=slot_end,
+            is_available=True,
+        ).exists()
+
+    ensure_default_employee_weekly_hours(employee)
+    weekly_hours = EmployeeWeeklyHours.objects.filter(
+        employee=employee,
+        day_of_week=target_date.weekday(),
+    ).first()
+
+    if not weekly_hours or not weekly_hours.is_working:
+        return False
+
+    if not weekly_hours.start_time or not weekly_hours.end_time:
+        return False
+
+    return weekly_hours.start_time <= slot_start and weekly_hours.end_time >= slot_end
 
 
 class AppointmentListView(generics.ListCreateAPIView):
@@ -100,21 +152,13 @@ class AppointmentListView(generics.ListCreateAPIView):
                     'details': 'Selected time is outside business hours',
                 })
 
-        has_service_conflict = Appointment.objects.filter(
-            service=service,
-            date=date,
-            status__in=['confirmed', 'pending'],
-            start_time__lt=end_time,
-            end_time__gt=start_time
-        ).exists()
-
-        if has_service_conflict:
-            raise ValidationError({
-                'error': 'Time slot is not available',
-                'details': 'This service already has a booking at that time',
-            })
-
         if employee:
+            if not employee_matches_slot(employee, date, start_time, end_time):
+                raise ValidationError({
+                    'error': 'Time slot is not available',
+                    'details': 'Selected employee is not working at that time.',
+                })
+
             employee_has_conflict = Appointment.objects.filter(
                 employee=employee,
                 date=date,
@@ -134,13 +178,56 @@ class AppointmentListView(generics.ListCreateAPIView):
                 start_date__lte=date,
                 end_date__gte=date,
                 status='approved'
-            ).exists()
+            )
 
-            if employee_time_off:
+            if has_time_off_overlap(employee_time_off, start_time, end_time):
                 raise ValidationError({
                     'error': 'Time slot is not available',
                     'details': 'Selected employee is on time off',
                 })
+        else:
+            eligible_employees = Employee.objects.filter(
+                business_owner=service.business_owner,
+                is_active=True,
+            )
+            service_has_explicit_staff = eligible_employees.filter(services=service).exists()
+            if service_has_explicit_staff:
+                eligible_employees = eligible_employees.filter(services=service).distinct()
+
+            if eligible_employees.exists():
+                has_available_employee = False
+
+                for candidate in eligible_employees:
+                    if not employee_matches_slot(candidate, date, start_time, end_time):
+                        continue
+
+                    candidate_time_off = EmployeeTimeOff.objects.filter(
+                        employee=candidate,
+                        start_date__lte=date,
+                        end_date__gte=date,
+                        status='approved',
+                    )
+                    if has_time_off_overlap(candidate_time_off, start_time, end_time):
+                        continue
+
+                    candidate_conflict = Appointment.objects.filter(
+                        employee=candidate,
+                        date=date,
+                        status__in=['confirmed', 'pending'],
+                        start_time__lt=end_time,
+                        end_time__gt=start_time,
+                    ).exists()
+                    if candidate_conflict:
+                        continue
+
+                    has_available_employee = True
+                    break
+
+                if not has_available_employee:
+                    raise ValidationError({
+                        'error': 'Time slot is not available',
+                        'details': 'No staff member is available at that time.',
+                    })
 
         if resource:
             resource_has_conflict = Appointment.objects.filter(
