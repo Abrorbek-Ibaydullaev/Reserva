@@ -49,9 +49,9 @@ const clearDraft = () => {
 };
 
 const formatCurrency = (value) =>
-  new Intl.NumberFormat('pl-PL', {
+  new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'PLN',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(value || 0));

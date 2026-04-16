@@ -171,6 +171,7 @@ export const serviceService = {
  */
 export const appointmentService = {
     getAllAppointments: (params) => api.get('/appointments/', { params }),
+    getBusinessDashboardStats: () => api.get('/appointments/dashboard-stats/'),
     getAppointment: (id) => api.get(`/appointments/${id}/`),
     createAppointment: (data) => api.post('/appointments/', data),
     updateAppointmentStatus: (id, data) => api.put(`/appointments/${id}/status/`, data),
