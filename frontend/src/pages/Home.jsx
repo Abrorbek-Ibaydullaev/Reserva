@@ -1,267 +1,248 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-// import ServiceList from '../components/Services/ServiceList';
-import { 
-  CalendarIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  UserGroupIcon,
-  StarIcon,
+import {
   MagnifyingGlassIcon,
   MapPinIcon,
-  ArrowRightIcon
+  CalendarDaysIcon,
+  CheckCircleIcon,
+  StarIcon,
+  ArrowRightIcon,
+  BoltIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
+
+const CATEGORIES = [
+  { name: 'Barber', emoji: '✂️', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { name: 'Nail salon', emoji: '💅', color: 'bg-pink-50 text-pink-700 border-pink-200' },
+  { name: 'Massage', emoji: '💆', color: 'bg-violet-50 text-violet-700 border-violet-200' },
+  { name: 'Makeup', emoji: '💄', color: 'bg-rose-50 text-rose-700 border-rose-200' },
+  { name: 'Spa', emoji: '🧖', color: 'bg-teal-50 text-teal-700 border-teal-200' },
+  { name: 'Fitness', emoji: '🏋️', color: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { name: 'Tattoo', emoji: '🖊️', color: 'bg-slate-50 text-slate-700 border-slate-200' },
+  { name: 'Dental', emoji: '🦷', color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
+];
+
+const CITIES = ['Toshkent', 'Samarqand', 'Buxoro', 'Namangan', 'Andijon', 'Farg\'ona'];
+
+const HOW_IT_WORKS = [
+  {
+    step: '1',
+    title: 'Search & Discover',
+    desc: 'Find local professionals by category, city, or service name.',
+    color: 'bg-blue-600',
+  },
+  {
+    step: '2',
+    title: 'Pick a Time',
+    desc: 'See real-time availability and choose the slot that works for you.',
+    color: 'bg-violet-600',
+  },
+  {
+    step: '3',
+    title: 'Show Up & Enjoy',
+    desc: 'Get a confirmation, receive a reminder, and just arrive.',
+    color: 'bg-emerald-600',
+  },
+];
 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const [city, setCity] = useState('');
 
-  const features = [
-    {
-      icon: <CalendarIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Easy Booking',
-      description: 'Book appointments in just a few clicks with our intuitive interface.'
-    },
-    {
-      icon: <ClockIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Real-time Availability',
-      description: 'See available time slots in real-time and book instantly.'
-    },
-    {
-      icon: <CheckCircleIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Automatic Reminders',
-      description: 'Get email and SMS reminders for your upcoming appointments.'
-    },
-    {
-      icon: <UserGroupIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Professional Network',
-      description: 'Connect with verified professionals in your area.'
-    },
-    {
-      icon: <StarIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Verified Reviews',
-      description: 'Read authentic reviews from other customers.'
-    },
-    {
-      icon: <MapPinIcon className="h-12 w-12 text-primary-600" />,
-      title: 'Local Search',
-      description: 'Find services near you with our location-based search.'
-    }
-  ];
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (search) params.set('q', search);
+    if (city) params.set('city', city);
+    navigate(`/services?${params.toString()}`);
+  };
+
+  const handleCategory = (cat) => {
+    navigate(`/services?category=${encodeURIComponent(cat)}`);
+  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-700 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,black,rgba(0,0,0,0.6))]"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-                Book Appointments with{' '}
-                <span className="bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400">
-                  Ease
-                </span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl">
-                Discover and book appointments with local professionals. From beauty services to healthcare, 
-                find the perfect provider for your needs.
-              </p>
-              
-              {/* Search Bar */}
-              <div className="mb-8 max-w-2xl">
-                <div className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-lg">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-                      <input
-                        type="text"
-                        placeholder="What service are you looking for?"
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="relative">
-                      <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-                      <input
-                        type="text"
-                        placeholder="City or ZIP code"
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <button className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 dark:hover:bg-primary-500 transition-colors flex items-center justify-center">
-                    <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
-                    Search
-                  </button>
-                </div>
-              </div>
+    <div className="min-h-screen bg-white">
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                {!isAuthenticated ? (
-                  <>
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-500 shadow-sm transition-colors"
-                    >
-                      Get Started Free
-                    </Link>
-                    <Link
-                      to="/login"
-                      className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-gray-600 text-base font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-colors"
-                    >
-                      Sign In
-                    </Link>
-                  </>
-                ) : user?.user_type === 'business_owner' ? (
-                  <Link
-                    to="/dashboard"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-500 shadow-sm transition-colors"
-                  >
-                    Go to Dashboard
-                  </Link>
-                ) : user?.user_type === 'employee' ? (
-                  <Link
-                    to="/employee/dashboard"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-500 shadow-sm transition-colors"
-                  >
-                    Go to Staff Dashboard
-                  </Link>
-                ) : (
-                  <Link
-                    to="/services"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-500 shadow-sm transition-colors"
-                  >
-                    Browse Services
-                  </Link>
-                )}
-              </div>
-            </div>
-            
-            {/* Hero Image */}
-            <div className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-3xl blur-2xl opacity-30"></div>
-                <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    alt="Booking Appointments"
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ── HERO ───────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 pb-20 pt-16">
+        {/* Decorative circles */}
+        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/5" />
+        <div className="absolute -left-10 bottom-0 h-64 w-64 rounded-full bg-white/5" />
 
-      {/* Features Section */}
-      <div className="py-24 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose Reserva?
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Our platform makes booking appointments simple and efficient
-            </p>
+        <div className="relative mx-auto max-w-4xl px-4 text-center">
+          {/* Badge */}
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
+            <BoltIcon className="h-4 w-4 text-yellow-300" />
+            O'zbekistondagi №1 bron qilish platformasi
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="group p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-white dark:hover:bg-gray-600 hover:shadow-xl transition-all duration-300"
+          <h1 className="mb-5 text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
+            O'zingizga yaqin{' '}
+            <span className="text-yellow-300">professional</span>
+            <br />
+            toping va bron qiling
+          </h1>
+          <p className="mx-auto mb-8 max-w-xl text-lg text-blue-100">
+            Sartarosh, go'zallik saloni, massaj va ko'plab xizmatlar —
+            bir joyda, bir daqiqada.
+          </p>
+
+          {/* Search form */}
+          <form
+            onSubmit={handleSearch}
+            className="mx-auto max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div className="flex flex-col sm:flex-row">
+              <div className="flex flex-1 items-center gap-2 border-b border-slate-100 px-4 py-3 sm:border-b-0 sm:border-r">
+                <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Xizmat yoki salon nomi…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-2 px-4 py-3">
+                <MapPinIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-full bg-transparent text-slate-600 focus:outline-none"
+                >
+                  <option value="">Barcha shaharlar</option>
+                  {CITIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="m-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
               >
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
+                Qidirish
+              </button>
+            </div>
+          </form>
+
+          {/* Logged-in CTA */}
+          {isAuthenticated && user?.user_type === 'customer' && (
+            <div className="mt-6">
+              <Link
+                to="/appointments"
+                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/25 transition"
+              >
+                <CalendarDaysIcon className="h-4 w-4" />
+                My appointments
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── CATEGORIES ─────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-4 py-12">
+        <h2 className="mb-6 text-center text-2xl font-bold text-slate-900">
+          Xizmat turini tanlang
+        </h2>
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.name}
+              onClick={() => handleCategory(cat.name)}
+              className={`flex flex-col items-center gap-2 rounded-2xl border p-3 text-xs font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md ${cat.color}`}
+            >
+              <span className="text-2xl">{cat.emoji}</span>
+              <span className="text-center leading-tight">{cat.name}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:underline"
+          >
+            Barcha salonlar <ArrowRightIcon className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ───────────────────────────────────────────────── */}
+      <section className="bg-slate-50 px-4 py-14">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-2 text-center text-2xl font-bold text-slate-900">
+            Qanday ishlaydi?
+          </h2>
+          <p className="mb-10 text-center text-slate-500">3 oddiy qadam</p>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {HOW_IT_WORKS.map((step) => (
+              <div key={step.step} className="rounded-2xl bg-white p-6 shadow-sm text-center">
+                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold text-white ${step.color}`}>
+                  {step.step}
+                </div>
+                <h3 className="mb-2 font-bold text-slate-900">{step.title}</h3>
+                <p className="text-sm text-slate-500">{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Popular Services Preview */}
-      <div className="py-24 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Popular Services
+      {/* ── TRUST SIGNALS ──────────────────────────────────────────────── */}
+      <section className="px-4 py-14">
+        <div className="mx-auto max-w-4xl">
+          <div className="grid gap-6 sm:grid-cols-3">
+            <div className="flex flex-col items-center gap-3 rounded-2xl bg-emerald-50 p-6 text-center">
+              <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
+              <h3 className="font-bold text-slate-900">Tasdiqlangan mutaxassislar</h3>
+              <p className="text-sm text-slate-500">Barcha salonlar va ustalar tekshirilgan</p>
+            </div>
+            <div className="flex flex-col items-center gap-3 rounded-2xl bg-amber-50 p-6 text-center">
+              <StarIcon className="h-10 w-10 text-amber-500" />
+              <h3 className="font-bold text-slate-900">Haqiqiy sharhlar</h3>
+              <p className="text-sm text-slate-500">Faqat haqiqiy mijozlar sharh qoldira oladi</p>
+            </div>
+            <div className="flex flex-col items-center gap-3 rounded-2xl bg-blue-50 p-6 text-center">
+              <ShieldCheckIcon className="h-10 w-10 text-blue-600" />
+              <h3 className="font-bold text-slate-900">Xavfsiz bron</h3>
+              <p className="text-sm text-slate-500">Ma'lumotlaringiz to'liq himoyalangan</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── BUSINESS CTA ───────────────────────────────────────────────── */}
+      {!isAuthenticated && (
+        <section className="bg-gradient-to-r from-slate-900 to-slate-700 px-4 py-16">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="mb-3 text-3xl font-extrabold text-white">
+              Biznesingizni Reserva'ga qo'shing
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Browse our most booked services
+            <p className="mb-8 text-slate-300">
+              Onlayn bron tizimini ulang va mijozlaringizni ko'paytiring. Bepul boshlang.
             </p>
-          </div>
-
-          {/* <ServiceList limit={6} /> */}
-
-          <div className="text-center mt-12">
-            <Link
-              to="/services"
-              className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
-            >
-              View All Services
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="relative py-24 bg-gradient-to-r from-primary-600 to-secondary-600">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Grow Your Business?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of professionals who use Reserva to manage their appointments and grow their customer base.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register?type=business"
-              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-primary-600 bg-white hover:bg-gray-100 shadow-lg transition-colors"
-            >
-              Start Free Trial
-            </Link>
-            <Link
-              to="/business"
-              className="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-base font-medium rounded-lg text-white hover:bg-white/10 transition-colors"
-            >
-              Learn More
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">10,000+</div>
-              <div className="text-gray-600">Professionals</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">50,000+</div>
-              <div className="text-gray-600">Appointments Monthly</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">4.8</div>
-              <div className="text-gray-600">Average Rating</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">100+</div>
-              <div className="text-gray-600">Cities</div>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                to="/register"
+                className="rounded-xl bg-blue-500 px-8 py-3 font-semibold text-white hover:bg-blue-400 transition"
+              >
+                Ro'yxatdan o'tish
+              </Link>
+              <Link
+                to="/services"
+                className="rounded-xl border border-white/30 px-8 py-3 font-semibold text-white hover:bg-white/10 transition"
+              >
+                Salonlarni ko'rish
+              </Link>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      )}
     </div>
   );
 };

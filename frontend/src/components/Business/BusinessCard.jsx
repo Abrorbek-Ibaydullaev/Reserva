@@ -1,123 +1,114 @@
-
-
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  MapPinIcon,
-  SparklesIcon
-} from '@heroicons/react/24/outline';
-import { StarIcon } from '@heroicons/react/24/solid';
+import { Link } from 'react-router-dom';
+import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
+
+const FALLBACK =
+  'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
+
+const avg = (services) => {
+  const ratings = services.flatMap((s) => (s.average_rating ? [s.average_rating] : []));
+  if (!ratings.length) return null;
+  return (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+};
+
+const totalReviews = (services) =>
+  services.reduce((sum, s) => sum + (s.review_count || 0), 0);
 
 const BusinessCard = ({ business }) => {
   const services = business.services || [];
-  const navigate = useNavigate();
-
-  const openBusiness = () => {
-    navigate(`/business/${business.id}`);
-  };
-
-  const handleCardKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openBusiness();
-    }
-  };
+  const rating = avg(services);
+  const reviews = totalReviews(services);
+  const city =
+    business.profile?.city ||
+    business.profile?.business_address ||
+    business.profile?.address ||
+    null;
+  const preview = services.filter((s) => s.is_active).slice(0, 3);
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={openBusiness}
-      onKeyDown={handleCardKeyDown}
-      className="group cursor-pointer bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+    <Link
+      to={`/business/${business.id}`}
+      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >
-      {/* MAIN HORIZONTAL CONTAINER */}
-      <div className="flex flex-col md:flex-row">
-
-        {/* LEFT SIDE: Business Image */}
-        <div className="relative w-full md:w-72 lg:w-96 h-64 md:h-auto overflow-hidden bg-gray-100 flex-shrink-0">
-          <img
-            src={business.profile_picture || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
-            alt={business.full_name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          {/* Rating Badge Overlay */}
-          <div className="absolute top-3 right-3 bg-gray-900/80 backdrop-blur-sm rounded-lg px-3 py-2">
-            <div className="flex flex-col items-center text-white">
-              <span className="font-bold text-sm">5.0</span>
-              <span className="text-[10px]">107 reviews</span>
-            </div>
+      {/* Cover image */}
+      <div className="relative h-44 w-full overflow-hidden bg-slate-100">
+        <img
+          src={
+            business.gallery_images?.[0]?.image ||
+            business.profile_picture ||
+            FALLBACK
+          }
+          alt={business.full_name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {/* Avatar badge */}
+        <div className="absolute bottom-3 left-3">
+          <div className="h-12 w-12 overflow-hidden rounded-xl border-2 border-white shadow-md">
+            <img
+              src={business.profile_picture || FALLBACK}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
-
-        {/* RIGHT SIDE: Business Info & Services */}
-        <div className="flex-1 p-6">
-          {/* Business Header */}
-          <div className="mb-6">
-            <h3 className="font-bold text-gray-900 dark:text-white text-2xl mb-1">
-              {business.full_name}
-            </h3>
-            <div className="flex items-center text-sm text-gray-500">
-              <span>3.4 km</span>
-              <span className="mx-2">•</span>
-              <span>{business.profile?.business_address || 'Krakowskie Przedmieście, 19'}</span>
-            </div>
+        {/* Rating badge */}
+        {rating && (
+          <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg bg-white/90 px-2 py-1 shadow-sm backdrop-blur-sm">
+            <StarIcon className="h-3.5 w-3.5 text-amber-400" />
+            <span className="text-xs font-bold text-slate-900">{rating}</span>
+            <span className="text-xs text-slate-400">({reviews})</span>
           </div>
+        )}
+      </div>
 
-          {/* Services List - Booksy Style Alignment */}
-          <div className="space-y-0">
-            {services.slice(0, 3).map((service, index) => {
-              const discountedPrice = service.discount_percentage > 0
-                ? (service.price * (1 - service.discount_percentage / 100)).toFixed(2)
-                : parseFloat(service.price).toFixed(2);
+      {/* Info */}
+      <div className="flex flex-1 flex-col p-4">
+        <div className="mb-3">
+          <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+            {business.profile?.business_name || business.full_name}
+          </h3>
+          {city && (
+            <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+              <MapPinIcon className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" />
+              {city}
+            </div>
+          )}
+        </div>
 
-              return (
-                <div key={service.id} className="py-4 border-t border-gray-100 dark:border-gray-700/50 first:border-0">
-                  <div className="flex items-start justify-between">
-                    {/* Service Name & Add-ons */}
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                        {service.name}
-                      </h4>
-                      {service.has_addons && (
-                        <button className="mt-3 flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700/50 rounded-full text-[11px] font-bold text-gray-600 dark:text-gray-300">
-                          Add-ons
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Price, Duration, and Button Group */}
-                    <div className="flex items-start gap-6">
-                      <div className="text-right">
-                        {service.discount_percentage > 0 && (
-                          <span className="block text-gray-400 text-xs line-through mb-1">
-                            {parseFloat(service.price).toFixed(2)} $
-                          </span>
-                        )}
-                        <span className="block text-gray-900 dark:text-white font-bold text-sm">
-                          {discountedPrice} $
-                        </span>
-                        <span className="block text-[10px] text-gray-500 mt-1">
-                          {service.duration}min
-                        </span>
-                      </div>
-
-                      <Link
-                        to={`/business/${business.id}?service=${service.id}`}
-                        onClick={(event) => event.stopPropagation()}
-                        className="px-5 py-2 bg-[#1B809E] text-white text-xs font-bold rounded hover:bg-opacity-90 transition-all"
-                      >
-                        Book
-                      </Link>
-                    </div>
+        {/* Services */}
+        {preview.length > 0 ? (
+          <div className="flex-1 divide-y divide-slate-100">
+            {preview.map((s) => (
+              <div key={s.id} className="flex items-center justify-between py-2">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-800">{s.name}</p>
+                  <div className="flex items-center gap-1 text-xs text-slate-400">
+                    <ClockIcon className="h-3 w-3" />
+                    {s.duration} min
                   </div>
                 </div>
-              );
-            })}
+                <span className="ml-3 flex-shrink-0 text-sm font-bold text-slate-900">
+                  ${Number(s.price).toFixed(0)}
+                </span>
+              </div>
+            ))}
           </div>
+        ) : (
+          <p className="text-xs text-slate-400">No services listed yet</p>
+        )}
+
+        {/* Footer */}
+        <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+          <span className="text-xs text-slate-400">
+            {services.length} service{services.length !== 1 ? 's' : ''}
+          </span>
+          <span className="flex items-center gap-1 text-xs font-semibold text-blue-600">
+            View & Book <ArrowRightIcon className="h-3.5 w-3.5" />
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -155,3 +155,25 @@ class BusinessGalleryImageDetailView(generics.DestroyAPIView):
 
     def get_queryset(self):
         return BusinessGalleryImage.objects.filter(business_owner=self.request.user)
+
+
+class TelegramLinkView(APIView):
+    """Return a Telegram deep-link for connecting the current user's account."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from apps.telegram_bot.service import get_telegram_link, make_link_token
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        link = get_telegram_link(request.user.id)
+        return Response({
+            'link': link,
+            'connected': bool(profile.telegram_chat_id),
+            'token': make_link_token(request.user.id),
+        })
+
+    def delete(self, request):
+        """Disconnect Telegram."""
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        profile.telegram_chat_id = None
+        profile.save(update_fields=['telegram_chat_id'])
+        return Response({'detail': 'Telegram disconnected.'})

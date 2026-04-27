@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.users',
     'apps.services',
+    'apps.telegram_bot',
     'apps.schedules',
     'apps.appointments',
 ]
@@ -184,3 +185,27 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Telegram Bot
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
+
+# Frontend URL (used in Telegram deep links).
+# If not set in .env, auto-detect the local network IP so phones on the same
+# WiFi can open the link even when the DHCP-assigned IP changes.
+def _local_frontend_url():
+    _env = os.getenv('FRONTEND_URL')
+    if _env:
+        return _env
+    import socket
+    try:
+        # Connect to a public address to find which local interface is used.
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+    except Exception:
+        ip = '127.0.0.1'
+    return f'http://{ip}:5173'
+
+FRONTEND_URL = _local_frontend_url()

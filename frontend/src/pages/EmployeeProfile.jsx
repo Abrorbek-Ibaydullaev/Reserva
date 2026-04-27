@@ -9,16 +9,6 @@ import {
 } from '@heroicons/react/24/outline';
 
 const normalizeList = (response) => response.data?.results || response.data || [];
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const defaultWeeklyHours = () =>
-  dayLabels.map((_, index) => ({
-    id: `temp-${index}`,
-    day_of_week: index,
-    is_working: index !== 6,
-    start_time: index !== 6 ? '09:00:00' : null,
-    end_time: index !== 6 ? '18:00:00' : null,
-    is_temp: true,
-  }));
 
 const formatHumanDate = (value) => {
   if (!value) return '';
@@ -33,11 +23,9 @@ const formatHumanDate = (value) => {
 const EmployeeProfile = () => {
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
-  const [savingWeeklyHours, setSavingWeeklyHours] = useState(false);
   const [savingDuty, setSavingDuty] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [weeklyHoursReady, setWeeklyHoursReady] = useState(true);
   const [profileData, setProfileData] = useState({
     first_name: '',
     last_name: '',
@@ -48,7 +36,6 @@ const EmployeeProfile = () => {
     max_daily_appointments: 10,
     appointment_buffer: 15,
   });
-  const [weeklyHours, setWeeklyHours] = useState([]);
   const [duties, setDuties] = useState([]);
   const [dutyForm, setDutyForm] = useState({
     time_off_type: 'personal',
@@ -68,10 +55,9 @@ const EmployeeProfile = () => {
     try {
       setLoading(true);
       const storedUser = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const [meResult, employeeResult, weeklyHoursResult, dutiesResult] = await Promise.allSettled([
+      const [meResult, employeeResult, dutiesResult] = await Promise.allSettled([
         userService.getMe(),
         scheduleService.getMyEmployeeProfile(),
-        scheduleService.getMyWeeklyHours(),
         scheduleService.getMyTimeOff(),
       ]);
 
@@ -83,10 +69,6 @@ const EmployeeProfile = () => {
         employeeResult.status === 'fulfilled' && employeeResult.value?.data
           ? employeeResult.value.data
           : {};
-      const weeklyHoursData =
-        weeklyHoursResult.status === 'fulfilled'
-          ? normalizeList(weeklyHoursResult.value)
-          : [];
       const dutiesData =
         dutiesResult.status === 'fulfilled'
           ? normalizeList(dutiesResult.value)
@@ -103,13 +85,7 @@ const EmployeeProfile = () => {
         appointment_buffer: employee.appointment_buffer ?? 15,
       });
       setImagePreview(me.profile_picture || '');
-      setWeeklyHours(weeklyHoursData.length > 0 ? weeklyHoursData : defaultWeeklyHours());
-      setWeeklyHoursReady(weeklyHoursData.length > 0);
       setDuties(dutiesData);
-
-      if (weeklyHoursResult.status === 'rejected') {
-        toast.warning('Weekly hours are not ready in the database yet. Run backend migrate to save Tim\'s weekly schedule.');
-      }
     } catch (error) {
       console.error('Failed to load employee profile:', error);
       toast.error('Failed to load employee profile.');
@@ -117,12 +93,6 @@ const EmployeeProfile = () => {
       setLoading(false);
     }
   };
-
-  const sortedWeeklyHours = useMemo(
-    () =>
-      [...weeklyHours].sort((a, b) => Number(a.day_of_week) - Number(b.day_of_week)),
-    [weeklyHours]
-  );
 
   const sortedDuties = useMemo(
     () =>
@@ -140,12 +110,6 @@ const EmployeeProfile = () => {
   const handleDutyChange = (event) => {
     const { name, value, type, checked } = event.target;
     setDutyForm((current) => ({ ...current, [name]: type === 'checkbox' ? checked : value }));
-  };
-
-  const handleWeeklyHourChange = (id, patch) => {
-    setWeeklyHours((current) =>
-      current.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    );
   };
 
   const handleImageChange = (event) => {
@@ -186,33 +150,6 @@ const EmployeeProfile = () => {
       toast.error('Failed to update employee profile.');
     } finally {
       setSavingProfile(false);
-    }
-  };
-
-  const saveWeeklyHours = async () => {
-    if (weeklyHours.some((item) => item.is_temp)) {
-      toast.error('Weekly hours database table is not ready yet. Run backend migrate first.');
-      return;
-    }
-
-    try {
-      setSavingWeeklyHours(true);
-      await Promise.all(
-        weeklyHours.map((item) =>
-          scheduleService.updateMyWeeklyHour(item.id, {
-            day_of_week: item.day_of_week,
-            is_working: item.is_working,
-            start_time: item.is_working ? item.start_time : null,
-            end_time: item.is_working ? item.end_time : null,
-          })
-        )
-      );
-      toast.success('Weekly working hours updated.');
-    } catch (error) {
-      console.error('Failed to update weekly hours:', error);
-      toast.error('Failed to update weekly hours.');
-    } finally {
-      setSavingWeeklyHours(false);
     }
   };
 
@@ -271,7 +208,7 @@ const EmployeeProfile = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Employee Profile</h1>
           <p className="mt-2 text-gray-600">
-            Upload your profile photo, update your details, set weekly working hours, and block personal duty in advance.
+            Upload your profile photo, update your details, and block personal duty in advance.
           </p>
         </div>
 
@@ -347,85 +284,7 @@ const EmployeeProfile = () => {
             </form>
           </section>
 
-          <section className="space-y-6">
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">Working Hours</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Choose your weekly working days and hours. Example: Monday to Saturday working, Sunday off.
-              </p>
-
-              {!weeklyHoursReady ? (
-                <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                  These weekday rows are shown for setup, but the weekly-hours table is missing in your local database right now.
-                  Run `python3 manage.py migrate` in `backend/` so Tim&apos;s real weekly data can be saved.
-                </div>
-              ) : null}
-
-              <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200">
-                <div className="grid grid-cols-[160px_1fr] bg-gray-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  <div>Weekday</div>
-                  <div>Hours</div>
-                </div>
-
-                {sortedWeeklyHours.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className={`grid grid-cols-[160px_1fr] items-center gap-4 px-5 py-4 ${
-                      index !== sortedWeeklyHours.length - 1 ? 'border-b border-gray-200' : ''
-                    }`}
-                  >
-                    <div className="font-medium text-gray-900">{dayLabels[item.day_of_week]}</div>
-
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <label className="inline-flex items-center gap-3 text-sm text-gray-700">
-                        <input
-                          type="checkbox"
-                          checked={item.is_working}
-                          onChange={(event) =>
-                            handleWeeklyHourChange(item.id, {
-                              is_working: event.target.checked,
-                              start_time: event.target.checked ? item.start_time || '09:00:00' : null,
-                              end_time: event.target.checked ? item.end_time || '17:00:00' : null,
-                            })
-                          }
-                        />
-                        Working
-                      </label>
-
-                      {item.is_working ? (
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                          <input
-                            type="time"
-                            value={(item.start_time || '09:00:00').slice(0, 5)}
-                            onChange={(event) => handleWeeklyHourChange(item.id, { start_time: `${event.target.value}:00` })}
-                            className="w-full rounded-2xl border border-gray-300 px-4 py-3 sm:w-[150px]"
-                          />
-                          <span className="hidden text-sm text-gray-400 sm:inline">to</span>
-                          <input
-                            type="time"
-                            value={(item.end_time || '17:00:00').slice(0, 5)}
-                            onChange={(event) => handleWeeklyHourChange(item.id, { end_time: `${event.target.value}:00` })}
-                            className="w-full rounded-2xl border border-gray-300 px-4 py-3 sm:w-[150px]"
-                          />
-                        </div>
-                      ) : (
-                        <span className="text-sm font-medium text-gray-400">Day off</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={saveWeeklyHours}
-                disabled={savingWeeklyHours}
-                className="mt-6 rounded-2xl bg-[#4a90b0] px-6 py-3 text-sm font-semibold text-white"
-              >
-                {savingWeeklyHours ? 'Saving...' : 'Save weekly hours'}
-              </button>
-            </div>
-
+          <section>
             <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
                 <ClockIcon className="h-5 w-5 text-[#4a90b0]" />

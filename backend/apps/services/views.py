@@ -114,6 +114,23 @@ class ServiceReviewListView(generics.ListCreateAPIView):
         serializer.save(service=service, customer=self.request.user)
 
 
+class ServiceReviewByIdView(generics.ListCreateAPIView):
+    """List and create reviews for a service by ID."""
+    serializer_class = ServiceReviewSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        service = get_object_or_404(Service, id=self.kwargs['pk'])
+        return ServiceReview.objects.filter(service=service)
+
+    def perform_create(self, serializer):
+        service = get_object_or_404(Service, id=self.kwargs['pk'])
+        if ServiceReview.objects.filter(service=service, customer=self.request.user).exists():
+            from rest_framework import serializers as drf_serializers
+            raise drf_serializers.ValidationError("You have already reviewed this service.")
+        serializer.save(service=service, customer=self.request.user)
+
+
 class ServiceAddonListView(generics.ListCreateAPIView):
     """List and create addons for a service."""
     serializer_class = ServiceAddonSerializer

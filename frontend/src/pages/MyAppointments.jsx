@@ -1,105 +1,416 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   CalendarDaysIcon,
   ClockIcon,
-  MapPinIcon,
+  UserCircleIcon,
   XCircleIcon,
+  XMarkIcon,
+  BriefcaseIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
-import { appointmentService } from '../services/api';
+import { StarIcon } from '@heroicons/react/24/solid';
+import { appointmentService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
-const formatDate = (dateValue) =>
-  new Date(`${dateValue}T00:00:00`).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+const fmtDate = (d) =>
+  new Date(`${d}T00:00:00`).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
   });
 
-const formatTime = (timeValue) => {
-  const [hours, minutes] = timeValue.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const fmtTime = (t) => {
+  const [h, m] = t.split(':').map(Number);
+  const d = new Date(); d.setHours(h, m);
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 };
 
-const getAppointmentStart = (appointment) => {
-  const [hours, minutes] = appointment.start_time.split(':').map(Number);
-  const start = new Date(`${appointment.date}T00:00:00`);
-  start.setHours(hours, minutes, 0, 0);
-  return start;
+const apptStart = (a) => {
+  const [h, m] = a.start_time.split(':').map(Number);
+  const d = new Date(`${a.date}T00:00:00`); d.setHours(h, m);
+  return d;
 };
 
-const statusClasses = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  confirmed: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800',
-  rescheduled: 'bg-purple-100 text-purple-800',
+const STATUS_STYLE = {
+  pending:     'bg-amber-100 text-amber-800',
+  confirmed:   'bg-blue-100 text-blue-800',
+  completed:   'bg-emerald-100 text-emerald-800',
+  cancelled:   'bg-red-100 text-red-800',
+  rescheduled: 'bg-violet-100 text-violet-800',
+  no_show:     'bg-slate-100 text-slate-600',
 };
 
+const TABS = ['Upcoming', 'Past', 'Cancelled'];
+
+// ── Star picker ───────────────────────────────────────────────────────────────
+const StarPicker = ({ value, onChange }) => (
+  <div className="flex gap-1">
+    {[1, 2, 3, 4, 5].map((n) => (
+      <button
+        key={n}
+        type="button"
+        onClick={() => onChange(n)}
+        className="focus:outline-none"
+      >
+        <StarIcon
+          className={`h-8 w-8 transition-colors ${n <= value ? 'text-amber-400' : 'text-slate-200 hover:text-amber-200'}`}
+        />
+      </button>
+    ))}
+  </div>
+);
+
+// ── Review modal ──────────────────────────────────────────────────────────────
+const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (rating === 0) { toast.error('Please select a star rating.'); return; }
+    if (!comment.trim()) { toast.error('Please write a comment.'); return; }
+    try {
+      setSubmitting(true);
+      await serviceService.addReview(a.service_details.id, { rating, comment });
+      toast.success('Review submitted — thank you!');
+      onSubmitted(a.service_details.id);
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data;
+      if (typeof msg === 'string' && msg.toLowerCase().includes('already')) {
+        toast.info('You have already reviewed this service.');
+        onSubmitted(a.service_details.id);
+        onClose();
+      } else {
+        toast.error('Failed to submit review.');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-4 pb-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900">Rate your experience</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
+            <XMarkIcon className="h-5 w-5 text-slate-500" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div>
+            <p className="mb-1 text-sm font-semibold text-slate-700">{a.service_details?.name}</p>
+            <p className="text-xs text-slate-400">How would you rate this service?</p>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-slate-50 py-5">
+            <StarPicker value={rating} onChange={setRating} />
+            <p className="text-sm font-medium text-slate-600">
+              {rating === 0 ? 'Tap to rate' : ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][rating]}
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">Your review</label>
+            <textarea
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Share your experience with this service…"
+              className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+          >
+            {submitting ? 'Submitting…' : 'Submit review'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// ── Detail modal ─────────────────────────────────────────────────────────────
+const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onReview, isEmployee, isBusinessOwner, cancellingId, statusBusyId, reviewedIds }) => {
+  if (!a) return null;
+  const now = new Date();
+  const canCancel =
+    !isBusinessOwner &&
+    !isEmployee &&
+    ['pending', 'confirmed', 'rescheduled'].includes(a.status) &&
+    apptStart(a) > now;
+
+  const bName =
+    [a.business_owner_details?.first_name, a.business_owner_details?.last_name]
+      .filter(Boolean).join(' ') || a.business_owner_details?.email || 'Business';
+  const empName =
+    [a.employee_details?.user_details?.first_name, a.employee_details?.user_details?.last_name]
+      .filter(Boolean).join(' ') || null;
+  const custName =
+    [a.customer_details?.first_name, a.customer_details?.last_name]
+      .filter(Boolean).join(' ') || a.customer_details?.email || 'Customer';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-4 pb-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900">Appointment details</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
+            <XMarkIcon className="h-5 w-5 text-slate-500" />
+          </button>
+        </div>
+
+        <div className="space-y-5 p-6">
+          {/* Service + status */}
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xl font-bold text-slate-900">{a.service_details?.name}</p>
+              {a.service_details?.category_name && (
+                <p className="text-sm text-slate-500">{a.service_details.category_name}</p>
+              )}
+            </div>
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+              {a.status?.replace('_', ' ')}
+            </span>
+          </div>
+
+          {/* Info grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <CalendarDaysIcon className="h-4 w-4" /> Date
+              </div>
+              <p className="text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <ClockIcon className="h-4 w-4" /> Time
+              </div>
+              <p className="text-sm font-semibold text-slate-900">
+                {fmtTime(a.start_time)} · {a.duration} min
+              </p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <CurrencyDollarIcon className="h-4 w-4" /> Amount
+              </div>
+              <p className="text-sm font-semibold text-slate-900">
+                ${Number(a.total_amount || 0).toFixed(2)}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <BriefcaseIcon className="h-4 w-4" /> Ref
+              </div>
+              <p className="text-xs font-semibold text-slate-700 truncate">#{a.appointment_number}</p>
+            </div>
+          </div>
+
+          {/* People */}
+          <div className="rounded-2xl border border-slate-100 p-4 space-y-2">
+            {(isBusinessOwner || isEmployee) && (
+              <div className="flex items-center gap-2 text-sm">
+                <UserCircleIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Customer:</span>
+                <span className="font-medium text-slate-900">{custName}</span>
+              </div>
+            )}
+            {!isEmployee && !isBusinessOwner && (
+              <div className="flex items-center gap-2 text-sm">
+                <BriefcaseIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Business:</span>
+                <span className="font-medium text-slate-900">{bName}</span>
+              </div>
+            )}
+            {empName && (
+              <div className="flex items-center gap-2 text-sm">
+                <UserCircleIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Staff:</span>
+                <span className="font-medium text-slate-900">{empName}</span>
+              </div>
+            )}
+          </div>
+
+          {a.customer_notes && (
+            <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">
+              <p className="font-semibold mb-1">Note</p>
+              <p>{a.customer_notes}</p>
+            </div>
+          )}
+
+          {/* Actions */}
+          {isEmployee && ['pending', 'confirmed', 'rescheduled'].includes(a.status) && (
+            <div className="flex gap-2">
+              {a.status === 'pending' && (
+                <button
+                  onClick={() => onStatusUpdate(a.id, 'confirmed')}
+                  disabled={statusBusyId === a.id}
+                  className="flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  Confirm
+                </button>
+              )}
+              <button
+                onClick={() => onStatusUpdate(a.id, 'completed')}
+                disabled={statusBusyId === a.id}
+                className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                Complete
+              </button>
+              <button
+                onClick={() => onCancel(a.id)}
+                disabled={cancellingId === a.id}
+                className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {canCancel && (
+            <button
+              onClick={() => onCancel(a.id)}
+              disabled={cancellingId === a.id}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+            >
+              <XCircleIcon className="h-5 w-5" />
+              {cancellingId === a.id ? 'Cancelling…' : 'Cancel appointment'}
+            </button>
+          )}
+
+          {/* Review button — only for customers with completed appointments */}
+          {!isBusinessOwner && !isEmployee && a.status === 'completed' && a.service_details?.id && (
+            reviewedIds.has(a.service_details.id) ? (
+              <div className="flex items-center justify-center gap-2 rounded-xl bg-emerald-50 py-2.5 text-sm font-semibold text-emerald-700">
+                <StarIcon className="h-4 w-4 text-amber-400" />
+                Review submitted — thank you!
+              </div>
+            ) : (
+              <button
+                onClick={() => onReview(a)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
+              >
+                <StarIcon className="h-4 w-4" />
+                Leave a review
+              </button>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Appointment card ──────────────────────────────────────────────────────────
+const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
+  const bName =
+    [a.business_owner_details?.first_name, a.business_owner_details?.last_name]
+      .filter(Boolean).join(' ') || a.business_owner_details?.email || 'Business';
+  const custName =
+    [a.customer_details?.first_name, a.customer_details?.last_name]
+      .filter(Boolean).join(' ') || a.customer_details?.email || 'Customer';
+  const displayName = (isBusinessOwner || isEmployee) ? custName : bName;
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-slate-900">{a.service_details?.name}</p>
+            <p className="truncate text-xs text-slate-500">{displayName}</p>
+          </div>
+        </div>
+        <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+          {a.status?.replace('_', ' ')}
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
+        <span className="flex items-center gap-1">
+          <CalendarDaysIcon className="h-3.5 w-3.5" />
+          {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
+        <span className="flex items-center gap-1">
+          <ClockIcon className="h-3.5 w-3.5" />
+          {fmtTime(a.start_time)} · {a.duration} min
+        </span>
+        <span className="ml-auto font-semibold text-slate-700">
+          ${Number(a.total_amount || 0).toFixed(2)}
+        </span>
+      </div>
+    </button>
+  );
+};
+
+// ── Main ─────────────────────────────────────────────────────────────────────
 const MyAppointments = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [cancellingId, setCancellingId] = useState(null);
-  const [statusBusyId, setStatusBusyId] = useState(null);
   const isBusinessOwner = user?.user_type === 'business_owner';
   const isEmployee = user?.user_type === 'employee';
 
-  useEffect(() => {
-    loadAppointments();
-  }, []);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('Upcoming');
+  const [selected, setSelected] = useState(null);
+  const [reviewTarget, setReviewTarget] = useState(null);
+  const [reviewedIds, setReviewedIds] = useState(new Set());
+  const [cancellingId, setCancellingId] = useState(null);
+  const [statusBusyId, setStatusBusyId] = useState(null);
 
-  const loadAppointments = async () => {
+  const load = async () => {
     try {
       setLoading(true);
-      const response = await appointmentService.getAllAppointments();
-      const items = response.data.results || response.data || [];
-      setAppointments(items);
-    } catch (error) {
-      console.error('Failed to load appointments:', error);
+      const r = await appointmentService.getAllAppointments();
+      setAppointments(r.data.results || r.data || []);
+    } catch {
       toast.error('Failed to load appointments.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancel = async (appointmentId) => {
-    const reason = window.prompt('Cancellation reason (optional):', '');
-    if (reason === null) {
-      return;
-    }
+  useEffect(() => { load(); }, []);
 
+  const handleCancel = async (id) => {
+    const reason = window.prompt('Cancellation reason (optional):', '');
+    if (reason === null) return;
     try {
-      setCancellingId(appointmentId);
-      await appointmentService.cancelAppointment(appointmentId, reason);
+      setCancellingId(id);
+      await appointmentService.cancelAppointment(id, reason);
       toast.success('Appointment cancelled.');
-      await loadAppointments();
-    } catch (error) {
-      console.error('Failed to cancel appointment:', error);
-      toast.error(
-        error.response?.data?.error ||
-          error.response?.data?.details ||
-          'Failed to cancel appointment.'
-      );
+      setSelected(null);
+      await load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to cancel appointment.');
     } finally {
       setCancellingId(null);
     }
   };
 
-  const handleStatusUpdate = async (appointmentId, status) => {
+  const handleStatusUpdate = async (id, status) => {
     try {
-      setStatusBusyId(appointmentId);
-      await appointmentService.updateAppointmentStatus(appointmentId, { status });
-      toast.success(`Appointment marked as ${status}.`);
-      await loadAppointments();
-    } catch (error) {
-      console.error('Failed to update appointment status:', error);
-      toast.error('Failed to update appointment status.');
+      setStatusBusyId(id);
+      await appointmentService.updateAppointmentStatus(id, { status });
+      toast.success(`Marked as ${status}.`);
+      setSelected(null);
+      await load();
+    } catch {
+      toast.error('Failed to update status.');
     } finally {
       setStatusBusyId(null);
     }
@@ -107,226 +418,117 @@ const MyAppointments = () => {
 
   const now = new Date();
 
-  const upcomingAppointments = appointments.filter(
-    (appointment) =>
-      ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) &&
-      getAppointmentStart(appointment) > now
-  );
+  const buckets = {
+    Upcoming: appointments.filter(
+      (a) => ['pending', 'confirmed', 'rescheduled'].includes(a.status) && apptStart(a) > now
+    ).sort((a, b) => apptStart(a) - apptStart(b)),
+    Past: appointments.filter(
+      (a) => a.status === 'completed' || (apptStart(a) <= now && !['cancelled', 'no_show'].includes(a.status))
+    ).sort((a, b) => apptStart(b) - apptStart(a)),
+    Cancelled: appointments.filter((a) => ['cancelled', 'no_show'].includes(a.status))
+      .sort((a, b) => apptStart(b) - apptStart(a)),
+  };
 
-  const pastAppointments = appointments.filter(
-    (appointment) =>
-      !(
-        ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) &&
-        getAppointmentStart(appointment) > now
-      )
-  );
+  const pageTitle = isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments';
 
-  const renderAppointmentCard = (appointment) => {
-    const businessName =
-      appointment.business_owner_details?.first_name || appointment.business_owner_details?.last_name
-        ? `${appointment.business_owner_details?.first_name || ''} ${appointment.business_owner_details?.last_name || ''}`.trim()
-        : appointment.business_owner_details?.email || 'Business';
-    const customerName =
-      appointment.customer_details?.first_name || appointment.customer_details?.last_name
-        ? `${appointment.customer_details?.first_name || ''} ${appointment.customer_details?.last_name || ''}`.trim()
-        : appointment.customer_details?.email || 'Customer';
-    const employeeName =
-      appointment.employee_details?.user_details?.first_name || appointment.employee_details?.user_details?.last_name
-        ? `${appointment.employee_details?.user_details?.first_name || ''} ${appointment.employee_details?.user_details?.last_name || ''}`.trim()
-        : appointment.employee_details?.user_details?.email || 'Assigned staff';
-    const counterpartName = isBusinessOwner ? customerName : isEmployee ? customerName : businessName;
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="border-b border-slate-200 bg-white px-4 py-6">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {isBusinessOwner
+              ? 'Customer bookings for your services'
+              : isEmployee
+              ? 'Appointments assigned to you'
+              : 'Your upcoming and past appointments'}
+          </p>
 
-    return (
-      <div
-        key={appointment.id}
-        className={`bg-white rounded-2xl border border-gray-200 shadow-sm p-6 ${isEmployee ? 'cursor-pointer transition hover:border-[#4a90b0] hover:shadow-md' : ''}`}
-        onClick={isEmployee ? () => navigate('/employee/appointments') : undefined}
-      >
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <h3 className="text-xl font-semibold text-gray-900">
-                {appointment.service_details?.name}
-              </h3>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                  statusClasses[appointment.status] || 'bg-gray-100 text-gray-700'
+          {/* Tabs */}
+          <div className="mt-5 flex gap-1 rounded-xl bg-slate-100 p-1">
+            {TABS.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${
+                  tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
-                {appointment.status}
-              </span>
-            </div>
-
-            <div className="space-y-2 text-gray-600">
-              <div className="flex items-center">
-                <CalendarDaysIcon className="h-5 w-5 mr-2" />
-                <span>{formatDate(appointment.date)}</span>
-              </div>
-              <div className="flex items-center">
-                <ClockIcon className="h-5 w-5 mr-2" />
-                <span>
-                  {formatTime(appointment.start_time)} • {appointment.duration} min
+                {t}
+                <span className={`rounded-full px-1.5 py-0.5 text-xs ${tab === t ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-500'}`}>
+                  {buckets[t].length}
                 </span>
-              </div>
-              <div className="flex items-center">
-                <MapPinIcon className="h-5 w-5 mr-2" />
-                <span>{counterpartName}</span>
-              </div>
-              {(isBusinessOwner || isEmployee) && appointment.customer_details?.email && (
-                <div className="pl-7 text-sm text-gray-500">
-                  {appointment.customer_details.email}
-                </div>
-              )}
-              {isEmployee ? (
-                <div className="pl-7 text-sm text-gray-500">
-                  Business: {businessName}
-                </div>
-              ) : null}
-              {!isEmployee && !isBusinessOwner && appointment.employee_details ? (
-                <div className="pl-7 text-sm text-gray-500">
-                  Staff: {employeeName}
-                </div>
-              ) : null}
-            </div>
-
-            {appointment.customer_notes && (
-              <p className="mt-4 text-sm text-gray-500">
-                {isBusinessOwner || isEmployee ? `Customer note: ${appointment.customer_notes}` : appointment.customer_notes}
-              </p>
-            )}
-          </div>
-
-          <div className="md:text-right">
-            <div className="text-2xl font-bold text-gray-900">
-              ${Number(appointment.total_amount || 0).toFixed(2)}
-            </div>
-            {isEmployee && ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) ? (
-              <div className="mt-4 flex flex-wrap justify-end gap-2" onClick={(event) => event.stopPropagation()}>
-                {appointment.status === 'pending' ? (
-                  <button
-                    type="button"
-                    onClick={() => handleStatusUpdate(appointment.id, 'confirmed')}
-                    disabled={statusBusyId === appointment.id}
-                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-                  >
-                    Confirm
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => handleStatusUpdate(appointment.id, 'completed')}
-                  disabled={statusBusyId === appointment.id}
-                  className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-                >
-                  Complete
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleCancel(appointment.id)}
-                  disabled={cancellingId === appointment.id}
-                  className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 disabled:opacity-60"
-                >
-                  {cancellingId === appointment.id ? 'Cancelling...' : 'Cancel'}
-                </button>
-              </div>
-            ) : null}
-            {!isBusinessOwner &&
-              !isEmployee &&
-              ['pending', 'confirmed', 'rescheduled'].includes(appointment.status) &&
-              getAppointmentStart(appointment) > now && (
-              <button
-                type="button"
-                onClick={() => handleCancel(appointment.id)}
-                disabled={cancellingId === appointment.id}
-                className="mt-4 inline-flex items-center rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-              >
-                <XCircleIcon className="h-5 w-5 mr-2" />
-                {cancellingId === appointment.id ? 'Cancelling...' : 'Cancel appointment'}
               </button>
-            )}
+            ))}
           </div>
         </div>
       </div>
-    );
-  };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments'}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {isBusinessOwner
-              ? 'Review bookings made by customers for your services.'
-              : isEmployee
-                ? 'See your assigned bookings, upcoming schedule, and finished work.'
-              : 'View upcoming bookings, review past visits, and cancel if needed.'}
-          </p>
-        </div>
-
+      {/* List */}
+      <div className="mx-auto max-w-3xl px-4 py-6">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600" />
+          <div className="flex justify-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
           </div>
-        ) : appointments.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
-              <h2 className="text-2xl font-semibold text-gray-900">
-              {isBusinessOwner ? 'No customer bookings yet' : isEmployee ? 'No assigned appointments yet' : 'No appointments yet'}
-              </h2>
-              <p className="text-gray-600 mt-3">
-              {isBusinessOwner
-                ? 'Bookings for your services will appear here.'
-                : isEmployee
-                  ? 'Appointments assigned to you will appear here.'
-                : 'Book a service to see it here.'}
-              </p>
-            {!isBusinessOwner && !isEmployee && (
+        ) : buckets[tab].length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
+            <p className="text-3xl mb-3">
+              {tab === 'Upcoming' ? '📅' : tab === 'Past' ? '🗂️' : '❌'}
+            </p>
+            <h2 className="text-base font-semibold text-slate-900">
+              No {tab.toLowerCase()} appointments
+            </h2>
+            {tab === 'Upcoming' && !isBusinessOwner && !isEmployee && (
               <Link
                 to="/services"
-                className="inline-flex mt-6 rounded-xl bg-primary-600 px-5 py-3 text-white font-semibold hover:bg-primary-700"
+                className="mt-4 inline-flex rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Browse services
               </Link>
             )}
           </div>
         ) : (
-          <div className="space-y-10">
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-gray-900">Upcoming</h2>
-                <span className="text-sm text-gray-500">{upcomingAppointments.length} active</span>
-              </div>
-              <div className="space-y-4">
-                {upcomingAppointments.length > 0 ? (
-                  upcomingAppointments.map(renderAppointmentCard)
-                ) : (
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 text-gray-500">
-                    No upcoming appointments.
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-gray-900">History</h2>
-                <span className="text-sm text-gray-500">{pastAppointments.length} items</span>
-              </div>
-              <div className="space-y-4">
-                {pastAppointments.length > 0 ? (
-                  pastAppointments.map(renderAppointmentCard)
-                ) : (
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 text-gray-500">
-                    No past appointments yet.
-                  </div>
-                )}
-              </div>
-            </section>
+          <div className="space-y-3">
+            {buckets[tab].map((a) => (
+              <ApptCard
+                key={a.id}
+                appointment={a}
+                isBusinessOwner={isBusinessOwner}
+                isEmployee={isEmployee}
+                onClick={() => setSelected(a)}
+              />
+            ))}
           </div>
         )}
       </div>
+
+      {/* Detail modal */}
+      {selected && (
+        <DetailModal
+          appointment={selected}
+          onClose={() => setSelected(null)}
+          onCancel={handleCancel}
+          onStatusUpdate={handleStatusUpdate}
+          onReview={(a) => { setReviewTarget(a); setSelected(null); }}
+          isBusinessOwner={isBusinessOwner}
+          isEmployee={isEmployee}
+          cancellingId={cancellingId}
+          statusBusyId={statusBusyId}
+          reviewedIds={reviewedIds}
+        />
+      )}
+
+      {/* Review modal */}
+      {reviewTarget && (
+        <ReviewModal
+          appointment={reviewTarget}
+          onClose={() => setReviewTarget(null)}
+          onSubmitted={(serviceId) =>
+            setReviewedIds((prev) => new Set([...prev, serviceId]))
+          }
+        />
+      )}
     </div>
   );
 };

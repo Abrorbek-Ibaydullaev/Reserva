@@ -160,8 +160,8 @@ export const serviceService = {
     updateService: (id, data) => api.put(`/services/my-services/${id}/`, data),
     deleteService: (id) => api.delete(`/services/my-services/${id}/`),
     getMyServices: () => api.get('/services/my-services/'),
-    addReview: (id, data) => api.post(`/services/${id}/reviews/`, data),
-    getServiceReviews: (id) => api.get(`/services/${id}/reviews/`),
+    addReview: (id, data) => api.post(`/services/id/${id}/reviews/`, data),
+    getServiceReviews: (id) => api.get(`/services/id/${id}/reviews/`),
 };
 
 /**
@@ -239,6 +239,8 @@ export const userService = {
     getGalleryImages: () => api.get('/users/gallery/'),
     uploadGalleryImage: (data) => api.post('/users/gallery/', data, withPayloadConfig(data)),
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
+    getTelegramLink: () => api.get('/users/telegram/'),
+    disconnectTelegram: () => api.delete('/users/telegram/'),
     getNotifications: () => api.get('/users/notifications/'),
     markNotificationAsRead: (id) =>
         api.put(`/users/notifications/${id}/read/`),

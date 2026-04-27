@@ -1,267 +1,253 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import {
-  CalendarIcon,
-  CurrencyDollarIcon,
+  CalendarDaysIcon,
   ClockIcon,
   CheckCircleIcon,
+  UserCircleIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 import { appointmentService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
-const formatMoney = (value) => `$${Number(value || 0).toFixed(2)}`;
+const STATUS_STYLE = {
+  pending:     'bg-amber-100 text-amber-800',
+  confirmed:   'bg-blue-100 text-blue-800',
+  completed:   'bg-emerald-100 text-emerald-800',
+  cancelled:   'bg-red-100 text-red-800',
+  rescheduled: 'bg-violet-100 text-violet-800',
+};
 
-const normalizeList = (response) => response.data?.results || response.data || [];
+const fmtTime = (t) => {
+  const [h, m] = t.split(':').map(Number);
+  const d = new Date(); d.setHours(h, m);
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const apptStart = (a) => {
+  const [h, m] = a.start_time.split(':').map(Number);
+  const d = new Date(`${a.date}T00:00:00`); d.setHours(h, m);
+  return d;
+};
+
+const StatCard = ({ label, value, icon: Icon, color }) => (
+  <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+    <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
+      <Icon className="h-5 w-5" />
+    </div>
+    <div>
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="text-xs text-slate-500">{label}</p>
+    </div>
+  </div>
+);
 
 const EmployeeDashboard = () => {
-  const [stats, setStats] = useState({
-    totalAppointments: 0,
-    todayAppointments: 0,
-    upcomingAppointments: 0,
-    completedAppointments: 0,
-    totalRevenue: 0,
-  });
-  const [recentAppointments, setRecentAppointments] = useState([]);
-  const [revenueData, setRevenueData] = useState([]);
+  const { user } = useAuth();
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [busyId, setBusyId] = useState(null);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  const loadAppts = () =>
+    appointmentService
+      .getAllAppointments()
+      .then((r) => setAppointments(r.data.results || r.data || []))
+      .catch(() => toast.error('Failed to load appointments.'))
+      .finally(() => setLoading(false));
 
-  const getAppointmentDateTime = (appointment) =>
-    new Date(`${appointment.date}T${appointment.start_time}`);
+  useEffect(() => { loadAppts(); }, []);
 
-  const loadDashboard = async () => {
+  const handleStatus = async (id, status) => {
     try {
-      setLoading(true);
-      setError('');
-
-      const appointmentsResponse = await appointmentService.getAllAppointments();
-      const appointments = normalizeList(appointmentsResponse);
-      const now = new Date();
-      const today = format(now, 'yyyy-MM-dd');
-      const completedAppointments = appointments.filter((item) => item.status === 'completed');
-
-      setStats({
-        totalAppointments: appointments.length,
-        todayAppointments: appointments.filter((item) => item.date === today).length,
-        upcomingAppointments: appointments.filter(
-          (item) =>
-            ['pending', 'confirmed', 'rescheduled'].includes(item.status) &&
-            getAppointmentDateTime(item) > now
-        ).length,
-        completedAppointments: completedAppointments.length,
-        totalRevenue: completedAppointments.reduce(
-          (sum, item) => sum + Number(item.total_amount || 0),
-          0
-        ),
-      });
-
-      setRecentAppointments(
-        [...appointments]
-          .sort((a, b) => getAppointmentDateTime(b) - getAppointmentDateTime(a))
-          .slice(0, 5)
-      );
-
-      setRevenueData(buildRevenueData(appointments));
-    } catch (err) {
-      console.error('Failed to load employee dashboard:', err);
-      setError('Failed to load employee dashboard data.');
+      setBusyId(id);
+      await appointmentService.updateAppointmentStatus(id, { status });
+      toast.success(`Marked as ${status}.`);
+      await loadAppts();
+    } catch {
+      toast.error('Failed to update.');
     } finally {
-      setLoading(false);
+      setBusyId(null);
     }
   };
 
-  const buildRevenueData = (appointments) => {
-    const days = [];
+  const now = new Date();
+  const today = format(now, 'yyyy-MM-dd');
 
-    for (let offset = 6; offset >= 0; offset -= 1) {
-      const day = subDays(new Date(), offset);
-      const dayKey = format(day, 'yyyy-MM-dd');
-      const revenue = appointments
-        .filter((item) => item.date === dayKey && item.status === 'completed')
-        .reduce((sum, item) => sum + Number(item.total_amount || 0), 0);
+  const todayAppts = appointments
+    .filter((a) => a.date === today)
+    .sort((a, b) => apptStart(a) - apptStart(b));
 
-      days.push({
-        label: format(day, 'EEE'),
-        revenue,
-      });
-    }
+  const upcoming = appointments
+    .filter(
+      (a) =>
+        ['pending', 'confirmed', 'rescheduled'].includes(a.status) &&
+        apptStart(a) > now
+    )
+    .sort((a, b) => apptStart(a) - apptStart(b));
 
-    return days;
-  };
-
-  const statusBadge = (status) => {
-    const palette = {
-      pending: 'bg-amber-100 text-amber-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      completed: 'bg-emerald-100 text-emerald-800',
-      cancelled: 'bg-red-100 text-red-800',
-      no_show: 'bg-slate-100 text-slate-700',
-      rescheduled: 'bg-violet-100 text-violet-800',
-    };
-
-    return (
-      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${palette[status] || 'bg-gray-100 text-gray-700'}`}>
-        {status.replace('_', ' ')}
-      </span>
-    );
-  };
-
-  const StatCard = ({ title, value, subtitle, icon }) => (
-    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="mt-3 text-3xl font-bold text-gray-900">{value}</p>
-          {subtitle ? <p className="mt-2 text-sm text-gray-500">{subtitle}</p> : null}
-        </div>
-        <div className="rounded-2xl bg-[#e8f2f6] p-3 text-[#4a90b0]">{icon}</div>
-      </div>
-    </div>
-  );
+  const completed = appointments.filter((a) => a.status === 'completed').length;
+  const pending = appointments.filter((a) => a.status === 'pending').length;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
+      <div className="flex h-full items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-violet-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Staff Dashboard</h1>
-          <p className="mt-2 text-gray-600">Track your own bookings, schedule, and completed revenue.</p>
-        </div>
-
-        {error ? (
-          <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            {error}
-          </div>
-        ) : null}
-
-        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Total Appointments"
-            value={stats.totalAppointments}
-            subtitle={`${stats.upcomingAppointments} upcoming`}
-            icon={<CalendarIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Today"
-            value={stats.todayAppointments}
-            subtitle="Scheduled for today"
-            icon={<ClockIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Completed"
-            value={stats.completedAppointments}
-            subtitle="Finished appointments"
-            icon={<CheckCircleIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Revenue"
-            value={formatMoney(stats.totalRevenue)}
-            subtitle="From your completed appointments"
-            icon={<CurrencyDollarIcon className="h-6 w-6" />}
-          />
-        </div>
-
-        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Revenue Last 7 Days</h2>
-                <p className="text-sm text-gray-500">Only your completed work is included here.</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatMoney(revenueData.reduce((sum, item) => sum + item.revenue, 0))}
-                </p>
-                <p className="text-sm text-gray-500">7-day total</p>
-              </div>
-            </div>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
-                  <CartesianGrid stroke="#edf2f7" strokeDasharray="3 3" />
-                  <XAxis dataKey="label" stroke="#64748b" fontSize={12} />
-                  <YAxis stroke="#64748b" fontSize={12} />
-                  <Tooltip formatter={(value) => [formatMoney(value), 'Revenue']} />
-                  <Area
-                    dataKey="revenue"
-                    type="monotone"
-                    stroke="#4a90b0"
-                    fill="#4a90b0"
-                    fillOpacity={0.15}
-                    strokeWidth={3}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">My Schedule</h2>
-                <p className="text-sm text-gray-500">Your latest assigned appointments.</p>
-              </div>
-              <Link to="/employee/appointments" className="inline-flex items-center text-sm font-semibold text-[#4a90b0]">
-                View all
-                <ChevronRightIcon className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-
-            {recentAppointments.length === 0 ? (
-              <div className="rounded-2xl bg-gray-50 p-8 text-gray-500">No assigned appointments yet.</div>
-            ) : (
-              <div className="space-y-4">
-                {recentAppointments.map((appointment) => (
-                  <Link
-                    key={appointment.id}
-                    to="/employee/appointments"
-                    className="block rounded-2xl border border-gray-200 p-4 transition hover:border-[#4a90b0] hover:shadow-md"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-gray-900">{appointment.service_details?.name}</h3>
-                          {statusBadge(appointment.status)}
-                        </div>
-                        <p className="mt-2 text-sm text-gray-600">
-                          {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {appointment.date} at {appointment.start_time}
-                        </p>
-                      </div>
-                      <div className="text-right text-sm font-semibold text-gray-900">
-                        {formatMoney(appointment.total_amount)}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="space-y-5 p-5">
+      {/* Greeting */}
+      <div>
+        <h1 className="text-xl font-bold text-slate-900">
+          Good {now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening'},{' '}
+          {user?.first_name} 👋
+        </h1>
+        <p className="text-sm text-slate-500">
+          {format(now, 'EEEE, MMMM d, yyyy')} ·{' '}
+          {todayAppts.length} appointment{todayAppts.length !== 1 ? 's' : ''} today
+        </p>
       </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Today" value={todayAppts.length} icon={CalendarDaysIcon} color="bg-violet-50 text-violet-600" />
+        <StatCard label="Upcoming" value={upcoming.length} icon={ClockIcon} color="bg-blue-50 text-blue-600" />
+        <StatCard label="Completed" value={completed} icon={CheckCircleIcon} color="bg-emerald-50 text-emerald-600" />
+        <StatCard label="Awaiting approval" value={pending} icon={UserCircleIcon} color="bg-amber-50 text-amber-600" />
+      </div>
+
+      {/* Today's schedule */}
+      <div className="rounded-2xl bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-semibold text-slate-900">Today's Schedule</h2>
+          <Link
+            to="/employee/appointments"
+            className="flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline"
+          >
+            See all <ChevronRightIcon className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {todayAppts.length === 0 ? (
+          <div className="rounded-xl bg-slate-50 p-8 text-center">
+            <p className="mb-2 text-2xl">🗓️</p>
+            <p className="text-sm text-slate-500">No appointments scheduled for today.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {todayAppts.map((a) => {
+              const custName =
+                [a.customer_details?.first_name, a.customer_details?.last_name]
+                  .filter(Boolean).join(' ') ||
+                a.customer_details?.email ||
+                'Customer';
+              const isPast = apptStart(a) < now;
+
+              return (
+                <div
+                  key={a.id}
+                  className={`flex items-center gap-4 rounded-xl border p-4 ${
+                    isPast
+                      ? 'border-slate-100 bg-slate-50'
+                      : 'border-violet-100 bg-violet-50/40'
+                  }`}
+                >
+                  <div className="w-16 flex-shrink-0 text-center">
+                    <p className="text-sm font-bold text-slate-900">{fmtTime(a.start_time)}</p>
+                    <p className="text-xs text-slate-400">{a.duration}min</p>
+                  </div>
+
+                  <div className="h-10 w-px flex-shrink-0 bg-slate-200" />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-slate-900">
+                      {a.service_details?.name}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <UserCircleIcon className="h-3.5 w-3.5" />
+                      {custName}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-shrink-0 flex-col items-end gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                        STATUS_STYLE[a.status] || ''
+                      }`}
+                    >
+                      {a.status?.replace('_', ' ')}
+                    </span>
+                    {!isPast && ['pending', 'confirmed'].includes(a.status) && (
+                      <div className="flex gap-1">
+                        {a.status === 'pending' && (
+                          <button
+                            onClick={() => handleStatus(a.id, 'confirmed')}
+                            disabled={busyId === a.id}
+                            className="rounded-lg bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-60"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleStatus(a.id, 'completed')}
+                          disabled={busyId === a.id}
+                          className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-60"
+                        >
+                          Done
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Coming up (non-today upcoming) */}
+      {upcoming.filter((a) => a.date !== today).length > 0 && (
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="mb-4 font-semibold text-slate-900">Coming up</h2>
+          <div className="space-y-2">
+            {upcoming
+              .filter((a) => a.date !== today)
+              .slice(0, 5)
+              .map((a) => {
+                const custName =
+                  [a.customer_details?.first_name, a.customer_details?.last_name]
+                    .filter(Boolean).join(' ') || 'Customer';
+                return (
+                  <div
+                    key={a.id}
+                    className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3"
+                  >
+                    <CalendarDaysIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-900">
+                        {a.service_details?.name}
+                      </p>
+                      <p className="text-xs text-slate-500">{custName}</p>
+                    </div>
+                    <div className="text-right text-xs text-slate-500">
+                      <p className="font-medium">
+                        {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </p>
+                      <p>{fmtTime(a.start_time)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

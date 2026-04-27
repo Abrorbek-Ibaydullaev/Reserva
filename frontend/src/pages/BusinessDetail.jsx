@@ -188,7 +188,8 @@ const BusinessDetail = () => {
       const servicesResponse = await serviceService.getAllServices({
         business_owner: businessId
       });
-      setServices(servicesResponse.data.results || servicesResponse.data);
+      // reviews are now bundled inside each service by ServiceListSerializer
+      setServices(servicesResponse.data.results || servicesResponse.data || []);
 
     } catch (err) {
       console.error('Error fetching business details:', err);
@@ -688,13 +689,6 @@ const BusinessDetail = () => {
       </div>
 
       <div className="px-6 pb-6 pt-5 md:px-6 md:pb-7 md:pt-6">
-        <div className="mb-3 flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#f2e9ff] px-3 py-1 text-[11px] font-semibold text-[#6f35e8]">Booksy Gift Cards</span>
-          <span className="rounded-full bg-[#e7f7e8] px-3 py-1 text-[11px] font-semibold text-[#3aa65a]">Cashback</span>
-          <span className="rounded-full bg-[#f9d5ea] px-3 py-1 text-[11px] font-semibold text-[#2f2a35]">Klarna</span>
-          <span className="rounded-full bg-[#f3f3f3] px-3 py-1 text-[11px] font-medium text-[#2f2a35]">Mobile service</span>
-        </div>
-
         <h1 className="text-[1.35rem] font-bold leading-tight tracking-tight text-[#1f1f1f] md:text-[1.65rem]">
           {publicBusinessName || ' '}
         </h1>
@@ -703,17 +697,13 @@ const BusinessDetail = () => {
           {businessAddressLine || ' '}
         </p>
 
-        <div className="mt-3 flex items-center gap-2 text-xs md:text-sm">
-          <span className="text-black">★</span>
-          <span className="font-semibold text-[#1f1f1f]">{businessReviewStats.averageRating.toFixed(1)}</span>
-          <span className="text-[#4fc5cf]">({businessReviewStats.reviewCount} reviews)</span>
-        </div>
-
-        <div className="mt-2 flex items-center gap-3 text-[11px] text-[#6f6f6f] md:text-xs">
-          <span>Promoted</span>
-          <span>|</span>
-          <span>Entrepreneur</span>
-        </div>
+        {businessReviewStats.reviewCount > 0 && (
+          <div className="mt-3 flex items-center gap-2 text-xs md:text-sm">
+            <span className="text-amber-400">★</span>
+            <span className="font-semibold text-[#1f1f1f]">{businessReviewStats.averageRating.toFixed(1)}</span>
+            <span className="text-slate-400">({businessReviewStats.reviewCount} {businessReviewStats.reviewCount === 1 ? 'review' : 'reviews'})</span>
+          </div>
+        )}
       </div>
     </div>
   ) : null;
@@ -1017,6 +1007,54 @@ const BusinessDetail = () => {
                     </div>
                   </div>
                 ))}
+            </div>
+          )}
+
+          {/* Reviews — inside left column, below services list */}
+          {!hasBookingDraftForBusiness && businessReviewStats.reviewCount > 0 && (
+            <div className="mt-8 overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-sm">
+              <div className="flex items-center gap-3 border-b border-gray-100 px-6 py-5">
+                <h2 className="text-lg font-bold text-gray-900">Reviews</h2>
+                <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1">
+                  <StarIconSolid className="h-4 w-4 text-amber-400" />
+                  <span className="text-sm font-bold text-gray-900">{businessReviewStats.averageRating.toFixed(1)}</span>
+                  <span className="text-xs text-gray-500">({businessReviewStats.reviewCount})</span>
+                </div>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {services
+                  .flatMap((s) => (s.reviews || []).map((r) => ({ ...r, serviceName: s.name })))
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .slice(0, 8)
+                  .map((review) => (
+                    <div key={review.id} className="px-6 py-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#e8f2f6] text-xs font-bold text-[#4a90b0]">
+                            {(review.customer_name || review.customer_email || '?')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {review.customer_name || review.customer_email?.split('@')[0] || 'Customer'}
+                            </p>
+                            <p className="text-xs text-gray-400">{review.serviceName}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-shrink-0 items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <StarIconSolid key={n} className={`h-3.5 w-3.5 ${n <= review.rating ? 'text-amber-400' : 'text-gray-200'}`} />
+                          ))}
+                          <span className="ml-1 text-xs text-gray-400">
+                            {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="mt-2 pl-10 text-sm leading-relaxed text-gray-600">{review.comment}</p>
+                      )}
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </div>

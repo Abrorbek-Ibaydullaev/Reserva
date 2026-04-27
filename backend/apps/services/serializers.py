@@ -48,7 +48,7 @@ class ServiceReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceReview
         fields = '__all__'
-        read_only_fields = ('customer', 'created_at', 'updated_at')
+        read_only_fields = ('customer', 'service', 'is_verified', 'created_at', 'updated_at')
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -99,13 +99,14 @@ class ServiceListSerializer(serializers.ModelSerializer):
     review_count = serializers.IntegerField(
         source='reviews.count', read_only=True)
     service_images = ServiceImageSerializer(many=True, read_only=True)
+    reviews = ServiceReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
         fields = ('id', 'name', 'description', 'price', 'duration', 'thumbnail',
                   'images', 'service_images', 'category',
                   'business_owner_name', 'category_name', 'average_rating',
-                  'review_count', 'is_active', 'slug')
+                  'review_count', 'reviews', 'is_active', 'slug')
 
     def get_average_rating(self, obj):
         reviews = obj.reviews.all()

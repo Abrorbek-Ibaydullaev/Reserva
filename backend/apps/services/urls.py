@@ -19,7 +19,11 @@ urlpatterns = [
     path('', views.ServiceListView.as_view(), name='service-list'),
     path('id/<int:pk>/', views.ServiceDetailByIdView.as_view(), name='service-detail-by-id'),
 
-    # Reviews
+    # Reviews (by ID for frontend use)
+    path('id/<int:pk>/reviews/', views.ServiceReviewByIdView.as_view(),
+         name='service-review-by-id'),
+
+    # Reviews (by slug)
     path('<slug:slug>/reviews/', views.ServiceReviewListView.as_view(),
          name='service-review-list'),
     path('<slug:slug>/', views.ServiceDetailView.as_view(), name='service-detail'),

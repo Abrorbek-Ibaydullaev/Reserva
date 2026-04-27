@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { scheduleService, userService } from '../services/api';
+import { userService } from '../services/api';
 import {
   BuildingStorefrontIcon,
   CameraIcon,
-  ClockIcon,
   EnvelopeIcon,
   GlobeAltIcon,
   MapPinIcon,
   PhoneIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const getErrorMessage = (error, fallback) => {
   const data = error?.response?.data;
@@ -67,8 +64,6 @@ const BusinessProfile = () => {
   const [selectedSpaceFiles, setSelectedSpaceFiles] = useState([]);
   const [selectedPortfolioFiles, setSelectedPortfolioFiles] = useState([]);
   const [galleryEnabled, setGalleryEnabled] = useState(true);
-  const [businessHours, setBusinessHours] = useState([]);
-  const [savingHours, setSavingHours] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -77,11 +72,10 @@ const BusinessProfile = () => {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const [meResponse, profileResponse, galleryResult, hoursResult] = await Promise.allSettled([
+      const [meResponse, profileResponse, galleryResult] = await Promise.allSettled([
         userService.getMe(),
         userService.getProfile(),
         userService.getGalleryImages(),
-        scheduleService.getBusinessHours(),
       ]);
 
       if (meResponse.status !== 'fulfilled' || profileResponse.status !== 'fulfilled') {
@@ -119,15 +113,6 @@ const BusinessProfile = () => {
       } else {
         setGalleryEnabled(false);
         setGalleryImages([]);
-      }
-
-      if (hoursResult.status === 'fulfilled') {
-        const loadedHours = (hoursResult.value.data?.results || hoursResult.value.data || []).map((item) => ({
-          ...item,
-          opening_time: item.opening_time ? item.opening_time.slice(0, 5) : '09:00',
-          closing_time: item.closing_time ? item.closing_time.slice(0, 5) : '18:00',
-        }));
-        setBusinessHours(loadedHours.sort((a, b) => a.day_of_week - b.day_of_week));
       }
     } catch (error) {
       console.error('Failed to load business profile:', error);
@@ -181,12 +166,6 @@ const BusinessProfile = () => {
       console.error('Failed to delete gallery image:', error);
       toast.error('Failed to delete photo.');
     }
-  };
-
-  const updateBusinessHour = (id, patch) => {
-    setBusinessHours((current) =>
-      current.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    );
   };
 
   const handleSubmit = async (event) => {
@@ -287,29 +266,6 @@ const BusinessProfile = () => {
       toast.error(getErrorMessage(error, 'Failed to update business profile.'));
     } finally {
       setSaving(false);
-    }
-  };
-
-  const saveBusinessHours = async () => {
-    try {
-      setSavingHours(true);
-      await Promise.all(
-        businessHours.map((hour) =>
-          scheduleService.updateBusinessHours(hour.id, {
-            day_of_week: hour.day_of_week,
-            is_open: hour.is_open,
-            is_24_hours: false,
-            opening_time: hour.is_open ? hour.opening_time : null,
-            closing_time: hour.is_open ? hour.closing_time : null,
-          })
-        )
-      );
-      toast.success('Business working hours updated.');
-    } catch (error) {
-      console.error('Failed to save business hours:', error);
-      toast.error('Failed to save business hours.');
-    } finally {
-      setSavingHours(false);
     }
   };
 
@@ -583,76 +539,6 @@ const BusinessProfile = () => {
             </div>
           </form>
         </div>
-
-        <section className="mt-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-3">
-            <ClockIcon className="h-6 w-6 text-[#4a90b0]" />
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Business Working Hours</h2>
-              <p className="mt-1 text-sm text-gray-500">
-                These are the public hours shown on your business page. Staff working hours are separate.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200">
-            <div className="grid grid-cols-[180px_1fr] bg-gray-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              <div>Weekday</div>
-              <div>Business hours</div>
-            </div>
-
-            {businessHours.map((hour, index) => (
-              <div
-                key={hour.id}
-                className={`grid grid-cols-[180px_1fr] items-center gap-4 px-5 py-4 ${
-                  index !== businessHours.length - 1 ? 'border-b border-gray-200' : ''
-                }`}
-              >
-                <div className="font-medium text-gray-900">{dayLabels[hour.day_of_week]}</div>
-
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <label className="inline-flex items-center gap-3 text-sm text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={hour.is_open}
-                      onChange={(event) => updateBusinessHour(hour.id, { is_open: event.target.checked })}
-                    />
-                    Open
-                  </label>
-
-                  {hour.is_open ? (
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                      <input
-                        type="time"
-                        value={hour.opening_time || '09:00'}
-                        onChange={(event) => updateBusinessHour(hour.id, { opening_time: event.target.value })}
-                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 sm:w-[160px]"
-                      />
-                      <span className="hidden text-sm text-gray-400 sm:inline">to</span>
-                      <input
-                        type="time"
-                        value={hour.closing_time || '18:00'}
-                        onChange={(event) => updateBusinessHour(hour.id, { closing_time: event.target.value })}
-                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 sm:w-[160px]"
-                      />
-                    </div>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-400">Closed</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={saveBusinessHours}
-            disabled={savingHours}
-            className="mt-6 rounded-2xl bg-[#4a90b0] px-6 py-3 text-sm font-semibold text-white"
-          >
-            {savingHours ? 'Saving...' : 'Save business hours'}
-          </button>
-        </section>
       </div>
     </div>
   );

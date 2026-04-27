@@ -105,6 +105,9 @@ class UserProfile(models.Model):
     twitter = models.URLField(blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
 
+    # Telegram integration
+    telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

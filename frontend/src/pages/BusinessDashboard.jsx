@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BellAlertIcon,
-  BriefcaseIcon,
+  UserGroupIcon,
   CalendarDaysIcon,
-  ChartBarIcon,
+  BriefcaseIcon,
+  CurrencyDollarIcon,
   CheckCircleIcon,
   ChevronRightIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  ExclamationTriangleIcon,
-  UserGroupIcon,
-  XCircleIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
 } from '@heroicons/react/24/outline';
 import {
   ResponsiveContainer,
@@ -20,17 +17,18 @@ import {
   BarChart,
   Bar,
   CartesianGrid,
-  Cell,
   PieChart,
   Pie,
+  Cell,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { format } from 'date-fns';
 import { appointmentService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
-const statusColors = {
+const STATUS_COLORS = {
   pending: '#f59e0b',
   confirmed: '#3b82f6',
   completed: '#10b981',
@@ -39,717 +37,313 @@ const statusColors = {
   rescheduled: '#8b5cf6',
 };
 
-const formatMoney = (value) =>
+const PIE_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
+
+const fmt = (v) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
+  }).format(Number(v || 0));
 
-const formatPercentDelta = (value) => `${value >= 0 ? '+' : ''}${value}%`;
+const delta = (v) => `${v >= 0 ? '+' : ''}${v}%`;
 
+// ── Compact stat card ────────────────────────────────────────────────────────
+const StatCard = ({ title, value, sub, icon: Icon, color, trend }) => (
+  <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+    <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
+      <Icon className="h-6 w-6" />
+    </div>
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-xs font-medium text-slate-500">{title}</p>
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      {sub && <p className="truncate text-xs text-slate-400">{sub}</p>}
+    </div>
+    {trend !== undefined && (
+      <div className={`flex items-center gap-1 text-xs font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+        {trend >= 0
+          ? <ArrowTrendingUpIcon className="h-4 w-4" />
+          : <ArrowTrendingDownIcon className="h-4 w-4" />}
+        {Math.abs(trend)}%
+      </div>
+    )}
+  </div>
+);
+
+// ── Status badge ─────────────────────────────────────────────────────────────
+const Badge = ({ status }) => {
+  const map = {
+    pending: 'bg-amber-100 text-amber-800',
+    confirmed: 'bg-blue-100 text-blue-800',
+    completed: 'bg-emerald-100 text-emerald-800',
+    cancelled: 'bg-red-100 text-red-800',
+    no_show: 'bg-slate-100 text-slate-600',
+    rescheduled: 'bg-violet-100 text-violet-800',
+  };
+  return (
+    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${map[status] || 'bg-gray-100 text-gray-700'}`}>
+      {status?.replace('_', ' ')}
+    </span>
+  );
+};
+
+// ── Main component ────────────────────────────────────────────────────────────
 const BusinessDashboard = () => {
+  const { user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadDashboard();
+    appointmentService
+      .getBusinessDashboardStats()
+      .then((r) => setDashboard(r.data))
+      .catch(() => setError('Failed to load dashboard statistics.'))
+      .finally(() => setLoading(false));
   }, []);
-
-  const loadDashboard = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const response = await appointmentService.getBusinessDashboardStats();
-      setDashboard(response.data);
-    } catch (err) {
-      console.error('Failed to load business dashboard:', err);
-      setError('Failed to load business dashboard statistics.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const palette = {
-      pending: 'bg-amber-100 text-amber-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      completed: 'bg-emerald-100 text-emerald-800',
-      cancelled: 'bg-red-100 text-red-800',
-      no_show: 'bg-slate-100 text-slate-700',
-      rescheduled: 'bg-violet-100 text-violet-800',
-    };
-
-    return (
-      <span
-        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-          palette[status] || 'bg-gray-100 text-gray-700'
-        }`}
-      >
-        {String(status).replace('_', ' ')}
-      </span>
-    );
-  };
-
-  const StatCard = ({ title, value, subtitle, delta, icon, tone = 'sky' }) => {
-    const tones = {
-      sky: 'bg-[#e8f2f6] text-[#4a90b0]',
-      emerald: 'bg-emerald-50 text-emerald-600',
-      amber: 'bg-amber-50 text-amber-600',
-      violet: 'bg-violet-50 text-violet-600',
-      rose: 'bg-rose-50 text-rose-600',
-      slate: 'bg-slate-100 text-slate-700',
-    };
-
-    return (
-      <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
-            {subtitle ? <p className="mt-2 text-sm text-slate-500">{subtitle}</p> : null}
-          </div>
-          <div className={`rounded-2xl p-3 ${tones[tone] || tones.sky}`}>{icon}</div>
-        </div>
-        {delta ? (
-          <div className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-            {delta}
-          </div>
-        ) : null}
-      </div>
-    );
-  };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
+      <div className="flex h-full items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
       </div>
     );
   }
 
   if (error || !dashboard) {
     return (
-      <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
-        <div className="mx-auto max-w-7xl">
-          <div className="rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
-            {error || 'Dashboard data is unavailable.'}
-          </div>
+      <div className="p-6">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
+          {error || 'Dashboard data unavailable.'}
         </div>
       </div>
     );
   }
 
-  const { overview, trends, status_breakdown, busiest_days, top_services, top_employees } =
-    dashboard;
-  const statusData = status_breakdown.map((item) => ({
+  const { overview, trends, status_breakdown, busiest_days, top_services, top_employees } = dashboard;
+
+  const statusData = status_breakdown.map((item, i) => ({
     name: item.status.replace('_', ' '),
     value: item.count,
-    color: statusColors[item.status] || '#94a3b8',
+    color: STATUS_COLORS[item.status] || PIE_COLORS[i % PIE_COLORS.length],
+  }));
+
+  const serviceBarData = top_services.slice(0, 6).map((s) => ({
+    name: s.name.length > 12 ? s.name.slice(0, 12) + '…' : s.name,
+    bookings: s.appointments,
+    revenue: Number(s.revenue),
   }));
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Business Dashboard</h1>
-            <p className="mt-2 max-w-3xl text-slate-600">
-              Dynamic business intelligence for bookings, revenue, staff workload, service
-              demand, and schedule health.
-            </p>
-          </div>
+    <div className="flex h-full flex-col gap-4 p-5 overflow-hidden">
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Last 30 Days
-              </p>
-              <p className="mt-2 text-lg font-bold text-slate-900">
-                {formatPercentDelta(overview.appointment_delta_30_days)} bookings
-              </p>
-              <p className="text-sm text-slate-500">
-                {formatPercentDelta(overview.revenue_delta_30_days)} revenue
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Generated
-              </p>
-              <p className="mt-2 text-lg font-bold text-slate-900">
-                {format(new Date(dashboard.generated_at), 'MMM dd, yyyy')}
-              </p>
-              <p className="text-sm text-slate-500">
-                {format(new Date(dashboard.generated_at), 'HH:mm')}
-              </p>
-            </div>
-          </div>
+      {/* ── Header ─────────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">
+            Hello, {user?.first_name || 'there'} 👋
+          </h1>
+          <p className="text-xs text-slate-500">
+            {format(new Date(), 'EEEE, MMMM d, yyyy')}
+            {dashboard.schedule_overview.today_is_open
+              ? ` · Open ${dashboard.schedule_overview.today_opening_time || ''} – ${dashboard.schedule_overview.today_closing_time || ''}`
+              : ' · Closed today'}
+          </p>
         </div>
+        <Link
+          to="/dashboard/appointments"
+          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+        >
+          <CalendarDaysIcon className="h-4 w-4" />
+          View appointments
+        </Link>
+      </div>
 
-        <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Revenue"
-            value={formatMoney(overview.total_revenue)}
-            subtitle={`${formatMoney(overview.revenue_30_days)} in the last 30 days`}
-            delta={formatPercentDelta(overview.revenue_delta_30_days)}
-            tone="emerald"
-            icon={<CurrencyDollarIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Bookings"
-            value={overview.total_appointments}
-            subtitle={`${overview.upcoming_7_days} upcoming in the next 7 days`}
-            delta={formatPercentDelta(overview.appointment_delta_30_days)}
-            tone="sky"
-            icon={<CalendarDaysIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Completion Rate"
-            value={`${overview.completion_rate}%`}
-            subtitle={`${overview.completed_appointments} completed appointments`}
-            tone="violet"
-            icon={<CheckCircleIcon className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Team Capacity"
-            value={`${overview.active_employees}/${overview.total_employees}`}
-            subtitle={`${dashboard.schedule_overview.staff_on_duty_today} staff on duty today`}
-            tone="amber"
-            icon={<UserGroupIcon className="h-6 w-6" />}
-          />
-        </div>
+      {/* ── Stat cards ─────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <StatCard
+          title="Total Bookings"
+          value={overview.total_appointments}
+          sub={`${overview.upcoming_7_days} upcoming this week`}
+          icon={CalendarDaysIcon}
+          color="bg-blue-50 text-blue-600"
+          trend={overview.appointment_delta_30_days}
+        />
+        <StatCard
+          title="Employees"
+          value={`${overview.active_employees}/${overview.total_employees}`}
+          sub={`${dashboard.schedule_overview.staff_on_duty_today} on duty today`}
+          icon={UserGroupIcon}
+          color="bg-violet-50 text-violet-600"
+        />
+        <StatCard
+          title="Today's Appointments"
+          value={overview.today_appointments}
+          sub={`${overview.pending_appointments} pending approval`}
+          icon={CheckCircleIcon}
+          color="bg-emerald-50 text-emerald-600"
+        />
+        <StatCard
+          title="Total Revenue"
+          value={fmt(overview.total_revenue)}
+          sub={`${fmt(overview.revenue_30_days)} last 30 days`}
+          icon={CurrencyDollarIcon}
+          color="bg-amber-50 text-amber-600"
+          trend={overview.revenue_delta_30_days}
+        />
+      </div>
 
-        <div className="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Bookings and Revenue Trend</h2>
-                <p className="text-sm text-slate-500">Live backend data for the last 14 days</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
-                  {formatMoney(overview.average_booking_value)}
-                </p>
-                <p className="text-sm text-slate-500">Average completed booking</p>
-              </div>
-            </div>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trends}>
-                  <defs>
-                    <linearGradient id="bookingFill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="5%" stopColor="#4a90b0" stopOpacity={0.28} />
-                      <stop offset="95%" stopColor="#4a90b0" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <XAxis dataKey="label" stroke="#64748b" fontSize={12} />
-                  <YAxis yAxisId="left" stroke="#64748b" fontSize={12} />
-                  <YAxis yAxisId="right" orientation="right" stroke="#64748b" fontSize={12} />
-                  <Tooltip
-                    formatter={(value, name) => [
-                      name === 'revenue' ? formatMoney(value) : value,
-                      name === 'revenue' ? 'Revenue' : 'Bookings',
-                    ]}
-                  />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="bookings"
-                    radius={[8, 8, 0, 0]}
-                    fill="#cbd5e1"
-                    barSize={18}
-                  />
-                  <Area
-                    yAxisId="right"
-                    dataKey="revenue"
-                    type="monotone"
-                    stroke="#4a90b0"
-                    fill="url(#bookingFill)"
-                    strokeWidth={3}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+      {/* ── Middle row ─────────────────────────────────────────────────── */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-3">
 
-          <div className="space-y-5">
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">Status Mix</h2>
-                  <p className="text-sm text-slate-500">Current distribution of appointment states</p>
-                </div>
-                <ChartBarIcon className="h-6 w-6 text-slate-400" />
-              </div>
-
-              <div className="h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={statusData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={52}
-                      outerRadius={86}
-                      paddingAngle={3}
-                    >
-                      {statusData.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [value, 'Appointments']} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {statusData.map((item) => (
-                  <div key={item.name} className="rounded-2xl bg-slate-50 px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-sm text-slate-600 capitalize">{item.name}</span>
-                    </div>
-                    <p className="mt-1 text-lg font-semibold text-slate-900">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">Operational Health</h2>
-                  <p className="text-sm text-slate-500">Key daily indicators for the business</p>
-                </div>
-                <BellAlertIcon className="h-6 w-6 text-slate-400" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Today&apos;s bookings</p>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
-                    {overview.today_appointments}
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Unread notifications</p>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
-                    {dashboard.notifications.unread}
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Cancellation rate</p>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
-                    {overview.cancellation_rate}%
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">No-show rate</p>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">{overview.no_show_rate}%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Best Performing Services</h2>
-                <p className="text-sm text-slate-500">Revenue and demand by service</p>
-              </div>
-              <Link
-                to="/dashboard/services"
-                className="inline-flex items-center text-sm font-semibold text-[#4a90b0]"
-              >
-                Manage services
-                <ChevronRightIcon className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="space-y-4">
-              {top_services.length === 0 ? (
-                <div className="rounded-2xl bg-slate-50 p-8 text-center text-slate-500">
-                  No services found yet.
-                </div>
-              ) : (
-                top_services.map((service) => (
-                  <div
-                    key={service.id}
-                    className="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr]"
-                  >
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <p className="font-semibold text-slate-900">{service.name}</p>
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            service.is_active
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-slate-100 text-slate-600'
-                          }`}
-                        >
-                          {service.is_active ? 'Active' : 'Paused'}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm text-slate-500">
-                        {service.appointments} total bookings, {service.pending} pending approval
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-slate-400">Revenue</p>
-                      <p className="mt-2 text-lg font-semibold text-slate-900">
-                        {formatMoney(service.revenue)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-slate-400">Completed</p>
-                      <p className="mt-2 text-lg font-semibold text-slate-900">
-                        {service.completed}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-slate-400">Demand</p>
-                      <p className="mt-2 text-lg font-semibold text-slate-900">
-                        {service.appointments}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-5">
-              <h2 className="text-xl font-semibold text-slate-900">Alerts & Attention Items</h2>
-              <p className="text-sm text-slate-500">Issues that may need quick action</p>
-            </div>
-
-            <div className="space-y-3">
-              {dashboard.alerts.length === 0 ? (
-                <div className="rounded-2xl bg-emerald-50 p-4 text-emerald-700">
-                  No urgent issues detected right now.
-                </div>
-              ) : (
-                dashboard.alerts.map((alert) => (
-                  <div
-                    key={`${alert.type}-${alert.title}`}
-                    className="rounded-2xl border border-amber-200 bg-amber-50 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-amber-900">{alert.title}</p>
-                        <p className="mt-1 text-sm text-amber-800">{alert.description}</p>
-                      </div>
-                      <ExclamationTriangleIcon className="h-5 w-5 shrink-0 text-amber-600" />
-                    </div>
-                    <p className="mt-3 text-2xl font-bold text-amber-900">{alert.value}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Employee Performance</h2>
-                <p className="text-sm text-slate-500">Workload and output by staff member</p>
-              </div>
-              <Link
-                to="/dashboard/employees"
-                className="inline-flex items-center text-sm font-semibold text-[#4a90b0]"
-              >
-                Staff list
-                <ChevronRightIcon className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="space-y-4">
-              {top_employees.length === 0 ? (
-                <div className="rounded-2xl bg-slate-50 p-8 text-center text-slate-500">
-                  No employees found yet.
-                </div>
-              ) : (
-                top_employees.map((employee) => (
-                  <div
-                    key={employee.id}
-                    className="rounded-2xl border border-slate-200 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-slate-900">{employee.name}</p>
-                        <p className="text-sm text-slate-500">{employee.position}</p>
-                      </div>
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          employee.is_active
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
-                      >
-                        {employee.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                      <div className="rounded-2xl bg-slate-50 px-3 py-2">
-                        <p className="text-slate-500">Completed</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">
-                          {employee.completed}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl bg-slate-50 px-3 py-2">
-                        <p className="text-slate-500">Upcoming</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">
-                          {employee.upcoming}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl bg-slate-50 px-3 py-2">
-                        <p className="text-slate-500">Revenue</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">
-                          {formatMoney(employee.revenue)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Demand by Weekday</h2>
-                <p className="text-sm text-slate-500">Identify the busiest operating days</p>
-              </div>
-              <ClockIcon className="h-6 w-6 text-slate-400" />
-            </div>
-
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={busiest_days}>
-                  <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <XAxis dataKey="day" stroke="#64748b" fontSize={12} />
-                  <YAxis stroke="#64748b" fontSize={12} />
-                  <Tooltip formatter={(value, name) => [name === 'revenue' ? formatMoney(value) : value, name === 'revenue' ? 'Revenue' : 'Appointments']} />
-                  <Bar dataKey="appointments" fill="#4a90b0" radius={[8, 8, 0, 0]} barSize={26} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Open days per week</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">
-                  {dashboard.schedule_overview.open_days_per_week}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Employees on time off today</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">
-                  {dashboard.schedule_overview.employees_on_time_off_today}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Today&apos;s schedule</p>
-                <p className="mt-2 text-lg font-bold text-slate-900">
-                  {dashboard.schedule_overview.today_is_open
-                    ? `${dashboard.schedule_overview.today_opening_time || '--:--'} - ${
-                        dashboard.schedule_overview.today_closing_time || '--:--'
-                      }`
-                    : 'Closed'}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Active services</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">
-                  {overview.active_services}/{overview.total_services}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900">Recent Appointment Activity</h2>
-              <p className="text-sm text-slate-500">Latest customer bookings and assignment status</p>
-            </div>
-            <Link
-              to="/dashboard/appointments"
-              className="inline-flex items-center text-sm font-semibold text-[#4a90b0]"
-            >
-              View all appointments
-              <ChevronRightIcon className="ml-1 h-4 w-4" />
+        {/* Employee list */}
+        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Employees</h2>
+            <Link to="/dashboard/employees" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
+              All <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
-
-          {dashboard.recent_appointments.length === 0 ? (
-            <div className="rounded-2xl bg-slate-50 p-10 text-center text-slate-500">
-              No appointment activity yet.
-            </div>
+          {top_employees.length === 0 ? (
+            <p className="text-center text-xs text-slate-400 py-4">No employees yet.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                    <th className="px-4 py-3">Customer</th>
-                    <th className="px-4 py-3">Service</th>
-                    <th className="px-4 py-3">Employee</th>
-                    <th className="px-4 py-3">Schedule</th>
-                    <th className="px-4 py-3">Amount</th>
-                    <th className="px-4 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {dashboard.recent_appointments.map((appointment) => (
-                    <tr key={appointment.id}>
-                      <td className="px-4 py-4">
-                        <div className="font-medium text-slate-900">{appointment.customer_name}</div>
-                        <div className="text-sm text-slate-500">{appointment.customer_email}</div>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-slate-700">
-                        <div className="font-medium text-slate-900">{appointment.service_name}</div>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-slate-700">{appointment.employee_name}</td>
-                      <td className="px-4 py-4 text-sm text-slate-700">
-                        <div>{format(new Date(appointment.date), 'MMM dd, yyyy')}</div>
-                        <div className="text-slate-500">{appointment.start_time}</div>
-                      </td>
-                      <td className="px-4 py-4 text-sm font-semibold text-slate-900">
-                        {formatMoney(appointment.amount)}
-                      </td>
-                      <td className="px-4 py-4">{getStatusBadge(appointment.status)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+              <div className="grid grid-cols-3 text-xs text-slate-400 font-medium px-2 mb-1">
+                <span>Name</span>
+                <span className="text-center">Status</span>
+                <span className="text-right">Done</span>
+              </div>
+              {top_employees.map((emp) => (
+                <div key={emp.id} className="grid grid-cols-3 items-center rounded-xl bg-slate-50 px-3 py-2">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-900 truncate">{emp.name}</p>
+                    <p className="text-xs text-slate-400 truncate">{emp.position || 'Staff'}</p>
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                      {emp.is_active ? 'Active' : 'Off'}
+                    </span>
+                  </div>
+                  <p className="text-right text-sm font-bold text-slate-900">{emp.completed}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Link
-            to="/dashboard/services"
-            className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
-                <BriefcaseIcon className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-medium text-blue-700">
-                {overview.active_services} active
-              </span>
+        {/* Segmentation / Status donut */}
+        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Appointment Status</h2>
+            <span className="text-xs text-slate-400">{overview.completion_rate}% complete</span>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="60%">
+              <PieChart>
+                <Pie
+                  data={statusData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius="40%"
+                  outerRadius="70%"
+                  paddingAngle={3}
+                >
+                  {statusData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v) => [v, 'appointments']} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="mt-1 grid grid-cols-2 gap-1.5">
+              {statusData.map((item) => (
+                <div key={item.name} className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2 py-1">
+                  <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="truncate text-xs text-slate-600 capitalize">{item.name}</span>
+                  <span className="ml-auto text-xs font-bold text-slate-900">{item.value}</span>
+                </div>
+              ))}
             </div>
-            <h3 className="font-semibold text-slate-900">Manage Services</h3>
-            <p className="mt-2 text-sm text-slate-500">
-              Update services based on demand and revenue data.
-            </p>
-          </Link>
-
-          <Link
-            to="/dashboard/appointments"
-            className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
-                <CalendarDaysIcon className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-medium text-emerald-700">
-                {overview.pending_appointments} pending
-              </span>
-            </div>
-            <h3 className="font-semibold text-slate-900">Manage Appointments</h3>
-            <p className="mt-2 text-sm text-slate-500">
-              Confirm bookings faster and reduce operational delays.
-            </p>
-          </Link>
-
-          <Link
-            to="/dashboard/employees"
-            className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <div className="rounded-2xl bg-violet-50 p-3 text-violet-600">
-                <UserGroupIcon className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-medium text-violet-700">
-                {dashboard.schedule_overview.staff_on_duty_today} on duty
-              </span>
-            </div>
-            <h3 className="font-semibold text-slate-900">Manage Employees</h3>
-            <p className="mt-2 text-sm text-slate-500">
-              Review staff workload, assignments, and capacity coverage.
-            </p>
-          </Link>
-
-          <Link
-            to="/dashboard/schedule"
-            className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <div className="rounded-2xl bg-amber-50 p-3 text-amber-600">
-                <ClockIcon className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-medium text-amber-700">
-                {dashboard.schedule_overview.today_is_open ? 'Open today' : 'Closed today'}
-              </span>
-            </div>
-            <h3 className="font-semibold text-slate-900">Business Schedule</h3>
-            <p className="mt-2 text-sm text-slate-500">
-              Keep availability accurate so booking analytics stay reliable.
-            </p>
-          </Link>
+          </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-3">
-              <CheckCircleIcon className="h-6 w-6 text-emerald-600" />
-              <div>
-                <p className="font-semibold text-slate-900">Completed</p>
-                <p className="text-sm text-slate-500">
-                  {overview.completed_appointments} finished bookings
-                </p>
-              </div>
-            </div>
+        {/* Bookings trend */}
+        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Booking Trend</h2>
+            <span className="text-xs text-slate-400">Last 14 days</span>
           </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-3">
-              <XCircleIcon className="h-6 w-6 text-rose-600" />
-              <div>
-                <p className="font-semibold text-slate-900">Cancelled</p>
-                <p className="text-sm text-slate-500">
-                  {overview.cancelled_appointments} cancelled bookings
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-3">
-              <BellAlertIcon className="h-6 w-6 text-sky-600" />
-              <div>
-                <p className="font-semibold text-slate-900">Needs Response</p>
-                <p className="text-sm text-slate-500">
-                  {overview.pending_appointments} pending, {dashboard.notifications.unread} unread notices
-                </p>
-              </div>
-            </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trends} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="bFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+                <XAxis dataKey="label" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <Tooltip formatter={(v, n) => [n === 'revenue' ? fmt(v) : v, n === 'revenue' ? 'Revenue' : 'Bookings']} />
+                <Area
+                  dataKey="bookings"
+                  type="monotone"
+                  stroke="#3b82f6"
+                  fill="url(#bFill)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
+
+      {/* ── Bottom row ─────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2" style={{ height: '180px' }}>
+
+        {/* Busiest days */}
+        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+          <div className="mb-1 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Busiest Days</h2>
+            <span className="text-xs text-slate-400">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={busiest_days} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="day" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <Tooltip formatter={(v) => [v, 'Appointments']} />
+                <Bar dataKey="appointments" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Services-wise bookings */}
+        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+          <div className="mb-1 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Services-wise Bookings</h2>
+            <Link to="/dashboard/services" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
+              Manage <ChevronRightIcon className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={serviceBarData} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <Tooltip formatter={(v, n) => [n === 'revenue' ? fmt(v) : v, n === 'revenue' ? 'Revenue' : 'Bookings']} />
+                <Bar dataKey="bookings" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
