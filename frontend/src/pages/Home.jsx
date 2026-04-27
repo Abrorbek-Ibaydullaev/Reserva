@@ -1,245 +1,492 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { userService } from '../services/api';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
-  CalendarDaysIcon,
-  CheckCircleIcon,
-  StarIcon,
+  ClockIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ArrowRightIcon,
-  BoltIcon,
-  ShieldCheckIcon,
+  CalendarDaysIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 
-const CATEGORIES = [
-  { name: 'Barber', emoji: '✂️', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { name: 'Nail salon', emoji: '💅', color: 'bg-pink-50 text-pink-700 border-pink-200' },
-  { name: 'Massage', emoji: '💆', color: 'bg-violet-50 text-violet-700 border-violet-200' },
-  { name: 'Makeup', emoji: '💄', color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  { name: 'Spa', emoji: '🧖', color: 'bg-teal-50 text-teal-700 border-teal-200' },
-  { name: 'Fitness', emoji: '🏋️', color: 'bg-orange-50 text-orange-700 border-orange-200' },
-  { name: 'Tattoo', emoji: '🖊️', color: 'bg-slate-50 text-slate-700 border-slate-200' },
-  { name: 'Dental', emoji: '🦷', color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
+// ── swap with your own mp4 URL or a local /public/hero.mp4 ──────────────────
+const HERO_VIDEO =
+  'https://videos.pexels.com/video-files/3571264/3571264-hd_1920_1080_25fps.mp4';
+
+const HEADLINES = [
+  ['O\'zbekistondagi eng yaxshi', 'mutaxassislarni toping'],
+  ['Sartarosh, spa, salon —', 'bir joyda, bir daqiqada'],
+  ['Qulay vaqtni tanlang,', 'bron qiling, keling'],
 ];
 
-const CITIES = ['Toshkent', 'Samarqand', 'Buxoro', 'Namangan', 'Andijon', 'Farg\'ona'];
+const CATEGORY_ICONS = {
+  Barber: '✂️', Hair: '💇', Nail: '💅', Massage: '💆',
+  Spa: '🧖', Makeup: '💄', Tattoo: '🖊️', Fitness: '🏋️',
+  Dental: '🦷', Beauty: '✨', Skin: '🧴', Brow: '👁️',
+};
+const categoryIcon = (name = '') => {
+  const k = Object.keys(CATEGORY_ICONS).find((k) =>
+    name.toLowerCase().includes(k.toLowerCase())
+  );
+  return k ? CATEGORY_ICONS[k] : '🏪';
+};
 
-const HOW_IT_WORKS = [
-  {
-    step: '1',
-    title: 'Search & Discover',
-    desc: 'Find local professionals by category, city, or service name.',
-    color: 'bg-blue-600',
-  },
-  {
-    step: '2',
-    title: 'Pick a Time',
-    desc: 'See real-time availability and choose the slot that works for you.',
-    color: 'bg-violet-600',
-  },
-  {
-    step: '3',
-    title: 'Show Up & Enjoy',
-    desc: 'Get a confirmation, receive a reminder, and just arrive.',
-    color: 'bg-emerald-600',
-  },
-];
+// ── Carousel ─────────────────────────────────────────────────────────────────
+const Carousel = ({ children }) => {
+  const ref = useRef(null);
+  const scroll = (dir) => {
+    const el = ref.current;
+    if (!el) return;
+    const card = el.querySelector('[data-card]');
+    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 260) + 16), behavior: 'smooth' });
+  };
+  return (
+    <div className="relative group/car">
+      <button
+        onClick={() => scroll(-1)}
+        className="absolute -left-5 top-1/2 z-10 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-white shadow-md border border-slate-100 hover:bg-slate-50 transition opacity-0 group-hover/car:opacity-100"
+      >
+        <ChevronLeftIcon className="h-5 w-5 text-slate-600" />
+      </button>
+      <div ref={ref} className="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {children}
+      </div>
+      <button
+        onClick={() => scroll(1)}
+        className="absolute -right-5 top-1/2 z-10 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-white shadow-md border border-slate-100 hover:bg-slate-50 transition opacity-0 group-hover/car:opacity-100"
+      >
+        <ChevronRightIcon className="h-5 w-5 text-slate-600" />
+      </button>
+    </div>
+  );
+};
 
+// ── Business card ─────────────────────────────────────────────────────────────
+const BizCard = ({ biz }) => {
+  const name =
+    biz.profile?.business_name ||
+    `${biz.first_name || ''} ${biz.last_name || ''}`.trim() ||
+    'Business';
+  const city = biz.profile?.city || '';
+  const img = biz.profile_picture || biz.gallery_images?.[0]?.image || null;
+  const services = biz.services_active || biz.services || [];
+  const reviewCount = biz.review_count || 0;
+
+  return (
+    <Link
+      to={`/business/${biz.id}`}
+      data-card
+      className="group/card flex-shrink-0 w-56 rounded-2xl overflow-hidden bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+    >
+      {/* Photo */}
+      <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-slate-200 to-slate-100">
+        {img ? (
+          <img
+            src={img}
+            alt={name}
+            className="h-full w-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center text-5xl">🏪</div>
+        )}
+        {/* Rating badge */}
+        <div className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+          <span className="text-yellow-400">★</span>
+          <span>5.0</span>
+          {reviewCount > 0 && <span className="text-white/70">· {reviewCount}</span>}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="p-3">
+        <p className="font-semibold text-sm text-slate-900 truncate">{name}</p>
+        {city && (
+          <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
+            <MapPinIcon className="h-3 w-3 flex-shrink-0" />{city}
+          </p>
+        )}
+        {services.length > 0 && (
+          <div className="mt-2 flex gap-1 flex-wrap">
+            {services.slice(0, 2).map((s) => (
+              <span key={s.id} className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 truncate max-w-[90px]">
+                {s.name}
+              </span>
+            ))}
+            {services.length > 2 && (
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">+{services.length - 2}</span>
+            )}
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+};
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 const Home = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+
   const [search, setSearch] = useState('');
-  const [city, setCity] = useState('');
+  const [where, setWhere] = useState('');
+  const [when, setWhen] = useState('');
+  const [headIdx, setHeadIdx] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [sticky, setSticky] = useState(false);
+  const [stickyIn, setStickyIn] = useState(false);
+  const [businesses, setBusinesses] = useState([]);
+  const [videoErr, setVideoErr] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (search) params.set('q', search);
-    if (city) params.set('city', city);
-    navigate(`/services?${params.toString()}`);
+  const sentinelRef = useRef(null);
+
+  // Rotate headlines
+  useEffect(() => {
+    const id = setInterval(() => {
+      setFade(false);
+      setTimeout(() => { setHeadIdx((i) => (i + 1) % HEADLINES.length); setFade(true); }, 350);
+    }, 3800);
+    return () => clearInterval(id);
+  }, []);
+
+  // Sticky nav: triggers when hero sentinel leaves viewport
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) {
+        setSticky(true);
+        requestAnimationFrame(() => setStickyIn(true));
+      } else {
+        setStickyIn(false);
+        setTimeout(() => setSticky(false), 280);
+      }
+    }, { threshold: 0 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Load businesses
+  useEffect(() => {
+    userService.getBusinesses()
+      .then((r) => setBusinesses(r.data.results || r.data || []))
+      .catch(() => {});
+  }, []);
+
+  // Group businesses by their offered service categories
+  const grouped = useMemo(() => {
+    const map = {};
+    businesses.forEach((b) => {
+      const cats = [...new Set(
+        (b.services_active || b.services || [])
+          .map((s) => s.category_name)
+          .filter(Boolean)
+      )];
+      cats.forEach((cat) => {
+        if (!map[cat]) map[cat] = [];
+        map[cat].push(b);
+      });
+    });
+    // Keep categories with ≥ 1 business, sort by count desc
+    return Object.entries(map)
+      .filter(([, arr]) => arr.length > 0)
+      .sort((a, b) => b[1].length - a[1].length);
+  }, [businesses]);
+
+  const doSearch = (e) => {
+    e?.preventDefault();
+    const p = new URLSearchParams();
+    if (search.trim()) p.set('q', search.trim());
+    if (where.trim()) p.set('city', where.trim());
+    navigate(`/services?${p.toString()}`);
   };
 
-  const handleCategory = (cat) => {
-    navigate(`/services?category=${encodeURIComponent(cat)}`);
-  };
+  const lines = HEADLINES[headIdx];
 
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 pb-20 pt-16">
-        {/* Decorative circles */}
-        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/5" />
-        <div className="absolute -left-10 bottom-0 h-64 w-64 rounded-full bg-white/5" />
-
-        <div className="relative mx-auto max-w-4xl px-4 text-center">
-          {/* Badge */}
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-            <BoltIcon className="h-4 w-4 text-yellow-300" />
-            O'zbekistondagi №1 bron qilish platformasi
+      {/* ── FIXED NAV (over hero, hidden when sticky bar shows) ─────────── */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          sticky ? 'pointer-events-none opacity-0' : 'opacity-100'
+        }`}
+      >
+        <div className="flex items-center justify-between px-6 py-4">
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-extrabold text-white tracking-tight drop-shadow">
+            Reserva
+          </Link>
+          {/* Auth */}
+          <div className="flex items-center gap-2">
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu((v) => !v)}
+                  className="flex items-center gap-2 rounded-full border border-white/30 bg-black/20 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-black/30 transition"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  {user?.first_name || 'Profile'}
+                </button>
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white shadow-xl border border-slate-100 py-1 text-sm">
+                    <Link to="/profile" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Profile</Link>
+                    <Link to="/appointments" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Appointments</Link>
+                    <button onClick={() => { logout(); setShowUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-slate-50">Logout</button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="rounded-full border border-white/40 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 transition backdrop-blur-sm">
+                  Login
+                </Link>
+                <Link to="/register" className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition shadow">
+                  List your business
+                </Link>
+              </>
+            )}
           </div>
+        </div>
+      </nav>
 
-          <h1 className="mb-5 text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
-            O'zingizga yaqin{' '}
-            <span className="text-yellow-300">professional</span>
-            <br />
-            toping va bron qiling
-          </h1>
-          <p className="mx-auto mb-8 max-w-xl text-lg text-blue-100">
-            Sartarosh, go'zallik saloni, massaj va ko'plab xizmatlar —
-            bir joyda, bir daqiqada.
-          </p>
+      {/* ── STICKY SEARCH BAR (Booksy-style, slides in on scroll) ────────── */}
+      {sticky && (
+        <div
+          className={`fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e] shadow-xl transition-all duration-280 ${
+            stickyIn ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+          }`}
+        >
+          <div className="mx-auto flex max-w-7xl items-center gap-3 px-6 py-3">
+            {/* Logo */}
+            <Link to="/" className="mr-2 text-xl font-extrabold text-white tracking-tight flex-shrink-0">
+              Reserva
+            </Link>
 
-          {/* Search form */}
-          <form
-            onSubmit={handleSearch}
-            className="mx-auto max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl"
-          >
-            <div className="flex flex-col sm:flex-row">
-              <div className="flex flex-1 items-center gap-2 border-b border-slate-100 px-4 py-3 sm:border-b-0 sm:border-r">
-                <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
+            {/* Search inputs */}
+            <form onSubmit={doSearch} className="flex flex-1 items-center gap-2 min-w-0">
+              <div className="flex flex-1 items-center gap-2 rounded-xl bg-white px-3 py-2 min-w-0">
+                <MagnifyingGlassIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
                 <input
-                  type="text"
-                  placeholder="Xizmat yoki salon nomi…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                  placeholder="Search services or businesses"
+                  className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 />
               </div>
-              <div className="flex items-center gap-2 px-4 py-3">
-                <MapPinIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full bg-transparent text-slate-600 focus:outline-none"
-                >
-                  <option value="">Barcha shaharlar</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+              <div className="flex w-40 flex-shrink-0 items-center gap-2 rounded-xl bg-white px-3 py-2">
+                <MapPinIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <input
+                  value={where}
+                  onChange={(e) => setWhere(e.target.value)}
+                  placeholder="Where?"
+                  className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                />
+              </div>
+              <div className="flex w-36 flex-shrink-0 items-center gap-2 rounded-xl bg-white px-3 py-2">
+                <ClockIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <input
+                  type="date"
+                  value={when}
+                  onChange={(e) => setWhen(e.target.value)}
+                  className="w-full bg-transparent text-sm text-slate-600 focus:outline-none"
+                />
               </div>
               <button
                 type="submit"
-                className="m-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                className="flex-shrink-0 rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
               >
-                Qidirish
+                Search
+              </button>
+            </form>
+
+            {/* Auth */}
+            <div className="flex flex-shrink-0 items-center gap-2 ml-2">
+              {isAuthenticated ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu((v) => !v)}
+                    className="flex items-center gap-1.5 text-sm text-white hover:text-slate-300 transition"
+                  >
+                    <UserCircleIcon className="h-6 w-6" />
+                    <span className="hidden md:inline">{user?.first_name}</span>
+                  </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white shadow-xl border border-slate-100 py-1 text-sm z-50">
+                      <Link to="/profile" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Profile</Link>
+                      <Link to="/appointments" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Appointments</Link>
+                      <button onClick={() => { logout(); setShowUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-slate-50">Logout</button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="text-sm text-slate-300 hover:text-white transition">Login</Link>
+                  <Link to="/register" className="rounded-lg border border-white/30 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition">
+                    List your business
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+
+        {/* Video background */}
+        {!videoErr && (
+          <video
+            autoPlay muted loop playsInline
+            onError={() => setVideoErr(true)}
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
+        )}
+        {/* Gradient fallback + overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800" />
+        <div className="absolute inset-0 bg-black/60" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center px-4 text-center">
+          {/* Rotating headline */}
+          <h1
+            className="mb-5 max-w-2xl text-5xl font-extrabold leading-tight text-white md:text-6xl"
+            style={{ opacity: fade ? 1 : 0, transform: fade ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity 0.35s ease, transform 0.35s ease' }}
+          >
+            {lines[0]}<br />
+            <span className="text-blue-400">{lines[1]}</span>
+          </h1>
+
+          <p className="mb-8 max-w-md text-lg text-slate-300">
+            Discover and book beauty &amp; wellness professionals near you
+          </p>
+
+          {/* Search bar — single field like Booksy hero */}
+          <form onSubmit={doSearch} className="w-full max-w-lg">
+            <div className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2 shadow-2xl">
+              <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search services or businesses"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 bg-transparent py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-blue-600 px-6 py-2.5 font-semibold text-white hover:bg-blue-700 transition"
+              >
+                Search
               </button>
             </div>
           </form>
+        </div>
 
-          {/* Logged-in CTA */}
-          {isAuthenticated && user?.user_type === 'customer' && (
-            <div className="mt-6">
-              <Link
-                to="/appointments"
-                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/25 transition"
+        {/* Category chips — bottom of hero */}
+        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-black/40 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-6 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {[
+              ['Hair salons', '💇'], ['Barbers', '✂️'], ['Skin care', '🧴'],
+              ['Nail salons', '💅'], ['Massage', '💆'], ['Brows & Lashes', '👁️'],
+              ['Spa', '🧖'], ['Tattoo', '🖊️'],
+            ].map(([label, icon]) => (
+              <button
+                key={label}
+                onClick={() => navigate(`/services?q=${encodeURIComponent(label)}`)}
+                className="flex-shrink-0 rounded-full border border-white/20 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/15 transition whitespace-nowrap"
               >
-                <CalendarDaysIcon className="h-4 w-4" />
-                My appointments
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-            </div>
-          )}
+                {icon} {label}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Sentinel — crossing this triggers sticky bar */}
+        <div ref={sentinelRef} className="absolute bottom-0 h-px w-full" />
       </section>
 
-      {/* ── CATEGORIES ─────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-4 py-12">
-        <h2 className="mb-6 text-center text-2xl font-bold text-slate-900">
-          Xizmat turini tanlang
-        </h2>
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.name}
-              onClick={() => handleCategory(cat.name)}
-              className={`flex flex-col items-center gap-2 rounded-2xl border p-3 text-xs font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md ${cat.color}`}
-            >
-              <span className="text-2xl">{cat.emoji}</span>
-              <span className="text-center leading-tight">{cat.name}</span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-6 text-center">
-          <Link
-            to="/services"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:underline"
-          >
-            Barcha salonlar <ArrowRightIcon className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ───────────────────────────────────────────────── */}
-      <section className="bg-slate-50 px-4 py-14">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="mb-2 text-center text-2xl font-bold text-slate-900">
-            Qanday ishlaydi?
-          </h2>
-          <p className="mb-10 text-center text-slate-500">3 oddiy qadam</p>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {HOW_IT_WORKS.map((step) => (
-              <div key={step.step} className="rounded-2xl bg-white p-6 shadow-sm text-center">
-                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold text-white ${step.color}`}>
-                  {step.step}
+      {/* ── BUSINESS CAROUSELS (grouped by category) ─────────────────────── */}
+      <div className="bg-[#f7f8fa] py-10">
+        {businesses.length === 0 ? (
+          // Skeleton
+          <div className="mx-auto max-w-6xl px-6 space-y-12">
+            {[1, 2].map((n) => (
+              <div key={n}>
+                <div className="mb-4 h-6 w-48 rounded-lg bg-slate-200 animate-pulse" />
+                <div className="flex gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="flex-shrink-0 w-56 h-52 rounded-2xl bg-slate-200 animate-pulse" />
+                  ))}
                 </div>
-                <h3 className="mb-2 font-bold text-slate-900">{step.title}</h3>
-                <p className="text-sm text-slate-500">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        ) : grouped.length === 0 ? (
+          <div className="mx-auto max-w-6xl px-6">
+            <p className="text-slate-500">No businesses available yet.</p>
+          </div>
+        ) : (
+          grouped.map(([category, bizList]) => (
+            <div key={category} className="mx-auto mb-12 max-w-6xl px-6">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">
+                  {categoryIcon(category)} {category} near you
+                </h2>
+                <button
+                  onClick={() => navigate(`/services?q=${encodeURIComponent(category)}`)}
+                  className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+                >
+                  See all <ArrowRightIcon className="h-4 w-4" />
+                </button>
+              </div>
+              <Carousel>
+                {bizList.map((b) => <BizCard key={b.id} biz={b} />)}
+              </Carousel>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="mb-2 text-2xl font-bold text-slate-900">How it works</h2>
+          <p className="mb-10 text-slate-400">Book in 3 simple steps</p>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {[
+              { n: '1', color: 'bg-blue-600', title: 'Search', desc: 'Find professionals by category, name, or location.' },
+              { n: '2', color: 'bg-violet-600', title: 'Pick a time', desc: 'See live availability and choose your slot.' },
+              { n: '3', color: 'bg-emerald-600', title: 'Show up', desc: 'Get confirmed, receive a reminder, and enjoy.' },
+            ].map((s) => (
+              <div key={s.n} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm text-center">
+                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-extrabold text-white ${s.color}`}>{s.n}</div>
+                <h3 className="mb-1.5 font-bold text-slate-900">{s.title}</h3>
+                <p className="text-sm text-slate-500">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── TRUST SIGNALS ──────────────────────────────────────────────── */}
-      <section className="px-4 py-14">
-        <div className="mx-auto max-w-4xl">
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="flex flex-col items-center gap-3 rounded-2xl bg-emerald-50 p-6 text-center">
-              <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
-              <h3 className="font-bold text-slate-900">Tasdiqlangan mutaxassislar</h3>
-              <p className="text-sm text-slate-500">Barcha salonlar va ustalar tekshirilgan</p>
-            </div>
-            <div className="flex flex-col items-center gap-3 rounded-2xl bg-amber-50 p-6 text-center">
-              <StarIcon className="h-10 w-10 text-amber-500" />
-              <h3 className="font-bold text-slate-900">Haqiqiy sharhlar</h3>
-              <p className="text-sm text-slate-500">Faqat haqiqiy mijozlar sharh qoldira oladi</p>
-            </div>
-            <div className="flex flex-col items-center gap-3 rounded-2xl bg-blue-50 p-6 text-center">
-              <ShieldCheckIcon className="h-10 w-10 text-blue-600" />
-              <h3 className="font-bold text-slate-900">Xavfsiz bron</h3>
-              <p className="text-sm text-slate-500">Ma'lumotlaringiz to'liq himoyalangan</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── BUSINESS CTA ───────────────────────────────────────────────── */}
+      {/* ── CTA ──────────────────────────────────────────────────────────── */}
       {!isAuthenticated && (
-        <section className="bg-gradient-to-r from-slate-900 to-slate-700 px-4 py-16">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="mb-3 text-3xl font-extrabold text-white">
-              Biznesingizni Reserva'ga qo'shing
-            </h2>
-            <p className="mb-8 text-slate-300">
-              Onlayn bron tizimini ulang va mijozlaringizni ko'paytiring. Bepul boshlang.
-            </p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                to="/register"
-                className="rounded-xl bg-blue-500 px-8 py-3 font-semibold text-white hover:bg-blue-400 transition"
-              >
-                Ro'yxatdan o'tish
-              </Link>
-              <Link
-                to="/services"
-                className="rounded-xl border border-white/30 px-8 py-3 font-semibold text-white hover:bg-white/10 transition"
-              >
-                Salonlarni ko'rish
-              </Link>
-            </div>
+        <section className="bg-[#1a1a2e] px-6 py-16 text-center">
+          <h2 className="mb-3 text-3xl font-extrabold text-white">Add your business to Reserva</h2>
+          <p className="mb-8 text-slate-400">Connect online booking and grow your client base. Start free.</p>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to="/register" className="rounded-xl bg-blue-600 px-8 py-3 font-semibold text-white hover:bg-blue-500 transition">
+              Register
+            </Link>
+            <Link to="/services" className="rounded-xl border border-white/20 px-8 py-3 font-semibold text-white hover:bg-white/10 transition">
+              Browse businesses
+            </Link>
           </div>
         </section>
       )}

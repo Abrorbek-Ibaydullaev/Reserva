@@ -36,6 +36,7 @@ const EmployeeProfile = () => {
     max_daily_appointments: 10,
     appointment_buffer: 15,
   });
+  const [telegram, setTelegram] = useState({ link: null, connected: false });
   const [duties, setDuties] = useState([]);
   const [dutyForm, setDutyForm] = useState({
     time_off_type: 'personal',
@@ -55,10 +56,11 @@ const EmployeeProfile = () => {
     try {
       setLoading(true);
       const storedUser = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const [meResult, employeeResult, dutiesResult] = await Promise.allSettled([
+      const [meResult, employeeResult, dutiesResult, tgResult] = await Promise.allSettled([
         userService.getMe(),
         scheduleService.getMyEmployeeProfile(),
         scheduleService.getMyTimeOff(),
+        userService.getTelegramLink(),
       ]);
 
       const me =
@@ -86,6 +88,9 @@ const EmployeeProfile = () => {
       });
       setImagePreview(me.profile_picture || '');
       setDuties(dutiesData);
+      if (tgResult.status === 'fulfilled' && tgResult.value?.data) {
+        setTelegram({ link: tgResult.value.data.link, connected: tgResult.value.data.connected });
+      }
     } catch (error) {
       console.error('Failed to load employee profile:', error);
       toast.error('Failed to load employee profile.');
@@ -101,6 +106,16 @@ const EmployeeProfile = () => {
       ),
     [duties]
   );
+
+  const handleDisconnectTelegram = async () => {
+    try {
+      await userService.disconnectTelegram();
+      setTelegram((prev) => ({ ...prev, connected: false }));
+      toast.success('Telegram disconnected.');
+    } catch {
+      toast.error('Failed to disconnect Telegram.');
+    }
+  };
 
   const handleProfileChange = (event) => {
     const { name, value } = event.target;
@@ -348,6 +363,45 @@ const EmployeeProfile = () => {
                     </div>
                   ))
                 )}
+              </div>
+            </div>
+
+            {/* Telegram connect card */}
+            <div className={`rounded-3xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {telegram.connected
+                        ? 'Connected — you\'ll receive booking alerts and a weekly summary every Sunday'
+                        : 'Connect to get booking alerts and your weekly appointment summary'}
+                    </p>
+                  </div>
+                </div>
+                {telegram.connected ? (
+                  <button
+                    type="button"
+                    onClick={handleDisconnectTelegram}
+                    className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    Disconnect
+                  </button>
+                ) : telegram.link ? (
+                  <a
+                    href={telegram.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-xl bg-[#229ed9] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1a8bbf] transition-colors"
+                  >
+                    Connect Telegram
+                  </a>
+                ) : null}
               </div>
             </div>
           </section>

@@ -1,5 +1,6 @@
 import time
 import logging
+from datetime import date
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import requests
@@ -64,7 +65,7 @@ def handle_update(update):
 
 
 class Command(BaseCommand):
-    help = 'Runs the Telegram bot using long polling'
+    help = 'Runs the Telegram bot using long polling. Sends weekly reports every Sunday at 23:59.'
 
     def handle(self, *args, **options):
         if not BOT_TOKEN:
@@ -73,8 +74,29 @@ class Command(BaseCommand):
 
         self.stdout.write('Telegram bot is running. Press Ctrl+C to stop.')
         offset = None
+        last_report_date = None  # track which Sunday we last sent reports
 
         while True:
+            # ── Weekly report scheduler ──────────────────────────────────────
+            import datetime
+            now = datetime.datetime.now()
+            # weekday() == 6 is Sunday; send at 23:59
+            if (
+                now.weekday() == 6
+                and now.hour == 23
+                and now.minute == 59
+                and last_report_date != now.date()
+            ):
+                self.stdout.write(f'Sending weekly reports ({now.date()})...')
+                try:
+                    from apps.telegram_bot.management.commands.send_weekly_reports import send_all_reports
+                    owners, emps = send_all_reports(stdout=self.stdout)
+                    self.stdout.write(f'Reports sent — {owners} owners, {emps} employees.')
+                except Exception as exc:
+                    logger.error('Weekly report error: %s', exc)
+                last_report_date = now.date()
+
+            # ── Message polling ──────────────────────────────────────────────
             updates = get_updates(offset)
             for update in updates:
                 try:

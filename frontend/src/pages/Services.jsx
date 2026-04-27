@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { userService } from '../services/api';
 import BusinessCard from '../components/Business/BusinessCard';
@@ -25,11 +26,14 @@ const getCategoryIcon = (name) => {
 };
 
 const Services = () => {
+  const [searchParams] = useSearchParams();
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [search, setSearch] = useState(() => searchParams.get('q') || '');
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => searchParams.get('category') || 'All'
+  );
 
   useEffect(() => {
     userService

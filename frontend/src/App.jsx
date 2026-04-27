@@ -74,13 +74,15 @@ function App() {
               }
             />
 
+            {/* ── Home – standalone layout (own nav + hero) ── */}
+            <Route path="/" element={<Home />} />
+
             {/* ── All other routes – main Navbar / Footer layout ── */}
             <Route
               path="/*"
               element={
                 <Layout>
                   <Routes>
-                    <Route path="/" element={<Home />} />
 
                     <Route
                       path="/login"
