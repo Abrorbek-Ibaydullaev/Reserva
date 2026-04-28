@@ -6,19 +6,18 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 const FALLBACK =
   'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
 
-const avg = (services) => {
-  const ratings = services.flatMap((s) => (s.average_rating ? [s.average_rating] : []));
-  if (!ratings.length) return null;
-  return (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-};
-
-const totalReviews = (services) =>
-  services.reduce((sum, s) => sum + (s.review_count || 0), 0);
-
 const BusinessCard = ({ business }) => {
   const services = business.services || [];
-  const rating = avg(services);
-  const reviews = totalReviews(services);
+  // Use pre-aggregated fields from BusinessSerializer; fall back to per-service computation
+  const rating = business.avg_rating != null
+    ? Number(business.avg_rating).toFixed(1)
+    : (() => {
+        const ratings = services.flatMap((s) => s.average_rating ? [s.average_rating] : []);
+        return ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : null;
+      })();
+  const reviews = business.review_count != null
+    ? business.review_count
+    : services.reduce((sum, s) => sum + (s.review_count || 0), 0);
   const city =
     business.profile?.city ||
     business.profile?.business_address ||

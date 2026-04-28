@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.db import models
+from django.db.models import Avg, Count
 from .models import UserProfile, Notification, BusinessGalleryImage
 from apps.services.models import Service
 from .serializers import (
@@ -124,7 +125,9 @@ class BusinessListView(generics.ListAPIView):
 
     def get_queryset(self):
         return User.objects.filter(user_type='business_owner').annotate(
-            services_count=models.Count('services', filter=models.Q(services__is_active=True))
+            services_count=models.Count('services', filter=models.Q(services__is_active=True)),
+            avg_rating=Avg('services__reviews__rating'),
+            review_count=Count('services__reviews', distinct=True),
         ).filter(services_count__gt=0).order_by('-services_count').prefetch_related(
             models.Prefetch('services', queryset=Service.objects.filter(is_active=True), to_attr='services_active'),
             'gallery_images',

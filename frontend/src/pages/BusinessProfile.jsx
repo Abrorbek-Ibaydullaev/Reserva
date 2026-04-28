@@ -472,6 +472,16 @@ const BusinessProfile = () => {
           </section>
 
           <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+            {/* City prominently at top — required for location filtering */}
+            {!formData.city && (
+              <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                <span className="text-xl">📍</span>
+                <div>
+                  <p className="text-sm font-semibold text-amber-800">City not set</p>
+                  <p className="text-xs text-amber-700 mt-0.5">Customers searching by city won't find you. Fill in your city below.</p>
+                </div>
+              </div>
+            )}
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-semibold text-gray-900">Business name</label>

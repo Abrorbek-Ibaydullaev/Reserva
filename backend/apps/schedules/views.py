@@ -479,10 +479,18 @@ class AvailableTimeSlotsView(APIView):
         # Generate time slots
         time_slots = []
         slot_duration = service.duration
-        current_time = business_hours.opening_time
 
         if business_hours.is_24_hours:
+            business_hours.opening_time = time(0, 0)
             business_hours.closing_time = time(23, 59)
+
+        if not business_hours.opening_time or not business_hours.closing_time:
+            return Response({
+                'slots': [],
+                'reason': 'Business hours are not fully configured for that day.',
+            }, status=status.HTTP_200_OK)
+
+        current_time = business_hours.opening_time
 
         while current_time < business_hours.closing_time:
             end_time = (datetime.combine(date, current_time) +

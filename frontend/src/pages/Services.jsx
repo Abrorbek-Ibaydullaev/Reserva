@@ -34,6 +34,7 @@ const Services = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     () => searchParams.get('category') || 'All'
   );
+  const [cityFilter] = useState(() => searchParams.get('city') || '');
 
   useEffect(() => {
     userService
@@ -54,12 +55,24 @@ const Services = () => {
   const filtered = useMemo(() => {
     let list = businesses;
 
-    if (selectedCategory !== 'All') {
+    // Filter by city (from URL param)
+    if (cityFilter.trim()) {
+      const city = cityFilter.toLowerCase();
       list = list.filter((b) =>
-        (b.services || []).some((s) => s.category_name === selectedCategory)
+        b.profile?.city?.toLowerCase().includes(city)
       );
     }
 
+    // Filter by category (checks both services and services_active arrays)
+    if (selectedCategory !== 'All') {
+      list = list.filter((b) =>
+        [...(b.services || []), ...(b.services_active || [])].some(
+          (s) => s.category_name === selectedCategory
+        )
+      );
+    }
+
+    // Filter by search text
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -67,21 +80,29 @@ const Services = () => {
           b.full_name?.toLowerCase().includes(q) ||
           b.profile?.business_name?.toLowerCase().includes(q) ||
           b.profile?.city?.toLowerCase().includes(q) ||
-          (b.services || []).some((s) => s.name?.toLowerCase().includes(q))
+          [...(b.services || []), ...(b.services_active || [])].some(
+            (s) => s.name?.toLowerCase().includes(q) || s.category_name?.toLowerCase().includes(q)
+          )
       );
     }
 
     return list;
-  }, [businesses, search, selectedCategory]);
+  }, [businesses, search, selectedCategory, cityFilter]);
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero / Search bar */}
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-2 text-3xl font-extrabold text-white">
-            Find a service near you
+          <h1 className="mb-1 text-3xl font-extrabold text-white">
+            {selectedCategory !== 'All' ? selectedCategory : 'Find a service near you'}
           </h1>
+          {cityFilter && (
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              {cityFilter}
+            </div>
+          )}
           <p className="mb-6 text-blue-100">
             Browse trusted professionals and book instantly
           </p>
@@ -138,7 +159,8 @@ const Services = () => {
               {filtered.length === 0
                 ? 'No businesses found'
                 : `${filtered.length} business${filtered.length !== 1 ? 'es' : ''} found`}
-              {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+              {selectedCategory !== 'All' && ` · ${selectedCategory}`}
+              {cityFilter && ` · ${cityFilter}`}
             </p>
             {(search || selectedCategory !== 'All') && (
               <button

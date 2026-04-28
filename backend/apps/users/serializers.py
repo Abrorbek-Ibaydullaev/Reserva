@@ -102,9 +102,11 @@ class BusinessGalleryImageSerializer(serializers.ModelSerializer):
 
 
 class BusinessSerializer(serializers.ModelSerializer):
-    """Serializer for business owners with service count."""
+    """Serializer for business owners with service count and ratings."""
     full_name = serializers.SerializerMethodField()
     services_count = serializers.SerializerMethodField()
+    avg_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     services = ServiceListSerializer(many=True, read_only=True, source='services_active')
     profile = UserProfileSerializer(read_only=True)
     gallery_images = BusinessGalleryImageSerializer(many=True, read_only=True)
@@ -112,13 +114,23 @@ class BusinessSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'full_name',
-                  'phone_number', 'profile_picture', 'services_count', 'services', 'profile', 'gallery_images')
+                  'phone_number', 'profile_picture', 'services_count',
+                  'avg_rating', 'review_count', 'services', 'profile', 'gallery_images')
 
     def get_full_name(self, obj):
         return obj.get_full_name()
 
     def get_services_count(self, obj):
         return getattr(obj, 'services_count', 0)
+
+    def get_avg_rating(self, obj):
+        val = getattr(obj, 'avg_rating', None)
+        if val is None:
+            return None
+        return round(float(val), 1)
+
+    def get_review_count(self, obj):
+        return getattr(obj, 'review_count', 0)
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

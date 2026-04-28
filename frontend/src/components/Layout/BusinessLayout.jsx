@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NotificationBell from './NotificationBell';
 import { Link, useLocation } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
@@ -292,10 +293,7 @@ const BusinessLayout = ({ children }) => {
               <QrCodeIcon className="h-4 w-4" />
               QR Code
             </button>
-            <button className="relative rounded-full p-2 text-slate-400 hover:bg-slate-100 transition-colors">
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
+            <NotificationBell />
             <div className="hidden items-center gap-2 md:flex">
               {user?.profile_picture ? (
                 <img src={user.profile_picture} alt="" className="h-8 w-8 rounded-full object-cover" />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NotificationBell from './NotificationBell';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -118,10 +119,7 @@ const EmployeeLayout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="relative rounded-full p-2 text-slate-400 hover:bg-slate-100">
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
+            <NotificationBell />
             <div className="hidden items-center gap-2 md:flex">
               {user?.profile_picture ? (
                 <img src={user.profile_picture} alt="" className="h-8 w-8 rounded-full object-cover" />
