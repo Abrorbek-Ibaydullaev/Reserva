@@ -28,7 +28,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             user = User.objects.get(email=request.data['email'])
-            serializer = UserSerializer(user)
+            serializer = UserSerializer(user, context={'request': request})
             response.data['user'] = serializer.data
         return response
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 
 User = get_user_model()
 
@@ -9,8 +10,8 @@ class Category(models.Model):
     """Service categories (Hair, Nails, Massage, etc.)"""
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
-    icon = models.CharField(max_length=50, blank=True,
-                            null=True)  # Font Awesome icon class
+    icon = models.CharField(max_length=100, blank=True, null=True)
+    color = models.CharField(max_length=20, blank=True, null=True)
     image = models.ImageField(
         upload_to='category_images/', blank=True, null=True)
     is_predefined = models.BooleanField(default=False, help_text="Pre-defined category that cannot be deleted")
@@ -42,13 +43,19 @@ class Service(models.Model):
         User, on_delete=models.CASCADE, related_name='services')
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name='services')
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
     duration = models.IntegerField(choices=DURATION_CHOICES, default=60)
     is_active = models.BooleanField(default=True)
     max_capacity = models.IntegerField(
-        default=1, help_text="Maximum number of clients for this service at one time")
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Maximum number of clients for this service at one time"
+    )
     requires_confirmation = models.BooleanField(default=False)
     cancellation_policy_hours = models.IntegerField(
         default=24, help_text="Hours before appointment when cancellation is allowed")
@@ -70,6 +77,10 @@ class Service(models.Model):
     class Meta:
         ordering = ['name']
         unique_together = ['business_owner', 'name']
+        constraints = [
+            CheckConstraint(condition=Q(price__gt=0), name='service_price_positive'),
+            CheckConstraint(condition=Q(max_capacity__gte=1), name='service_max_capacity_min_1'),
+        ]
 
     def __str__(self):
         return f"{self.name} - ${self.price}"

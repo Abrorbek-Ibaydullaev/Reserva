@@ -2,12 +2,24 @@
 import axios from 'axios';
 
 /**
- * Base API URL
- * Must NOT end with a slash
- * Example: http://localhost:8000/api
+ * Base API URL — must NOT end with a slash
  */
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
+
+/**
+ * Fix profile_picture / image URLs that come back as bare /media/... paths.
+ * Happens when the serializer was called without a request context
+ * (e.g. data loaded from localStorage after an old login).
+ */
+export const fixMediaUrl = (url) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `${BACKEND_ORIGIN}${url}`;
+    return url;
+};
 
 /**
  * Axios instance
@@ -98,7 +110,8 @@ export const authService = {
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            const userData = response.data.user || (await api.get('/users/me/')).data;
+            const raw = response.data.user || (await api.get('/users/me/')).data;
+            const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
             localStorage.setItem('user_data', JSON.stringify(userData));
         }
 
@@ -123,18 +136,23 @@ export const authService = {
 
     getCurrentUser: () => {
         const data = localStorage.getItem('user_data');
-        return data ? JSON.parse(data) : null;
+        if (!data) return null;
+        const user = JSON.parse(data);
+        // Fix stale relative media URLs from old sessions
+        return { ...user, profile_picture: fixMediaUrl(user.profile_picture) };
     },
 
     getUserProfile: async () => {
         const response = await api.get('/users/me/');
-        localStorage.setItem('user_data', JSON.stringify(response.data));
+        const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
+        localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },
 
     updateProfile: async (userData) => {
         const response = await api.put('/users/me/', userData, withPayloadConfig(userData));
-        localStorage.setItem('user_data', JSON.stringify(response.data));
+        const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
+        localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },
 

@@ -12,6 +12,11 @@ def build_absolute_media_url(request, value):
         return value
     if request:
         return request.build_absolute_uri(value)
+    # Fallback: prepend backend base URL for relative /media/ paths
+    from django.conf import settings
+    base = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    if str(value).startswith('/'):
+        return f"{base}{value}"
     return value
 
 

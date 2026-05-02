@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { userService, serviceService } from '../services/api';
+import { userService, serviceService, fixMediaUrl } from '../services/api';
 import Footer from '../components/Layout/Footer';
 import {
   MagnifyingGlassIcon,
@@ -321,7 +321,7 @@ const Carousel = ({ children }) => {
 const BizCard = ({ biz }) => {
   const name = biz.profile?.business_name || `${biz.first_name || ''} ${biz.last_name || ''}`.trim() || 'Business';
   const city = biz.profile?.city || '';
-  const img = biz.profile_picture || biz.gallery_images?.[0]?.image || null;
+  const img = fixMediaUrl(biz.profile_picture) || fixMediaUrl(biz.gallery_images?.[0]?.image) || null;
   const services = biz.services_active || biz.services || [];
   const rating = biz.avg_rating != null ? Number(biz.avg_rating).toFixed(1) : null;
   const reviewCount = biz.review_count || 0;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { fixMediaUrl } from '../../services/api';
 
 const FALLBACK =
   'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
@@ -34,8 +35,8 @@ const BusinessCard = ({ business }) => {
       <div className="relative h-44 w-full overflow-hidden bg-slate-100">
         <img
           src={
-            business.gallery_images?.[0]?.image ||
-            business.profile_picture ||
+            fixMediaUrl(business.gallery_images?.[0]?.image) ||
+            fixMediaUrl(business.profile_picture) ||
             FALLBACK
           }
           alt={business.full_name}

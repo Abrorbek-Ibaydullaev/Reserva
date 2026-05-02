@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, EmailValidator
 
 
 class UserManager(BaseUserManager):
@@ -48,12 +48,12 @@ class User(AbstractUser):
     )
 
     username = None  # Remove username field
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, max_length=254)
     user_type = models.CharField(
         max_length=20, choices=USER_TYPE_CHOICES, default='customer')
     phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,15}$',
-        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+        regex=r'^\+[1-9]\d{8,14}$',
+        message="Phone number must be in international format: '+998901234567'. 9-15 digits required."
     )
     phone_number = models.CharField(
         validators=[phone_regex], max_length=17, blank=True)
@@ -94,8 +94,14 @@ class UserProfile(models.Model):
     # For business owners
     business_name = models.CharField(max_length=255, blank=True, null=True)
     business_address = models.TextField(blank=True, null=True)
-    business_phone = models.CharField(max_length=17, blank=True, null=True)
-    business_email = models.EmailField(blank=True, null=True)
+    business_phone = models.CharField(
+        validators=[RegexValidator(
+            regex=r'^\+[1-9]\d{8,14}$',
+            message="Phone number must be in international format: '+998901234567'."
+        )],
+        max_length=17, blank=True, null=True
+    )
+    business_email = models.EmailField(max_length=254, blank=True, null=True)
     business_website = models.URLField(blank=True, null=True)
     business_description = models.TextField(blank=True, null=True)
 
