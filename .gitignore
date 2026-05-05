@@ -22,3 +22,6 @@ frontend/build/
 .idea/
 .DS_Store
 Thumbs.db
+thesis_backend_implementation
+thesis_frontend_implementation
+sample.md

@@ -39,7 +39,6 @@ const BusinessProfile = () => {
     first_name: '',
     last_name: '',
     email: '',
-    phone_number: '',
     business_name: '',
     business_address: '',
     business_phone: '',
@@ -91,10 +90,9 @@ const BusinessProfile = () => {
         first_name: me.first_name || '',
         last_name: me.last_name || '',
         email: me.email || '',
-        phone_number: me.phone_number || '',
         business_name: profile.business_name || `${me.first_name || ''} ${me.last_name || ''}`.trim(),
         business_address: profile.business_address || profile.address || '',
-        business_phone: profile.business_phone || me.phone_number || '',
+        business_phone: profile.business_phone || '',
         business_email: profile.business_email || me.email || '',
         business_website: profile.business_website || '',
         business_description: profile.business_description || '',
@@ -193,7 +191,6 @@ const BusinessProfile = () => {
       mePayload.append('first_name', formData.first_name);
       mePayload.append('last_name', formData.last_name);
       mePayload.append('email', formData.email);
-      mePayload.append('phone_number', formData.phone_number);
       if (selectedImage) {
         mePayload.append('profile_picture', selectedImage);
       }
@@ -228,7 +225,6 @@ const BusinessProfile = () => {
         first_name: updatedMe.first_name || '',
         last_name: updatedMe.last_name || '',
         email: updatedMe.email || '',
-        phone_number: updatedMe.phone_number || '',
         business_name: updatedProfile.business_name || current.business_name,
         business_address: updatedProfile.business_address || updatedProfile.address || current.business_address,
         business_phone: updatedProfile.business_phone || current.business_phone,
@@ -277,7 +273,7 @@ const BusinessProfile = () => {
       setSelectedPortfolioFiles([]);
       toast.success('Business profile updated.');
     } catch (error) {
-      console.error('Failed to update business profile:', error);
+      console.error('Failed to update business profile:', error?.response?.data || error);
       toast.error(getErrorMessage(error, 'Failed to update business profile.'));
     } finally {
       setSaving(false);

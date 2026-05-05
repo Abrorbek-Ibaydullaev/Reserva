@@ -47,26 +47,23 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     )
 
-    username = None  # Remove username field
+    username = None
+
     email = models.EmailField(unique=True, max_length=254)
     user_type = models.CharField(
         max_length=20, choices=USER_TYPE_CHOICES, default='customer')
     phone_regex = RegexValidator(
-        regex=r'^\+[1-9]\d{8,14}$',
-        message="Phone number must be in international format: '+998901234567'. 9-15 digits required."
+        regex=r'^\+998\d{9}$',
+        message="Phone number must be a valid Uzbek number: '+998901234567'."
     )
     phone_number = models.CharField(
-        validators=[phone_regex], max_length=17, blank=True)
+        validators=[phone_regex], max_length=13, blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # Stripe customer ID for payment processing
-    stripe_customer_id = models.CharField(
-        max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -96,10 +93,10 @@ class UserProfile(models.Model):
     business_address = models.TextField(blank=True, null=True)
     business_phone = models.CharField(
         validators=[RegexValidator(
-            regex=r'^\+[1-9]\d{8,14}$',
-            message="Phone number must be in international format: '+998901234567'."
+            regex=r'^\+998\d{9}$',
+            message="Phone number must be a valid Uzbek number: '+998901234567'."
         )],
-        max_length=17, blank=True, null=True
+        max_length=13, blank=True, null=True
     )
     business_email = models.EmailField(max_length=254, blank=True, null=True)
     business_website = models.URLField(blank=True, null=True)

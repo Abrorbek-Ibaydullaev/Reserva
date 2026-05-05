@@ -120,7 +120,7 @@ const CustomerProfile = () => {
       mePayload.append('first_name', formData.first_name);
       mePayload.append('last_name', formData.last_name);
       mePayload.append('email', formData.email);
-      mePayload.append('phone_number', formData.phone_number);
+      if (formData.phone_number) mePayload.append('phone_number', formData.phone_number);
       if (avatarFile) mePayload.append('profile_picture', avatarFile);
 
       await Promise.all([

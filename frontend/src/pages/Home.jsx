@@ -12,6 +12,19 @@ import {
   ArrowRightIcon,
   UserCircleIcon,
   XMarkIcon,
+  ScissorsIcon,
+  SparklesIcon,
+  EyeIcon,
+  BoltIcon,
+  CameraIcon,
+  MusicalNoteIcon,
+  WrenchIcon,
+  BriefcaseIcon,
+  AcademicCapIcon,
+  HeartIcon,
+  HandRaisedIcon,
+  PaintBrushIcon,
+  BuildingStorefrontIcon,
 } from '@heroicons/react/24/outline';
 
 // Place your video at /public/hero.mp4 — gradient shows as fallback
@@ -23,32 +36,109 @@ const HEADLINES = [
   ['Qulay vaqtni tanlang,', 'bron qiling, keling'],
 ];
 
-// SVG icons keyed by keywords found in category names (case-insensitive match)
+// ── Category icons ────────────────────────────────────────────────────────────
+// Heroicons components are used where a good match exists; clean custom SVGs
+// fill the gaps. All custom SVGs use strokeWidth="1.5" and strokeLinejoin="round"
+// to match the Heroicons outline style.
+
+const IC = (svg) => svg; // identity — keeps entries readable
+
+const ICON_BARBER = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="10" width="16" height="4" rx="2"/>
+    <path d="M6 10V7a1 1 0 011-1h10a1 1 0 011 1v3"/>
+    <path d="M7 6V5M10 6V5M14 6V5M17 6V5"/>
+    <path d="M4 14l-2 3M20 14l2 3"/>
+  </svg>
+);
+
+const ICON_NAIL = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 21V9.5A1.5 1.5 0 0111.5 8h1A1.5 1.5 0 0114 9.5V21a1 1 0 01-1 1h-2a1 1 0 01-1-1z"/>
+    <path d="M10 9V6h4v3"/>
+    <path d="M11 6V3h2v3"/>
+    <path d="M12 12v5"/>
+  </svg>
+);
+
+const ICON_SPA = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22v-8"/>
+    <path d="M12 14c0 0-5.5-1.5-6.5-6.5C8 7.5 10.5 9 12 14z"/>
+    <path d="M12 14c0 0 5.5-1.5 6.5-6.5C16 7.5 13.5 9 12 14z"/>
+    <path d="M12 14c0 0-2-5.5 0-10 2 4.5 0 10 0 10z"/>
+    <path d="M9 21c1-.7 1.8-1 3-1s2 .3 3 1"/>
+  </svg>
+);
+
+const ICON_DENTAL = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 4C7 4 3.5 6.5 3.5 11c0 3 1 4.5 2 6 1 1.5 1.5 4 3 4s2.5-3.5 3.5-3.5S14 21 15.5 21s2-2.5 3-4c1-1.5 2-3 2-6C20.5 6.5 17 4 15 4c-1.5 0-2.5.8-3 .8S10.5 4 9 4z"/>
+    <path d="M9 4c0 0 1.5 2 3 2s3-2 3-2"/>
+  </svg>
+);
+
+const ICON_DUMBBELL = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6.5 6v12M17.5 6v12"/>
+    <path d="M4 8.5v7M20 8.5v7"/>
+    <path d="M6.5 12h11"/>
+  </svg>
+);
+
+const ICON_PAW = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8.5" cy="5.5" r="1.8"/>
+    <circle cx="15.5" cy="5.5" r="1.8"/>
+    <circle cx="4.8" cy="11" r="1.8"/>
+    <circle cx="19.2" cy="11" r="1.8"/>
+    <path d="M12 22c-4 0-7-2-5.5-5.5C7.5 14 9.5 13 12 13s4.5 1 5.5 3.5C19 20 16 22 12 22z"/>
+  </svg>
+);
+
+const ICON_CLEAN = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 21l7-7"/>
+    <path d="M10 14l9-9-4-4-9 9 4 4z"/>
+    <path d="M14 5l4 4"/>
+    <path d="M3 21c1.5 0 3-1 3-2.5S5 16 6.5 16 9 17.5 9 19"/>
+  </svg>
+);
+
+const ICON_CAR = IC(
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 17H3v-4l3-7h12l3 7v4h-2"/>
+    <circle cx="7.5" cy="17" r="2.5"/>
+    <circle cx="16.5" cy="17" r="2.5"/>
+    <path d="M5 13h14"/>
+    <path d="M9 6l-1 7M15 6l1 7"/>
+  </svg>
+);
+
 const CAT_SVG_MAP = [
-  { keys: ['hair'],         svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 3C5 3 3 8 3 13s2 7 5 8"/><path d="M19 3C19 3 21 8 21 13s-2 7-5 8"/><path d="M9 14c0-2 6-2 6 0s-2 4-3 4-3-2-3-4z"/><path d="M9 7h6"/></svg> },
-  { keys: ['barber'],       svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="7.5" cy="16.5" r="2.5"/><path d="M10 7.5L20 12L10 16.5"/></svg> },
-  { keys: ['skin','beauty','makeup'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="9" y="2" width="6" height="14" rx="3"/><path d="M7 16h10l-1 6H8z"/></svg> },
-  { keys: ['nail'],         svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M7 14h10l-1 8H8z"/></svg> },
-  { keys: ['massage'],      svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1"/><path d="M4 9s1-1 4-1 5 2 8 2 4-1 4-1"/><circle cx="12" cy="5" r="2"/></svg> },
-  { keys: ['brow','lash'],  svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M12 5V3M17 7l1.5-1.5M7 7L5.5 5.5"/></svg> },
-  { keys: ['spa','wellness','yoga','holistic','therapy'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M12 22C6 22 3 17 3 12c3 0 5 1 9 5 4-4 6-5 9-5 0 5-3 10-9 10z"/><path d="M12 17V9M12 9C12 6 10 4 8 3c0 3 1 5 4 6zM12 9c0-3 2-5 4-6 0 3-1 5-4 6z"/></svg> },
-  { keys: ['tattoo'],       svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M4 20L16 8"/><circle cx="17.5" cy="6.5" r="2"/><path d="M19.5 4.5L21 3"/><path d="M8 20 q4-6 10-8"/></svg> },
-  { keys: ['dental'],       svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M8 3C5 3 3 6 3 9c0 2 1 4 2 5 1 2 2 7 3 7s2-4 4-4 3 4 4 4 2-5 3-7c1-1 2-3 2-5 0-3-2-6-5-6-2 0-3 1-4 1s-2-1-4-1z"/></svg> },
-  { keys: ['fitness','gym','training','diet'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="2" y="10" width="4" height="4" rx="1"/><rect x="18" y="10" width="4" height="4" rx="1"/><path d="M6 12h12M8 8v8M16 8v8"/></svg> },
-  { keys: ['pet','groo'],   svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><ellipse cx="7" cy="5" rx="2" ry="3"/><ellipse cx="17" cy="5" rx="2" ry="3"/><path d="M12 11c-4 0-7 3-5 7s8 5 10 0-1-7-5-7z"/></svg> },
-  { keys: ['health'],       svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M12 21C12 21 3 14 3 8a5 5 0 019-3 5 5 0 019 3c0 6-9 13-9 13z"/><path d="M9 12h6M12 9v6"/></svg> },
-  { keys: ['photo'],        svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="2" y="6" width="20" height="15" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 6V4h8v2"/></svg> },
-  { keys: ['music','lesson'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> },
-  { keys: ['clean'],        svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg> },
-  { keys: ['electr'],       svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg> },
-  { keys: ['plumb'],        svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3-3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0z"/><path d="M3 16.6l8.4-8.4 4 4L7 20.6A2.8 2.8 0 013 16.6z"/></svg> },
-  { keys: ['account','legal','consult','financ'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> },
-  { keys: ['educ','school'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M2 8v8M22 8v8M6 10.5v5a6 6 0 0012 0v-5"/></svg> },
-  { keys: ['car','detail','auto'], svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5"/></svg> },
+  { keys: ['hair'],                              svg: <ScissorsIcon /> },
+  { keys: ['barber'],                            svg: ICON_BARBER },
+  { keys: ['skin', 'beauty', 'makeup'],          svg: <SparklesIcon /> },
+  { keys: ['nail'],                              svg: ICON_NAIL },
+  { keys: ['massage'],                           svg: <HandRaisedIcon /> },
+  { keys: ['brow', 'lash'],                      svg: <EyeIcon /> },
+  { keys: ['spa', 'wellness', 'yoga', 'holistic', 'therapy'], svg: ICON_SPA },
+  { keys: ['tattoo'],                            svg: <PaintBrushIcon /> },
+  { keys: ['dental'],                            svg: ICON_DENTAL },
+  { keys: ['fitness', 'gym', 'training', 'diet'], svg: ICON_DUMBBELL },
+  { keys: ['pet', 'groo'],                       svg: ICON_PAW },
+  { keys: ['health'],                            svg: <HeartIcon /> },
+  { keys: ['photo'],                             svg: <CameraIcon /> },
+  { keys: ['music', 'lesson'],                   svg: <MusicalNoteIcon /> },
+  { keys: ['clean'],                             svg: ICON_CLEAN },
+  { keys: ['electr'],                            svg: <BoltIcon /> },
+  { keys: ['plumb'],                             svg: <WrenchIcon /> },
+  { keys: ['account', 'legal', 'consult', 'financ'], svg: <BriefcaseIcon /> },
+  { keys: ['educ', 'school'],                    svg: <AcademicCapIcon /> },
+  { keys: ['car', 'detail', 'auto'],             svg: ICON_CAR },
 ];
 
-// Default icon for categories that don't match any keyword
-const DEFAULT_SVG = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
+const DEFAULT_SVG = <BuildingStorefrontIcon />;
 
 const getCatSvg = (name = '') => {
   const n = name.toLowerCase();
@@ -833,7 +923,7 @@ const Home = () => {
       )}
 
       {/* ── HERO — ~65vh, NOT full screen ──────────────────────────────── */}
-      <section className="relative h-[65vh] min-h-[500px] max-h-[700px] flex flex-col overflow-hidden">
+      <section className="relative h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
 
         {/* Video */}
         {!videoErr && (
@@ -879,7 +969,7 @@ const Home = () => {
               )}
             </span>
           </h1>
-          <p className="mb-7 text-base text-white/70">Discover and book beauty &amp; wellness professionals near you</p>
+          <p className="mb-7 text-base text-white/70">Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering</p>
 
           {/* Search bar — single field like Booksy */}
           <form onSubmit={doSearch} className="w-full max-w-xl">

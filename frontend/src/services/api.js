@@ -251,9 +251,9 @@ export const scheduleService = {
  */
 export const userService = {
     getMe: () => api.get('/users/me/'),
-    updateMe: (data) => api.put('/users/me/', data, withPayloadConfig(data)),
+    updateMe: (data) => api.patch('/users/me/', data, withPayloadConfig(data)),
     getProfile: () => api.get('/users/profile/'),
-    updateProfile: (data) => api.put('/users/profile/', data, withPayloadConfig(data)),
+    updateProfile: (data) => api.patch('/users/profile/', data, withPayloadConfig(data)),
     getGalleryImages: () => api.get('/users/gallery/'),
     uploadGalleryImage: (data) => api.post('/users/gallery/', data, withPayloadConfig(data)),
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),

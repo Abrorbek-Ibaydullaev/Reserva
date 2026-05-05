@@ -77,29 +77,30 @@ function App() {
             {/* ── Home – standalone layout (own nav + hero) ── */}
             <Route path="/" element={<Home />} />
 
+            {/* ── Auth pages – no layout wrapper ── */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+
             {/* ── All other routes – main Navbar / Footer layout ── */}
             <Route
               path="/*"
               element={
                 <Layout>
                   <Routes>
-
-                    <Route
-                      path="/login"
-                      element={
-                        <PublicRoute>
-                          <Login />
-                        </PublicRoute>
-                      }
-                    />
-                    <Route
-                      path="/register"
-                      element={
-                        <PublicRoute>
-                          <Register />
-                        </PublicRoute>
-                      }
-                    />
 
                     <Route path="/services" element={<Services />} />
                     <Route path="/business/:businessId" element={<BusinessDetail />} />

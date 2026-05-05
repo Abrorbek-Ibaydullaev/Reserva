@@ -144,7 +144,7 @@ const EmployeeProfile = () => {
       mePayload.append('first_name', profileData.first_name);
       mePayload.append('last_name', profileData.last_name);
       mePayload.append('email', profileData.email);
-      mePayload.append('phone_number', profileData.phone_number);
+      if (profileData.phone_number) mePayload.append('phone_number', profileData.phone_number);
       if (selectedImage) {
         mePayload.append('profile_picture', selectedImage);
       }
