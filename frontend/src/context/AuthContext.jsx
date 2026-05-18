@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     authService.logout();
     clearAuthData();
-    navigate('/login');
+    navigate('/');
   };
 
   return (

@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # cloudinary_storage must come BEFORE django.contrib.staticfiles
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
 
     # Third party
     'rest_framework',
@@ -168,13 +171,28 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ---------------------------------------------------------------------------
+# Cloudinary — media storage for production
+# ---------------------------------------------------------------------------
+_CLOUDINARY_CLOUD_NAME = _env('CLOUDINARY_CLOUD_NAME', required=True)
+_CLOUDINARY_API_KEY = _env('CLOUDINARY_API_KEY', required=True)
+_CLOUDINARY_API_SECRET = _env('CLOUDINARY_API_SECRET', required=True)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': _CLOUDINARY_CLOUD_NAME,
+    'API_KEY': _CLOUDINARY_API_KEY,
+    'API_SECRET': _CLOUDINARY_API_SECRET,
+}
+
 STORAGES = {
-    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    # All model FileField / ImageField uploads go to Cloudinary
+    'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},
+    # Static files still served by WhiteNoise
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = f'https://res.cloudinary.com/{_CLOUDINARY_CLOUD_NAME}/'
+MEDIA_ROOT = BASE_DIR / 'media'  # kept for local fallback / migration scripts
 
 # ---------------------------------------------------------------------------
 # Custom user model
