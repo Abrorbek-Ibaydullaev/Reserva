@@ -101,11 +101,12 @@ api.interceptors.response.use(
  * =========================
  */
 export const authService = {
-    login: async (email, password) => {
-        const response = await api.post('/auth/login/', {
-            email,
-            password,
-        });
+    login: async (email, password, recaptchaToken = null) => {
+        const payload = { email, password };
+        if (recaptchaToken) {
+            payload.recaptcha_token = recaptchaToken;
+        }
+        const response = await api.post('/auth/login/', payload);
 
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
@@ -119,7 +120,7 @@ export const authService = {
     },
 
     register: async (userData) => {
-        return api.post('/auth/register/', {
+        const payload = {
             email: userData.email,
             password: userData.password,
             password2: userData.password2,
@@ -127,7 +128,11 @@ export const authService = {
             last_name: userData.last_name,
             phone_number: userData.phone_number || '',
             user_type: userData.user_type,
-        });
+        };
+        if (userData.recaptcha_token) {
+            payload.recaptcha_token = userData.recaptcha_token;
+        }
+        return api.post('/auth/register/', payload);
     },
 
     logout: () => {

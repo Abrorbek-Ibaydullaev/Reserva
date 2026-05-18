@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.db import models
 from django.db.models import Avg, Count
 from .models import UserProfile, Notification, BusinessGalleryImage
+from .recaptcha import verify_recaptcha
 from apps.services.models import Service
 from .serializers import (
     UserRegistrationSerializer,
@@ -22,9 +23,22 @@ User = get_user_model()
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    """Custom token obtain view to include user data in response."""
+    """Custom token obtain view to include user data in response.
+
+    Expects an optional 'recaptcha_token' field in the POST body alongside
+    the standard 'email' and 'password' fields.
+    """
 
     def post(self, request, *args, **kwargs):
+        # Verify reCAPTCHA before processing credentials
+        token = request.data.get('recaptcha_token', None)
+        remote_ip = request.META.get('REMOTE_ADDR')
+        if not verify_recaptcha(token, remote_ip):
+            return Response(
+                {'detail': 'reCAPTCHA verification failed. Please check the box and try again.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             user = User.objects.get(email=request.data['email'])

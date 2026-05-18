@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserProfile, Notification, BusinessGalleryImage
+from .recaptcha import verify_recaptcha
 from django.contrib.auth.password_validation import validate_password
 from apps.services.serializers import ServiceListSerializer
 
@@ -24,17 +25,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
+    recaptcha_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
         fields = ('email', 'password', 'password2', 'first_name',
-                  'last_name', 'phone_number', 'user_type')
+                  'last_name', 'phone_number', 'user_type', 'recaptcha_token')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
         }
 
     def validate(self, attrs):
+        # Validate reCAPTCHA before anything else
+        token = attrs.pop('recaptcha_token', None)
+        request = self.context.get('request')
+        remote_ip = request.META.get('REMOTE_ADDR') if request else None
+        if not verify_recaptcha(token, remote_ip):
+            raise serializers.ValidationError(
+                {'recaptcha': 'reCAPTCHA verification failed. Please check the box and try again.'})
+
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."})

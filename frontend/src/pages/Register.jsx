@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useAuth } from '../context/AuthContext';
 import {
   UserIcon,
@@ -13,6 +14,8 @@ import {
   PhoneIcon,
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 
 const Field = ({ label, error, children, optional }) => (
   <div>
@@ -45,11 +48,18 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [userType, setUserType] = useState('customer');
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const recaptchaRef = useRef(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password', '');
 
   const onSubmit = async (data) => {
+    if (!recaptchaToken) {
+      setError('Please complete the reCAPTCHA check before creating your account.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError('');
@@ -62,6 +72,7 @@ const Register = () => {
         last_name: data.last_name,
         phone_number: data.phone_number || '',
         user_type: userType,
+        recaptcha_token: recaptchaToken,
       };
 
       const result = await authRegister(payload);
@@ -76,6 +87,8 @@ const Register = () => {
         const msg = result.message;
         if (typeof msg === 'string') {
           setError(msg);
+        } else if (msg?.recaptcha) {
+          setError(Array.isArray(msg.recaptcha) ? msg.recaptcha[0] : msg.recaptcha);
         } else if (msg?.email) {
           setError(Array.isArray(msg.email) ? msg.email[0] : msg.email);
         } else if (msg?.detail) {
@@ -83,9 +96,13 @@ const Register = () => {
         } else {
           setError('Registration failed. Please check your details and try again.');
         }
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
       }
     } catch {
       setError('An unexpected error occurred. Please try again.');
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -310,9 +327,19 @@ const Register = () => {
               </div>
             </div>
 
+            {/* reCAPTCHA */}
+            <div>
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token)}
+                onExpired={() => setRecaptchaToken(null)}
+              />
+            </div>
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !recaptchaToken}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (

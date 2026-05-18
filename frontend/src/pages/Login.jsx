@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useAuth } from '../context/AuthContext';
 import {
   EnvelopeIcon,
@@ -11,6 +12,8 @@ import {
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,16 +21,23 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const recaptchaRef = useRef(null);
 
   const from = location.state?.from?.pathname || '/';
 
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
+    if (!recaptchaToken) {
+      setError('Please complete the reCAPTCHA check before signing in.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError('');
-      const result = await login(data.email, data.password);
+      const result = await login(data.email, data.password, recaptchaToken);
       if (result.success) {
         const fallback =
           result.user?.user_type === 'business_owner'
@@ -38,9 +48,14 @@ const Login = () => {
         navigate(from === '/' ? fallback : from, { replace: true });
       } else {
         setError('Invalid email or password. Please try again.');
+        // Reset reCAPTCHA so the user can try again
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
       }
     } catch {
       setError('An error occurred. Please try again.');
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -157,9 +172,19 @@ const Login = () => {
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
             </div>
 
+            {/* reCAPTCHA */}
+            <div>
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token)}
+                onExpired={() => setRecaptchaToken(null)}
+              />
+            </div>
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !recaptchaToken}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (

@@ -49,11 +49,14 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * LOGIN
+   * @param {string} email
+   * @param {string} password
+   * @param {string|null} recaptchaToken - reCAPTCHA v2 token from the widget
    */
-  const login = async (email, password) => {
+  const login = async (email, password, recaptchaToken = null) => {
     try {
       setLoading(true);
-      await authService.login(email, password);
+      await authService.login(email, password, recaptchaToken);
 
       const userData = authService.getCurrentUser();
       setUser(userData);
