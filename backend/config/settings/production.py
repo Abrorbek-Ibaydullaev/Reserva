@@ -99,7 +99,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Primary: DATABASE_URL env var (PostgreSQL for production)
 # Fallback: SQLite (useful for quick demo / university review)
 _db_url = _env('DATABASE_URL')
+# Railway sometimes provides DATABASE_URL with a 'railwaypostgresql://' scheme
+# which dj_database_url does not recognise, causing the full URL to be used as
+# the database NAME and triggering PostgreSQL's 63-character name limit error.
+# Normalise any Railway-specific scheme variants to the standard 'postgresql://'.
 if _db_url:
+    _db_url = _db_url.replace('railwaypostgresql://', 'postgresql://', 1)
     DATABASES = {
         'default': dj_database_url.parse(
             _db_url,
