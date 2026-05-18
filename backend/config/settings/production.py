@@ -104,17 +104,32 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
 _db_url = _env('DATABASE_URL')
 if _db_url:
-    # Crucial Fix: Standardize Railway's custom scheme so urlparse can map it properly
-    if _db_url.startswith('railwaypostgresql://'):
+    # 1. Clean out any accidental wrapping whitespaces or quotes
+    _db_url = _db_url.strip().strip('"').strip("'")
+    
+    # 2. Force change 'railwaypostgresql' to standard 'postgresql' safely
+    if 'railwaypostgresql://' in _db_url:
         _db_url = _db_url.replace('railwaypostgresql://', 'postgresql://', 1)
 
     _parsed = urlparse(_db_url)
+    
+    # 3. Defensive check: Did urlparse fail and stick everything in the path?
+    _db_name = _parsed.path.lstrip('/')
+    if '://' in _db_name or len(_db_name) > 63:
+        # Fallback split logic if urlparse still struggles with the custom scheme
+        # This splits the string by the last '/' right before the query parameters
+        _clean_path = _db_url.split('/')[-1].split('?')[0]
+        _db_name = _clean_path
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': _parsed.path.lstrip('/'),
+            'NAME': _db_name,
             'USER': _parsed.username,
             'PASSWORD': _parsed.password,
             'HOST': _parsed.hostname,
@@ -129,8 +144,7 @@ else:
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
-    }
-# ---------------------------------------------------------------------------
+    }# ---------------------------------------------------------------------------
 # Password validation
 # ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
