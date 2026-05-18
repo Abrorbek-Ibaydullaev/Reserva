@@ -101,8 +101,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Manually parse the URL to avoid dj_database_url mishandling Railway-specific
 # schemes (e.g. 'railwaypostgresql://') which caused the full URL string to be
 # used as the database NAME, exceeding PostgreSQL's 63-character limit.
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
 _db_url = _env('DATABASE_URL')
 if _db_url:
+    # Crucial Fix: Standardize Railway's custom scheme so urlparse can map it properly
+    if _db_url.startswith('railwaypostgresql://'):
+        _db_url = _db_url.replace('railwaypostgresql://', 'postgresql://', 1)
+
     _parsed = urlparse(_db_url)
     DATABASES = {
         'default': {
@@ -123,7 +130,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 # ---------------------------------------------------------------------------
 # Password validation
 # ---------------------------------------------------------------------------
