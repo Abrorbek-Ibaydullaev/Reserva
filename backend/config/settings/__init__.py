@@ -100,7 +100,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database — use DATABASE_URL (Railway) if set, otherwise fall back to SQLite
 DATABASE_URL = os.getenv('DATABASE_URL')
+# Railway sometimes provides DATABASE_URL with a 'railwaypostgresql://' scheme
+# which dj_database_url does not recognise, causing the full URL to be used as
+# the database NAME and triggering PostgreSQL's 63-character name limit error.
+# Normalise any Railway-specific scheme variants to the standard 'postgresql://'.
 if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace('railwaypostgresql://', 'postgresql://', 1)
     DATABASES = {'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
 else:
     DATABASES = {
