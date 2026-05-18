@@ -1,0 +1,5453 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "6t8ossp988u0sar82nzo23exd5fc1s02",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pChYRp06X7OQBq6lVEDyXxWxrsbklno9lXVe6tI-1bivsoSZ1YXZdTpd0uUn1I74AfVe9O51W2Zk-6KPuiqp8byuh7u30GhtfTaMLH4kDAMPAA5COBdMODIo0WWWwYbCNGO3khKZwzIKcPIJGAHoz5f3Dk3mQ:1w4nJG:miohCuoNo-mK3REwkeMignvqmJm_yYQVf3wOp4wEt1s",
+    "expire_date": "2026-04-06T21:59:42.606Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "awvwtisue2nxyamjqn2uapcl7sgipehh",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pChYRp06X7OQBq6lVEDyXxWxrsbklno9lXVe6tI-1bivsoSZ1YXZdTpd0uUn1I74AfVe9O51W2Zk-6KPuiqp8byuh7u30GhtfTaMLH4kDAMPAA5COBdMODIo0WWWwYbCNGO3khKZwzIKcPIJGAHoz5f3Dk3mQ:1wJ0jV:SF5MEBr9K4Hq49vtNr3juABQ18OSgg953o-7LS72ovE",
+    "expire_date": "2026-05-16T03:09:33.328Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "opi11vytd59gwhupxmgjrsu8fkq8jcq5",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pChYRp06X7OQBq6lVEDyXxWxrsbklno9lXVe6tI-1bivsoSZ1YXZdTpd0uUn1I74AfVe9O51W2Zk-6KPuiqp8byuh7u30GhtfTaMLH4kDAMPAA5COBdMODIo0WWWwYbCNGO3khKZwzIKcPIJGAHoz5f3Dk3mQ:1vy6zL:H8nX3V_suk6_4HY7Nfo8kBsRLj0iUdrvee2xFeK78hw",
+    "expire_date": "2026-03-19T11:35:31.190Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "pb8ntfn4zcdc00litu3eux9rzi6if2ll",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pChYRp06X7OQBq6lVEDyXxWxrsbklno9lXVe6tI-1bivsoSZ1YXZdTpd0uUn1I74AfVe9O51W2Zk-6KPuiqp8byuh7u30GhtfTaMLH4kDAMPAA5COBdMODIo0WWWwYbCNGO3khKZwzIKcPIJGAHoz5f3Dk3mQ:1wAbaO:3k2dDs9H4UUTJ3ijtbwsc_yjzMNFmTAkcwJ1BlBDTJ0",
+    "expire_date": "2026-04-22T22:41:24.650Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "wydxqeh61cdz3dt6zlsugow5qgvm2bwk",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pChYRp06X7OQBq6lVEDyXxWxrsbklno9lXVe6tI-1bivsoSZ1YXZdTpd0uUn1I74AfVe9O51W2Zk-6KPuiqp8byuh7u30GhtfTaMLH4kDAMPAA5COBdMODIo0WWWwYbCNGO3khKZwzIKcPIJGAHoz5f3Dk3mQ:1vlYip:1etkfMuzLHUdCga23R6LL55P8mAmaBDOAulKGaXLAKo",
+    "expire_date": "2026-02-12T20:34:35.959Z"
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$32Lm4kTGSwWYafzCbDlwBE$v1jRLRRaykbfuo092L/6pSZrTWkMNTWAmisufkDJ0Vg=",
+    "last_login": "2026-05-02T03:09:33.325Z",
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-29T20:13:50.867Z",
+    "email": "admin@gmail.com",
+    "user_type": "customer",
+    "phone_number": "",
+    "profile_picture": "",
+    "date_of_birth": null,
+    "is_verified": false,
+    "created_at": "2026-01-29T20:13:51.100Z",
+    "updated_at": "2026-01-29T20:13:51.100Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$rSJKkc37xxS6ga9STNgkyn$rEFNqva6N8gz3SrSINLh6hC7DUGquLn7+JWQrNuNPGc=",
+    "last_login": "2026-05-05T00:57:39.189Z",
+    "is_superuser": false,
+    "first_name": "Abrorbek",
+    "last_name": "Ibaydullaev",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-29T20:15:21.407Z",
+    "email": "abrorchikubaydullayev0428@gmail.com",
+    "user_type": "business_owner",
+    "phone_number": "902079226",
+    "profile_picture": "profile_pics/barbershop.jpeg",
+    "date_of_birth": null,
+    "is_verified": true,
+    "created_at": "2026-01-29T20:15:21.630Z",
+    "updated_at": "2026-05-05T00:04:23.423Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$9309bYnJIZiM9QkLcRfBZN$Qq8dP/e0RDCYIbLsxOPC8JB0RAEFKH4D0F8/MFfje34=",
+    "last_login": "2026-05-05T01:12:23.770Z",
+    "is_superuser": false,
+    "first_name": "John",
+    "last_name": "Doe",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-23T23:32:24.499Z",
+    "email": "johndoe@example.com",
+    "user_type": "customer",
+    "phone_number": "",
+    "profile_picture": "profile_pics/itachi-uchiha-dark-3840x2160-20031.jpg",
+    "date_of_birth": null,
+    "is_verified": false,
+    "created_at": "2026-03-23T23:32:24.721Z",
+    "updated_at": "2026-04-24T01:06:01.546Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$KYnrbiaxfsm0edTP0vA4fH$K+QfMUkxveVCJppWEPSnAsxjOWC+zl3FX5/n91ytB7U=",
+    "last_login": "2026-05-05T01:10:08.125Z",
+    "is_superuser": false,
+    "first_name": "Tim",
+    "last_name": "Cook",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-25T23:15:39.902Z",
+    "email": "tim@gmail.com",
+    "user_type": "employee",
+    "phone_number": "",
+    "profile_picture": "profile_pics/ai-generative-photo.jpg",
+    "date_of_birth": null,
+    "is_verified": true,
+    "created_at": "2026-03-25T23:15:40.123Z",
+    "updated_at": "2026-04-06T21:20:37.481Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "admin@gmail.com"
+    ],
+    "bio": null,
+    "address": null,
+    "city": null,
+    "state": null,
+    "country": null,
+    "postal_code": null,
+    "latitude": null,
+    "longitude": null,
+    "business_name": null,
+    "business_address": null,
+    "business_phone": null,
+    "business_email": null,
+    "business_website": null,
+    "business_description": null,
+    "facebook": null,
+    "instagram": null,
+    "twitter": null,
+    "linkedin": null,
+    "telegram_chat_id": null,
+    "created_at": "2026-01-29T20:13:51.101Z",
+    "updated_at": "2026-05-02T03:09:33.327Z"
+  }
+},
+{
+  "model": "users.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "bio": "new life starts from here",
+    "address": "Yunusobod 7-mavze,43",
+    "city": "Toshkent",
+    "state": "Tashkent",
+    "country": "Uzbekistan",
+    "postal_code": "170104",
+    "latitude": "41.371174",
+    "longitude": "69.266055",
+    "business_name": "New Life",
+    "business_address": "Yunusobod 7-mavze,43",
+    "business_phone": "+998902079223",
+    "business_email": "example@gmail.com",
+    "business_website": "https://example.com",
+    "business_description": "we are bringing new era to the world",
+    "facebook": "",
+    "instagram": "https://www.instagram.com/nasa?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+    "twitter": null,
+    "linkedin": null,
+    "telegram_chat_id": null,
+    "created_at": "2026-01-29T20:15:21.631Z",
+    "updated_at": "2026-05-05T00:57:39.192Z"
+  }
+},
+{
+  "model": "users.userprofile",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "bio": null,
+    "address": "",
+    "city": "",
+    "state": "",
+    "country": "",
+    "postal_code": "",
+    "latitude": null,
+    "longitude": null,
+    "business_name": null,
+    "business_address": null,
+    "business_phone": null,
+    "business_email": null,
+    "business_website": null,
+    "business_description": null,
+    "facebook": null,
+    "instagram": null,
+    "twitter": null,
+    "linkedin": null,
+    "telegram_chat_id": "1287267517",
+    "created_at": "2026-03-23T23:32:24.723Z",
+    "updated_at": "2026-05-05T01:12:23.773Z"
+  }
+},
+{
+  "model": "users.userprofile",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "tim@gmail.com"
+    ],
+    "bio": "",
+    "address": "",
+    "city": null,
+    "state": null,
+    "country": null,
+    "postal_code": null,
+    "latitude": null,
+    "longitude": null,
+    "business_name": null,
+    "business_address": "",
+    "business_phone": null,
+    "business_email": null,
+    "business_website": null,
+    "business_description": "",
+    "facebook": null,
+    "instagram": null,
+    "twitter": null,
+    "linkedin": null,
+    "telegram_chat_id": null,
+    "created_at": "2026-03-25T23:15:40.125Z",
+    "updated_at": "2026-05-05T01:10:08.129Z"
+  }
+},
+{
+  "model": "users.businessgalleryimage",
+  "pk": 4,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "image": "business_gallery/fitness.jpeg",
+    "image_type": "space",
+    "caption": null,
+    "order": 1,
+    "created_at": "2026-04-08T22:59:21.861Z"
+  }
+},
+{
+  "model": "users.businessgalleryimage",
+  "pk": 5,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "image": "business_gallery/barbershop.jpeg",
+    "image_type": "space",
+    "caption": null,
+    "order": 0,
+    "created_at": "2026-04-08T22:59:21.861Z"
+  }
+},
+{
+  "model": "users.businessgalleryimage",
+  "pk": 6,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "image": "business_gallery/barbershop_kStYUT5.jpeg",
+    "image_type": "portfolio",
+    "caption": null,
+    "order": 0,
+    "created_at": "2026-05-05T00:03:17.777Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from abrorchikubaydullayev0428@gmail.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T22:13:05.626Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T22:13:05.627Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from abrorchikubaydullayev0428@gmail.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T22:13:28.697Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T22:13:28.699Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from abrorchikubaydullayev0428@gmail.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T22:24:16.286Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T22:24:16.287Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from abrorchikubaydullayev0428@gmail.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T22:37:36.267Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T22:37:36.268Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from abrorchikubaydullayev0428@gmail.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T23:27:38.334Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T23:27:38.336Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-23T23:33:38.819Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-23T23:33:38.820Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 13,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_cancellation",
+    "title": "Appointment Cancelled",
+    "message": "Appointment #ea6d5ab6-5bcc-41ab-8b31-ea13429a9d01 has been cancelled",
+    "is_read": false,
+    "created_at": "2026-03-25T14:27:14.370Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 14,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Barbershop 77 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:16:22.040Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 15,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #72020260-b420-4ea0-9032-1670223b7d8f has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:16:22.042Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 16,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Barbershop 77 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:16:23.780Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 17,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #0a55f187-cbd7-44a3-912a-03b5a4b661df has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:16:23.781Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Buka",
+    "is_read": false,
+    "created_at": "2026-03-25T16:18:36.297Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 19,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Buka has been requested",
+    "is_read": false,
+    "created_at": "2026-03-25T16:18:36.299Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 20,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Buka",
+    "is_read": false,
+    "created_at": "2026-03-25T16:23:02.678Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 21,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Buka has been requested",
+    "is_read": false,
+    "created_at": "2026-03-25T16:23:02.679Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Buka has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:24:28.871Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 23,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #b5a1c527-2aa0-45c6-835c-5442d4cba633 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:24:28.872Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 24,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tom",
+    "is_read": false,
+    "created_at": "2026-03-25T16:52:18.265Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 25,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tom has been requested",
+    "is_read": false,
+    "created_at": "2026-03-25T16:52:18.267Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 26,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tom has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:52:57.305Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 27,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #e5ff0169-9415-4adb-866b-2ef3c92c5020 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T16:52:57.307Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 28,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tom has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:53:55.778Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 29,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #e5ff0169-9415-4adb-866b-2ef3c92c5020 has been completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:53:55.781Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 30,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Buka has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:47.210Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 31,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #b5a1c527-2aa0-45c6-835c-5442d4cba633 has been completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:47.211Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 32,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Buka has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:49.808Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 33,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #e8f769be-a072-4fc9-8b0c-eb98a047ff3f has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:49.809Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 34,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Buka has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:50.758Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 35,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #e8f769be-a072-4fc9-8b0c-eb98a047ff3f has been completed",
+    "is_read": false,
+    "created_at": "2026-03-25T18:57:50.759Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 36,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-03-26T00:39:55.466Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 37,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-03-26T00:39:55.467Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 38,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Barbershop 77 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-26T00:46:09.755Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 39,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #c9d31660-5e86-44c5-a334-32dd6ac538f3 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-03-26T00:46:09.757Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 40,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Barbershop 77 has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-03-26T00:47:04.996Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 41,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #c9d31660-5e86-44c5-a334-32dd6ac538f3 has been completed",
+    "is_read": false,
+    "created_at": "2026-03-26T00:47:04.998Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 42,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Buka",
+    "is_read": false,
+    "created_at": "2026-03-26T01:00:45.300Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 43,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Buka has been requested",
+    "is_read": false,
+    "created_at": "2026-03-26T01:00:45.301Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 44,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Kids barber",
+    "is_read": false,
+    "created_at": "2026-03-26T01:00:54.471Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 45,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Kids barber has been requested",
+    "is_read": false,
+    "created_at": "2026-03-26T01:00:54.472Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 46,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_cancellation",
+    "title": "Appointment Cancelled",
+    "message": "Appointment #ac92b1a3-2089-45dc-b1d5-22bd6b4cb784 has been cancelled",
+    "is_read": false,
+    "created_at": "2026-03-26T01:01:13.824Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 47,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_cancellation",
+    "title": "Appointment Cancelled",
+    "message": "Appointment #00f34d79-27b0-4016-ac96-74a955b3658b has been cancelled",
+    "is_read": false,
+    "created_at": "2026-03-26T01:01:15.738Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 48,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-06T14:43:23.247Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 49,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-06T14:43:23.248Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 50,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_cancellation",
+    "title": "Appointment Cancelled",
+    "message": "Appointment #dd4680ae-c2ad-4049-811d-04fe6631d60e has been cancelled",
+    "is_read": false,
+    "created_at": "2026-04-06T14:45:02.188Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 51,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tom",
+    "is_read": false,
+    "created_at": "2026-04-06T14:45:44.925Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 52,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tom has been requested",
+    "is_read": false,
+    "created_at": "2026-04-06T14:45:44.926Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 53,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tom has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-06T14:46:16.129Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 54,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #7385fec6-635a-4f7a-8802-cc7578ca8ec9 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-06T14:46:16.132Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 55,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tom has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-06T14:46:28.061Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 56,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #7385fec6-635a-4f7a-8802-cc7578ca8ec9 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-06T14:46:28.062Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 57,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-04-06T21:23:18.786Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 58,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-04-06T21:23:18.787Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 59,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-09T10:58:56.396Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 60,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-09T10:58:56.397Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 61,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tatoo has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-09T11:00:09.602Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 62,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #9a1696fb-ad59-4846-8072-98dc87d2a550 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-09T11:00:09.604Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 63,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-09T11:00:20.792Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 64,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #9a1696fb-ad59-4846-8072-98dc87d2a550 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-09T11:00:20.794Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 65,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Barbershop 77 has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T00:37:34.511Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 66,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #3cb246e3-fb4b-42f1-8918-acdb3a6785f7 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T00:37:34.513Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 67,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-24T01:12:00.305Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 68,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T01:12:00.306Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 69,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:17.918Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 70,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:17.919Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 71,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tatoo has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:48.146Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 72,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #613e2768-6701-45f9-8cba-084a43e4057a has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:48.150Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 73,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:58.575Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 74,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #613e2768-6701-45f9-8cba-084a43e4057a has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:02:58.580Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 75,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tom",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:14.965Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 76,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tom has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:14.966Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 77,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tom has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:38.084Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 78,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #22d42607-a2ee-448e-a93f-aff0e98a04d5 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:38.088Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 79,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tom has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:45.280Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 80,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #22d42607-a2ee-448e-a93f-aff0e98a04d5 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:18:45.282Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 81,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Kids barber",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:11.849Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 82,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Kids barber has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:11.850Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 83,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Kids barber has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:27.490Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 84,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #27143a71-a9c6-4550-8859-86004b469ee3 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:27.493Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 85,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Kids barber has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:29.308Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 86,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #27143a71-a9c6-4550-8859-86004b469ee3 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:29.309Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 87,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:40.502Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 88,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #ef482b79-6180-4cb7-9648-9ef1055a1bc2 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:21:40.503Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 89,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tom",
+    "is_read": false,
+    "created_at": "2026-04-24T02:37:24.326Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 90,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tom has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:37:24.329Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 91,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tom has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:37:51.875Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 92,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #13bf2089-0e3a-4e3f-8002-7046aa91777a has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:37:51.876Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 93,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tom has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:38:00.782Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 94,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #13bf2089-0e3a-4e3f-8002-7046aa91777a has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:38:00.784Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 95,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:16.085Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 96,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:16.087Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 97,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Barbershop 77 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:43.525Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 98,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #a9655a74-ca90-4cdc-a6b7-c8f9db6022fd has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:43.529Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 99,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Barbershop 77 has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:49.921Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 100,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #a9655a74-ca90-4cdc-a6b7-c8f9db6022fd has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:39:49.923Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 101,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:24.273Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 102,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:24.277Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 103,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Barbershop 77 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:40.840Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 104,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #136e6bf9-59dc-4a21-bbb8-53e85f4fff92 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:40.842Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 105,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Barbershop 77 has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:48.469Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 106,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #136e6bf9-59dc-4a21-bbb8-53e85f4fff92 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-24T02:51:48.473Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 107,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Kids barber",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:07.031Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 108,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Kids barber has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:07.033Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 109,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Kids barber has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:36.161Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 110,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #cc00bee3-6c47-4bde-a1e6-6baafb094fe7 has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:36.163Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 111,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Kids barber has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:52.774Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 112,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #cc00bee3-6c47-4bde-a1e6-6baafb094fe7 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:10:52.777Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 113,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tom",
+    "is_read": false,
+    "created_at": "2026-04-27T22:45:46.308Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 114,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tom has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T22:45:46.309Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 115,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tom has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:46:03.396Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 116,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #e92888f5-88e3-4d19-83ff-79f6a86f70da has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:46:03.398Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 117,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tom has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:46:06.500Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 118,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #e92888f5-88e3-4d19-83ff-79f6a86f70da has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:46:06.501Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 119,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-04-27T22:51:00.796Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 120,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T22:51:00.799Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 121,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Barbershop 77 has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:51:19.842Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 122,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #778ed8b8-69e0-4fcb-b795-9e8ac152e406 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:51:19.846Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 123,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-27T22:58:04.441Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 124,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T22:58:04.443Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 125,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:58:17.549Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 126,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #fda05304-5adb-4923-8ada-f2ba9eefe616 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T22:58:17.551Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 127,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Kids barber",
+    "is_read": false,
+    "created_at": "2026-04-27T23:02:39.216Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 128,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Kids barber has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T23:02:39.221Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 129,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Kids barber has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T23:03:32.068Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 130,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #214d67e8-9a4f-489b-a7cc-fc888b641e69 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T23:03:32.073Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 131,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-27T23:07:09.002Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 132,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-27T23:07:09.003Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 133,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-27T23:08:23.438Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 134,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #f3e17d4e-0369-46b3-8810-75bfdaa79ba8 has been completed",
+    "is_read": false,
+    "created_at": "2026-04-27T23:08:23.440Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 135,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Kids barber",
+    "is_read": false,
+    "created_at": "2026-04-29T00:07:17.026Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 136,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Kids barber has been requested",
+    "is_read": false,
+    "created_at": "2026-04-29T00:07:17.027Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 137,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Tatoo",
+    "is_read": false,
+    "created_at": "2026-04-29T00:08:49.497Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 138,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Tatoo has been requested",
+    "is_read": false,
+    "created_at": "2026-04-29T00:08:49.498Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 139,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Tatoo has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-29T00:09:29.843Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 140,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmed",
+    "title": "Appointment Confirmed",
+    "message": "Appointment #4211a270-6b18-43d6-8d97-9af705eeb04c has been confirmed",
+    "is_read": false,
+    "created_at": "2026-04-29T00:09:29.848Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 141,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Your appointment for Tatoo has been marked as completed",
+    "is_read": false,
+    "created_at": "2026-04-29T00:09:36.552Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 142,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_completed",
+    "title": "Appointment Completed",
+    "message": "Appointment #4211a270-6b18-43d6-8d97-9af705eeb04c has been completed",
+    "is_read": false,
+    "created_at": "2026-04-29T00:09:36.556Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 143,
+  "fields": {
+    "user": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "New Appointment Request",
+    "message": "New appointment request from johndoe@example.com for Barbershop 77",
+    "is_read": false,
+    "created_at": "2026-05-05T00:47:28.219Z"
+  }
+},
+{
+  "model": "users.notification",
+  "pk": 144,
+  "fields": {
+    "user": [
+      "johndoe@example.com"
+    ],
+    "notification_type": "appointment_confirmation",
+    "title": "Appointment Requested",
+    "message": "Your appointment for Barbershop 77 has been requested",
+    "is_read": false,
+    "created_at": "2026-05-05T00:47:28.222Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 1,
+  "fields": {
+    "name": "Hair Salon",
+    "description": "Hair cutting, styling, and coloring",
+    "icon": "fas fa-cut",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.831Z",
+    "updated_at": "2026-01-29T20:29:10.831Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 2,
+  "fields": {
+    "name": "Nails",
+    "description": "Manicure and pedicure services",
+    "icon": "fas fa-nail",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.832Z",
+    "updated_at": "2026-01-29T20:29:10.832Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 3,
+  "fields": {
+    "name": "Massage",
+    "description": "Therapeutic and relaxation massage",
+    "icon": "fas fa-spa",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.833Z",
+    "updated_at": "2026-01-29T20:29:10.833Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 4,
+  "fields": {
+    "name": "Fitness",
+    "description": "Personal training and fitness classes",
+    "icon": "fas fa-dumbbell",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.834Z",
+    "updated_at": "2026-01-29T20:29:10.834Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 5,
+  "fields": {
+    "name": "Yoga",
+    "description": "Yoga classes and instruction",
+    "icon": "fas fa-om",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.835Z",
+    "updated_at": "2026-01-29T20:29:10.835Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 6,
+  "fields": {
+    "name": "Health & Wellness",
+    "description": "Medical and wellness services",
+    "icon": "fas fa-heartbeat",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.836Z",
+    "updated_at": "2026-01-29T20:29:10.836Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 7,
+  "fields": {
+    "name": "Dental",
+    "description": "Dental care and orthodontics",
+    "icon": "fas fa-tooth",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.836Z",
+    "updated_at": "2026-01-29T20:29:10.836Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 8,
+  "fields": {
+    "name": "Therapy",
+    "description": "Mental health and counseling",
+    "icon": "fas fa-brain",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.837Z",
+    "updated_at": "2026-01-29T20:29:10.837Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 9,
+  "fields": {
+    "name": "Education",
+    "description": "Tutoring and educational services",
+    "icon": "fas fa-graduation-cap",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.838Z",
+    "updated_at": "2026-01-29T20:29:10.838Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 10,
+  "fields": {
+    "name": "Music Lessons",
+    "description": "Music instruction and coaching",
+    "icon": "fas fa-music",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.839Z",
+    "updated_at": "2026-01-29T20:29:10.839Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 11,
+  "fields": {
+    "name": "Photography",
+    "description": "Photo sessions and editing",
+    "icon": "fas fa-camera",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.839Z",
+    "updated_at": "2026-01-29T20:29:10.839Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 12,
+  "fields": {
+    "name": "Home Cleaning",
+    "description": "Cleaning and housekeeping",
+    "icon": "fas fa-broom",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.840Z",
+    "updated_at": "2026-01-29T20:29:10.840Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 13,
+  "fields": {
+    "name": "Plumbing",
+    "description": "Plumbing repairs and installation",
+    "icon": "fas fa-wrench",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.841Z",
+    "updated_at": "2026-01-29T20:29:10.841Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 14,
+  "fields": {
+    "name": "Electrical",
+    "description": "Electrical repairs and installation",
+    "icon": "fas fa-bolt",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.842Z",
+    "updated_at": "2026-01-29T20:29:10.842Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 15,
+  "fields": {
+    "name": "Consulting",
+    "description": "Business and professional consulting",
+    "icon": "fas fa-briefcase",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.842Z",
+    "updated_at": "2026-01-29T20:29:10.842Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 16,
+  "fields": {
+    "name": "Legal Services",
+    "description": "Legal advice and representation",
+    "icon": "fas fa-gavel",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.843Z",
+    "updated_at": "2026-01-29T20:29:10.843Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 17,
+  "fields": {
+    "name": "Accounting",
+    "description": "Accounting and tax services",
+    "icon": "fas fa-calculator",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.844Z",
+    "updated_at": "2026-01-29T20:29:10.844Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 18,
+  "fields": {
+    "name": "Beauty & Makeup",
+    "description": "Makeup application and beauty services",
+    "icon": "fas fa-makeup",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.844Z",
+    "updated_at": "2026-01-29T20:29:10.844Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 19,
+  "fields": {
+    "name": "Pet Grooming",
+    "description": "Pet grooming and care",
+    "icon": "fas fa-dog",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.845Z",
+    "updated_at": "2026-01-29T20:29:10.845Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 20,
+  "fields": {
+    "name": "Car Detailing",
+    "description": "Car cleaning and detailing",
+    "icon": "fas fa-car",
+    "color": null,
+    "image": "",
+    "is_predefined": true,
+    "created_at": "2026-01-29T20:29:10.846Z",
+    "updated_at": "2026-01-29T20:29:10.846Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 1,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "category": 1,
+    "name": "Barbershop 77",
+    "description": "new eras is coming up now tomorew but we are always be legend mafia you are die",
+    "price": "32.00",
+    "duration": 15,
+    "is_active": true,
+    "max_capacity": 1,
+    "requires_confirmation": false,
+    "cancellation_policy_hours": 24,
+    "thumbnail": "service_thumbnails/barbershop.jpeg",
+    "images": [],
+    "slug": "barbershop-77",
+    "meta_title": null,
+    "meta_description": "",
+    "created_at": "2026-01-29T20:32:48.978Z",
+    "updated_at": "2026-02-01T15:07:36.381Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 2,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "category": 19,
+    "name": "Tom",
+    "description": "tommy hilfiger is genetical mutation is now",
+    "price": "100.00",
+    "duration": 45,
+    "is_active": true,
+    "max_capacity": 1,
+    "requires_confirmation": false,
+    "cancellation_policy_hours": 24,
+    "thumbnail": "service_thumbnails/pet_grooming.jpeg",
+    "images": [],
+    "slug": "tommy",
+    "meta_title": null,
+    "meta_description": "",
+    "created_at": "2026-01-29T20:36:30.589Z",
+    "updated_at": "2026-02-01T15:08:04.388Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 4,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "category": 1,
+    "name": "Kids barber",
+    "description": "Hair cuts for only kids",
+    "price": "10.00",
+    "duration": 30,
+    "is_active": true,
+    "max_capacity": 1,
+    "requires_confirmation": false,
+    "cancellation_policy_hours": 24,
+    "thumbnail": "",
+    "images": [],
+    "slug": "kids-barber",
+    "meta_title": null,
+    "meta_description": null,
+    "created_at": "2026-03-26T00:59:22.627Z",
+    "updated_at": "2026-03-26T00:59:22.627Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 5,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "category": 18,
+    "name": "Tatoo",
+    "description": "marvel tatoos",
+    "price": "120.00",
+    "duration": 90,
+    "is_active": true,
+    "max_capacity": 1,
+    "requires_confirmation": false,
+    "cancellation_policy_hours": 24,
+    "thumbnail": "",
+    "images": [],
+    "slug": "tatoo",
+    "meta_title": null,
+    "meta_description": null,
+    "created_at": "2026-03-26T01:09:11.931Z",
+    "updated_at": "2026-03-26T01:09:11.931Z"
+  }
+},
+{
+  "model": "services.serviceimage",
+  "pk": 1,
+  "fields": {
+    "service": 1,
+    "image": "service_images/barbershop.jpeg",
+    "caption": null,
+    "order": 0,
+    "created_at": "2026-01-29T20:32:48.979Z"
+  }
+},
+{
+  "model": "services.serviceimage",
+  "pk": 2,
+  "fields": {
+    "service": 2,
+    "image": "service_images/pet_grooming.jpeg",
+    "caption": null,
+    "order": 0,
+    "created_at": "2026-01-29T20:36:30.590Z"
+  }
+},
+{
+  "model": "services.servicereview",
+  "pk": 1,
+  "fields": {
+    "service": 1,
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "rating": 5,
+    "comment": "great service",
+    "is_verified": false,
+    "created_at": "2026-04-24T01:33:15.480Z",
+    "updated_at": "2026-04-24T01:33:15.480Z"
+  }
+},
+{
+  "model": "services.servicereview",
+  "pk": 2,
+  "fields": {
+    "service": 5,
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "rating": 5,
+    "comment": "awesome service",
+    "is_verified": false,
+    "created_at": "2026-04-24T02:22:24.175Z",
+    "updated_at": "2026-04-24T02:22:24.176Z"
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 1,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 0,
+    "is_open": true,
+    "opening_time": "09:00:00",
+    "closing_time": "18:00:00",
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 2,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 1,
+    "is_open": true,
+    "opening_time": "09:00:00",
+    "closing_time": "18:00:00",
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 3,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 2,
+    "is_open": true,
+    "opening_time": "09:00:00",
+    "closing_time": "18:00:00",
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 4,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 3,
+    "is_open": true,
+    "opening_time": "09:00:00",
+    "closing_time": "18:00:00",
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 5,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 4,
+    "is_open": true,
+    "opening_time": "09:00:00",
+    "closing_time": "18:00:00",
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 6,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 5,
+    "is_open": false,
+    "opening_time": null,
+    "closing_time": null,
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.businesshours",
+  "pk": 7,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "day_of_week": 6,
+    "is_open": false,
+    "opening_time": null,
+    "closing_time": null,
+    "is_24_hours": false
+  }
+},
+{
+  "model": "schedules.employee",
+  "pk": 1,
+  "fields": {
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "user": [
+      "tim@gmail.com"
+    ],
+    "position": "Staff",
+    "bio": "",
+    "is_active": true,
+    "color_code": "#4A90E2",
+    "max_daily_appointments": 10,
+    "appointment_buffer": 15,
+    "created_at": "2026-03-25T23:15:40.133Z",
+    "updated_at": "2026-04-06T21:20:37.220Z",
+    "services": [
+      1
+    ]
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 0,
+    "is_working": true,
+    "start_time": "09:00:00",
+    "end_time": "18:00:00"
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 2,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 1,
+    "is_working": true,
+    "start_time": "09:00:00",
+    "end_time": "18:00:00"
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 3,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 2,
+    "is_working": true,
+    "start_time": "09:00:00",
+    "end_time": "17:00:00"
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 4,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 3,
+    "is_working": true,
+    "start_time": "09:00:00",
+    "end_time": "18:00:00"
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 5,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 4,
+    "is_working": true,
+    "start_time": "09:00:00",
+    "end_time": "18:00:00"
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 6,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 5,
+    "is_working": false,
+    "start_time": null,
+    "end_time": null
+  }
+},
+{
+  "model": "schedules.employeeweeklyhours",
+  "pk": 7,
+  "fields": {
+    "employee": 1,
+    "day_of_week": 6,
+    "is_working": false,
+    "start_time": null,
+    "end_time": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 1,
+  "fields": {
+    "appointment_number": "72020260-b420-4ea0-9032-1670223b7d8f",
+    "customer": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-23",
+    "start_time": "09:15:00",
+    "end_time": "09:30:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T22:13:05.622Z",
+    "updated_at": "2026-03-25T16:16:35.518Z",
+    "confirmed_at": "2026-03-25T16:16:22.030Z",
+    "cancelled_at": "2026-03-25T16:16:35.518Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 2,
+  "fields": {
+    "appointment_number": "0a55f187-cbd7-44a3-912a-03b5a4b661df",
+    "customer": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-23",
+    "start_time": "09:00:00",
+    "end_time": "09:15:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T22:13:28.692Z",
+    "updated_at": "2026-03-25T16:16:40.410Z",
+    "confirmed_at": "2026-03-25T16:16:23.778Z",
+    "cancelled_at": "2026-03-25T16:16:40.410Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 3,
+  "fields": {
+    "appointment_number": "332f7aee-3fbf-492f-9a02-9100a838303c",
+    "customer": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-26",
+    "start_time": "09:30:00",
+    "end_time": "09:45:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T22:24:16.281Z",
+    "updated_at": "2026-03-25T14:39:00.060Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-03-25T14:39:00.060Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 4,
+  "fields": {
+    "appointment_number": "4d7a9847-003e-46d2-9a42-821b0970c829",
+    "customer": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-23",
+    "start_time": "10:15:00",
+    "end_time": "10:30:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T22:37:36.258Z",
+    "updated_at": "2026-03-25T14:39:03.040Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-03-25T14:39:03.040Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 5,
+  "fields": {
+    "appointment_number": "b95110b6-77b1-464b-9726-83bde24fb1d5",
+    "customer": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-23",
+    "start_time": "09:30:00",
+    "end_time": "09:45:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T23:27:38.330Z",
+    "updated_at": "2026-03-25T14:39:04.789Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-03-25T14:39:04.789Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 6,
+  "fields": {
+    "appointment_number": "ea6d5ab6-5bcc-41ab-8b31-ea13429a9d01",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": null,
+    "date": "2026-03-23",
+    "start_time": "09:45:00",
+    "end_time": "10:00:00",
+    "duration": 15,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-23T23:33:38.812Z",
+    "updated_at": "2026-03-25T14:27:14.362Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-03-25T14:27:14.362Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 9,
+  "fields": {
+    "appointment_number": "e5ff0169-9415-4adb-866b-2ef3c92c5020",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 2,
+    "employee": null,
+    "date": "2026-03-25",
+    "start_time": "17:15:00",
+    "end_time": "18:00:00",
+    "duration": 45,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "100.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "100.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-25T16:52:18.260Z",
+    "updated_at": "2026-03-25T18:53:55.768Z",
+    "confirmed_at": "2026-03-25T16:52:57.293Z",
+    "cancelled_at": null,
+    "completed_at": "2026-03-25T18:53:55.768Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 10,
+  "fields": {
+    "appointment_number": "c9d31660-5e86-44c5-a334-32dd6ac538f3",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-03-26",
+    "start_time": "12:45:00",
+    "end_time": "13:00:00",
+    "duration": 15,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-26T00:39:55.458Z",
+    "updated_at": "2026-03-26T00:47:04.989Z",
+    "confirmed_at": "2026-03-26T00:46:09.734Z",
+    "cancelled_at": null,
+    "completed_at": "2026-03-26T00:47:04.989Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 12,
+  "fields": {
+    "appointment_number": "ac92b1a3-2089-45dc-b1d5-22bd6b4cb784",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 4,
+    "employee": null,
+    "date": "2026-03-26",
+    "start_time": "12:45:00",
+    "end_time": "13:15:00",
+    "duration": 30,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "10.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "10.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": "",
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-03-26T01:00:54.467Z",
+    "updated_at": "2026-03-26T01:01:13.813Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-03-26T01:01:13.813Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 13,
+  "fields": {
+    "appointment_number": "dd4680ae-c2ad-4049-811d-04fe6631d60e",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": null,
+    "date": "2026-04-07",
+    "start_time": "09:30:00",
+    "end_time": "11:00:00",
+    "duration": 90,
+    "status": "cancelled",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-06T14:43:23.241Z",
+    "updated_at": "2026-04-06T14:45:02.175Z",
+    "confirmed_at": null,
+    "cancelled_at": "2026-04-06T14:45:02.175Z",
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 14,
+  "fields": {
+    "appointment_number": "7385fec6-635a-4f7a-8802-cc7578ca8ec9",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 2,
+    "employee": 1,
+    "date": "2026-04-08",
+    "start_time": "13:00:00",
+    "end_time": "13:45:00",
+    "duration": 45,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "100.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "100.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-06T14:45:44.921Z",
+    "updated_at": "2026-04-06T14:46:28.058Z",
+    "confirmed_at": "2026-04-06T14:46:16.120Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-06T14:46:28.058Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 15,
+  "fields": {
+    "appointment_number": "3cb246e3-fb4b-42f1-8918-acdb3a6785f7",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-04-10",
+    "start_time": "12:15:00",
+    "end_time": "12:30:00",
+    "duration": 15,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-06T21:23:18.782Z",
+    "updated_at": "2026-04-24T00:37:34.504Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T00:37:34.504Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 16,
+  "fields": {
+    "appointment_number": "9a1696fb-ad59-4846-8072-98dc87d2a550",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-10",
+    "start_time": "09:45:00",
+    "end_time": "11:15:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-09T10:58:56.392Z",
+    "updated_at": "2026-04-09T11:00:20.784Z",
+    "confirmed_at": "2026-04-09T11:00:09.590Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-09T11:00:20.784Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 17,
+  "fields": {
+    "appointment_number": "613e2768-6701-45f9-8cba-084a43e4057a",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "12:15:00",
+    "end_time": "13:45:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T01:12:00.302Z",
+    "updated_at": "2026-04-24T02:02:57.305Z",
+    "confirmed_at": "2026-04-24T02:02:47.890Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:02:57.304Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 18,
+  "fields": {
+    "appointment_number": "ef482b79-6180-4cb7-9648-9ef1055a1bc2",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "14:45:00",
+    "end_time": "16:15:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:02:17.647Z",
+    "updated_at": "2026-04-24T02:21:40.278Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:21:40.277Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 19,
+  "fields": {
+    "appointment_number": "22d42607-a2ee-448e-a93f-aff0e98a04d5",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 2,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "12:00:00",
+    "end_time": "12:45:00",
+    "duration": 45,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "100.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "100.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:18:14.732Z",
+    "updated_at": "2026-04-24T02:18:45.040Z",
+    "confirmed_at": "2026-04-24T02:18:37.830Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:18:45.039Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 20,
+  "fields": {
+    "appointment_number": "27143a71-a9c6-4550-8859-86004b469ee3",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 4,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "09:15:00",
+    "end_time": "09:45:00",
+    "duration": 30,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "10.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "10.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:21:11.565Z",
+    "updated_at": "2026-04-24T02:21:29.060Z",
+    "confirmed_at": "2026-04-24T02:21:27.279Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:21:29.059Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 21,
+  "fields": {
+    "appointment_number": "13bf2089-0e3a-4e3f-8002-7046aa91777a",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 2,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "12:45:00",
+    "end_time": "13:30:00",
+    "duration": 45,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "100.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "100.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:37:24.083Z",
+    "updated_at": "2026-04-24T02:38:00.582Z",
+    "confirmed_at": "2026-04-24T02:37:51.661Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:38:00.580Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 22,
+  "fields": {
+    "appointment_number": "a9655a74-ca90-4cdc-a6b7-c8f9db6022fd",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "12:15:00",
+    "end_time": "12:30:00",
+    "duration": 15,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:39:15.733Z",
+    "updated_at": "2026-04-24T02:39:49.711Z",
+    "confirmed_at": "2026-04-24T02:39:43.278Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:39:49.710Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 23,
+  "fields": {
+    "appointment_number": "136e6bf9-59dc-4a21-bbb8-53e85f4fff92",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-04-24",
+    "start_time": "12:00:00",
+    "end_time": "12:15:00",
+    "duration": 15,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-24T02:51:23.896Z",
+    "updated_at": "2026-04-24T02:51:48.226Z",
+    "confirmed_at": "2026-04-24T02:51:40.619Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-24T02:51:48.225Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 24,
+  "fields": {
+    "appointment_number": "cc00bee3-6c47-4bde-a1e6-6baafb094fe7",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 4,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "10:15:00",
+    "end_time": "10:45:00",
+    "duration": 30,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "10.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "10.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T22:10:06.828Z",
+    "updated_at": "2026-04-27T22:10:52.620Z",
+    "confirmed_at": "2026-04-27T22:10:36.007Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T22:10:52.619Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 25,
+  "fields": {
+    "appointment_number": "e92888f5-88e3-4d19-83ff-79f6a86f70da",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 2,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "14:30:00",
+    "end_time": "15:15:00",
+    "duration": 45,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "100.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "100.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T22:45:46.174Z",
+    "updated_at": "2026-04-27T22:46:06.372Z",
+    "confirmed_at": "2026-04-27T22:46:03.161Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T22:46:06.371Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 26,
+  "fields": {
+    "appointment_number": "778ed8b8-69e0-4fcb-b795-9e8ac152e406",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "12:15:00",
+    "end_time": "12:30:00",
+    "duration": 15,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T22:51:00.635Z",
+    "updated_at": "2026-04-27T22:51:19.695Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T22:51:19.694Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 27,
+  "fields": {
+    "appointment_number": "fda05304-5adb-4923-8ada-f2ba9eefe616",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "12:00:00",
+    "end_time": "13:30:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T22:58:04.300Z",
+    "updated_at": "2026-04-27T22:58:17.415Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T22:58:17.413Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 28,
+  "fields": {
+    "appointment_number": "214d67e8-9a4f-489b-a7cc-fc888b641e69",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 4,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "12:30:00",
+    "end_time": "13:00:00",
+    "duration": 30,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "10.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "10.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T23:02:39.065Z",
+    "updated_at": "2026-04-27T23:03:31.747Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T23:03:31.746Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 29,
+  "fields": {
+    "appointment_number": "f3e17d4e-0369-46b3-8810-75bfdaa79ba8",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-28",
+    "start_time": "12:15:00",
+    "end_time": "13:45:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-27T23:07:08.785Z",
+    "updated_at": "2026-04-27T23:08:23.299Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": "2026-04-27T23:08:23.298Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 30,
+  "fields": {
+    "appointment_number": "bfef4e51-1ef7-4d95-a429-a61a6fb7279a",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 4,
+    "employee": 1,
+    "date": "2026-04-29",
+    "start_time": "12:30:00",
+    "end_time": "13:00:00",
+    "duration": 30,
+    "status": "pending",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "10.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "10.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-29T00:07:16.743Z",
+    "updated_at": "2026-04-29T00:07:16.743Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 31,
+  "fields": {
+    "appointment_number": "4211a270-6b18-43d6-8d97-9af705eeb04c",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 5,
+    "employee": 1,
+    "date": "2026-04-29",
+    "start_time": "09:30:00",
+    "end_time": "11:00:00",
+    "duration": 90,
+    "status": "completed",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "120.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "120.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-04-29T00:08:49.361Z",
+    "updated_at": "2026-04-29T00:09:36.404Z",
+    "confirmed_at": "2026-04-29T00:09:29.694Z",
+    "cancelled_at": null,
+    "completed_at": "2026-04-29T00:09:36.403Z"
+  }
+},
+{
+  "model": "appointments.appointment",
+  "pk": 32,
+  "fields": {
+    "appointment_number": "bf61177d-f5d2-405c-bc46-5a7e8ce5b7b6",
+    "customer": [
+      "johndoe@example.com"
+    ],
+    "business_owner": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "service": 1,
+    "employee": 1,
+    "date": "2026-05-05",
+    "start_time": "12:15:00",
+    "end_time": "12:30:00",
+    "duration": 15,
+    "status": "pending",
+    "payment_status": "pending",
+    "payment_method": null,
+    "service_price": "32.00",
+    "addons_total": "0.00",
+    "tax_amount": "0.00",
+    "discount_amount": "0.00",
+    "total_amount": "32.00",
+    "amount_paid": "0.00",
+    "stripe_payment_intent_id": null,
+    "stripe_refund_id": null,
+    "notes": null,
+    "customer_notes": null,
+    "internal_notes": null,
+    "resource": null,
+    "reminder_sent": false,
+    "confirmation_sent": false,
+    "created_at": "2026-05-05T00:47:28.010Z",
+    "updated_at": "2026-05-05T00:47:28.010Z",
+    "confirmed_at": null,
+    "cancelled_at": null,
+    "completed_at": null
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 1,
+  "fields": {
+    "appointment": 1,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T22:13:05.625Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 2,
+  "fields": {
+    "appointment": 2,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T22:13:28.695Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 3,
+  "fields": {
+    "appointment": 3,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T22:24:16.284Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 4,
+  "fields": {
+    "appointment": 4,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T22:37:36.265Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 5,
+  "fields": {
+    "appointment": 5,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T23:27:38.333Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 6,
+  "fields": {
+    "appointment": 6,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-23T23:33:38.817Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 7,
+  "fields": {
+    "appointment": 6,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "meeting with ceo",
+    "created_at": "2026-03-25T14:27:14.368Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 8,
+  "fields": {
+    "appointment": 3,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "q",
+    "created_at": "2026-03-25T14:39:00.065Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 9,
+  "fields": {
+    "appointment": 4,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-03-25T14:39:03.046Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 10,
+  "fields": {
+    "appointment": 5,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-03-25T14:39:04.794Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 11,
+  "fields": {
+    "appointment": 1,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-03-25T16:16:22.037Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 12,
+  "fields": {
+    "appointment": 2,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-03-25T16:16:23.780Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 13,
+  "fields": {
+    "appointment": 1,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-03-25T16:16:35.527Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 14,
+  "fields": {
+    "appointment": 2,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-03-25T16:16:40.416Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 18,
+  "fields": {
+    "appointment": 9,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-25T16:52:18.263Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 19,
+  "fields": {
+    "appointment": 9,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-03-25T16:52:57.301Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 20,
+  "fields": {
+    "appointment": 9,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-03-25T18:53:55.774Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 24,
+  "fields": {
+    "appointment": 10,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-26T00:39:55.464Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 25,
+  "fields": {
+    "appointment": 10,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-03-26T00:46:09.751Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 26,
+  "fields": {
+    "appointment": 10,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-03-26T00:47:04.993Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 28,
+  "fields": {
+    "appointment": 12,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-03-26T01:00:54.469Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 29,
+  "fields": {
+    "appointment": 12,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-03-26T01:01:13.822Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 31,
+  "fields": {
+    "appointment": 13,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-06T14:43:23.245Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 32,
+  "fields": {
+    "appointment": 13,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "cancelled",
+    "notes": "Client requested cancellation",
+    "created_at": "2026-04-06T14:45:02.186Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 33,
+  "fields": {
+    "appointment": 14,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-06T14:45:44.923Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 34,
+  "fields": {
+    "appointment": 14,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-06T14:46:16.125Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 35,
+  "fields": {
+    "appointment": 14,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-06T14:46:28.059Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 36,
+  "fields": {
+    "appointment": 15,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-06T21:23:18.785Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 37,
+  "fields": {
+    "appointment": 16,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-09T10:58:56.395Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 38,
+  "fields": {
+    "appointment": 16,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-09T11:00:09.599Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 39,
+  "fields": {
+    "appointment": 16,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-09T11:00:20.788Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 40,
+  "fields": {
+    "appointment": 15,
+    "changed_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-24T00:37:34.509Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 41,
+  "fields": {
+    "appointment": 17,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T01:12:00.304Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 42,
+  "fields": {
+    "appointment": 18,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:02:17.915Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 43,
+  "fields": {
+    "appointment": 17,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:02:48.143Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 44,
+  "fields": {
+    "appointment": 17,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:02:58.571Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 45,
+  "fields": {
+    "appointment": 19,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:18:14.963Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 46,
+  "fields": {
+    "appointment": 19,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:18:38.080Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 47,
+  "fields": {
+    "appointment": 19,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:18:45.276Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 48,
+  "fields": {
+    "appointment": 20,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:21:11.845Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 49,
+  "fields": {
+    "appointment": 20,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:21:27.486Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 50,
+  "fields": {
+    "appointment": 20,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:21:29.304Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 51,
+  "fields": {
+    "appointment": 18,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-24T02:21:40.501Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 52,
+  "fields": {
+    "appointment": 21,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:37:24.321Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 53,
+  "fields": {
+    "appointment": 21,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:37:51.872Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 54,
+  "fields": {
+    "appointment": 21,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:38:00.778Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 55,
+  "fields": {
+    "appointment": 22,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:39:16.081Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 56,
+  "fields": {
+    "appointment": 22,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:39:43.522Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 57,
+  "fields": {
+    "appointment": 22,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:39:49.917Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 58,
+  "fields": {
+    "appointment": 23,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-24T02:51:24.269Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 59,
+  "fields": {
+    "appointment": 23,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-24T02:51:40.836Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 60,
+  "fields": {
+    "appointment": 23,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-24T02:51:48.465Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 61,
+  "fields": {
+    "appointment": 24,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T22:10:07.027Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 62,
+  "fields": {
+    "appointment": 24,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-27T22:10:36.158Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 63,
+  "fields": {
+    "appointment": 24,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-27T22:10:52.769Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 64,
+  "fields": {
+    "appointment": 25,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T22:45:46.305Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 65,
+  "fields": {
+    "appointment": 25,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-27T22:46:03.392Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 66,
+  "fields": {
+    "appointment": 25,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-27T22:46:06.498Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 67,
+  "fields": {
+    "appointment": 26,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T22:51:00.792Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 68,
+  "fields": {
+    "appointment": 26,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-27T22:51:19.837Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 69,
+  "fields": {
+    "appointment": 27,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T22:58:04.437Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 70,
+  "fields": {
+    "appointment": 27,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-27T22:58:17.546Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 71,
+  "fields": {
+    "appointment": 28,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T23:02:39.212Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 72,
+  "fields": {
+    "appointment": 28,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-27T23:03:32.064Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 73,
+  "fields": {
+    "appointment": 29,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-27T23:07:08.999Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 74,
+  "fields": {
+    "appointment": 29,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "completed",
+    "notes": "Status changed from pending to completed",
+    "created_at": "2026-04-27T23:08:23.435Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 75,
+  "fields": {
+    "appointment": 30,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-29T00:07:17.025Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 76,
+  "fields": {
+    "appointment": 31,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-04-29T00:08:49.495Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 77,
+  "fields": {
+    "appointment": 31,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "pending",
+    "to_status": "confirmed",
+    "notes": "Status changed from pending to confirmed",
+    "created_at": "2026-04-29T00:09:29.839Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 78,
+  "fields": {
+    "appointment": 31,
+    "changed_by": [
+      "tim@gmail.com"
+    ],
+    "from_status": "confirmed",
+    "to_status": "completed",
+    "notes": "Status changed from confirmed to completed",
+    "created_at": "2026-04-29T00:09:36.547Z"
+  }
+},
+{
+  "model": "appointments.appointmenthistory",
+  "pk": 79,
+  "fields": {
+    "appointment": 32,
+    "changed_by": [
+      "johndoe@example.com"
+    ],
+    "from_status": null,
+    "to_status": "pending",
+    "notes": "Appointment created",
+    "created_at": "2026-05-05T00:47:28.214Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 1,
+  "fields": {
+    "appointment": 6,
+    "cancelled_by": [
+      "johndoe@example.com"
+    ],
+    "reason": null,
+    "custom_reason": "meeting with ceo",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T14:27:14.367Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 2,
+  "fields": {
+    "appointment": 3,
+    "cancelled_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "reason": null,
+    "custom_reason": "q",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T14:39:00.064Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 3,
+  "fields": {
+    "appointment": 4,
+    "cancelled_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T14:39:03.044Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 4,
+  "fields": {
+    "appointment": 5,
+    "cancelled_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T14:39:04.793Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 5,
+  "fields": {
+    "appointment": 1,
+    "cancelled_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T16:16:35.524Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 6,
+  "fields": {
+    "appointment": 2,
+    "cancelled_by": [
+      "abrorchikubaydullayev0428@gmail.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-25T16:16:40.414Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 7,
+  "fields": {
+    "appointment": 12,
+    "cancelled_by": [
+      "johndoe@example.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-03-26T01:01:13.818Z"
+  }
+},
+{
+  "model": "appointments.appointmentcancellation",
+  "pk": 9,
+  "fields": {
+    "appointment": 13,
+    "cancelled_by": [
+      "johndoe@example.com"
+    ],
+    "reason": null,
+    "custom_reason": "Client requested cancellation",
+    "refund_amount": "0.00",
+    "created_at": "2026-04-06T14:45:02.183Z"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-01-29T20:32:48.980Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "services",
+      "service"
+    ],
+    "object_id": "1",
+    "object_repr": "Barbershop 77 - $32",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"service image\", \"object\": \"Image for Barbershop 77\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-01-29T20:34:35.956Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-01-29T20:34:41.223Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-01-29T20:36:30.591Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "services",
+      "service"
+    ],
+    "object_id": "2",
+    "object_repr": "Tommy - $100",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"service image\", \"object\": \"Image for Tommy\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-02-01T13:16:04.162Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Phone number\", \"Is verified\"]}}, {\"changed\": {\"name\": \"user profile\", \"object\": \"abrorchikubaydullayev0428@gmail.com's Profile\", \"fields\": [\"Bio\", \"Address\", \"City\", \"State\", \"Country\", \"Postal code\", \"Business name\", \"Business address\", \"Business email\", \"Business website\", \"Business description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-02-01T15:07:36.383Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "services",
+      "service"
+    ],
+    "object_id": "1",
+    "object_repr": "Barbershop 77 - $32.00",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Thumbnail\"]}}, {\"changed\": {\"name\": \"service image\", \"object\": \"Image for Barbershop 77\", \"fields\": [\"Image\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-02-01T15:08:04.390Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "services",
+      "service"
+    ],
+    "object_id": "2",
+    "object_repr": "Tom - $100.00",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Name\", \"Thumbnail\"]}}, {\"changed\": {\"name\": \"service image\", \"object\": \"Image for Tom\", \"fields\": [\"Image\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-02-01T15:36:40.558Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "services",
+      "service"
+    ],
+    "object_id": "3",
+    "object_repr": "Buka - $45",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"service image\", \"object\": \"Image for Buka\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-03-05T11:35:31.187Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-03-25T23:16:46.382Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "4",
+    "object_repr": "tim@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Staff status\", \"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-04-05T19:04:47.568Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"name\": \"user profile\", \"object\": \"abrorchikubaydullayev0428@gmail.com's Profile\", \"fields\": [\"Instagram\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-04-05T19:05:33.795Z",
+    "user": [
+      "admin@gmail.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "abrorchikubaydullayev0428@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Profile picture\"]}}]"
+  }
+}
+]
