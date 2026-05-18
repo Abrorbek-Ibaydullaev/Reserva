@@ -9,7 +9,7 @@ See .env.example for the full list of required variables.
 """
 
 import os
-import dj_database_url
+from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
 
@@ -98,19 +98,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ---------------------------------------------------------------------------
 # Primary: DATABASE_URL env var (PostgreSQL for production)
 # Fallback: SQLite (useful for quick demo / university review)
+# Manually parse the URL to avoid dj_database_url mishandling Railway-specific
+# schemes (e.g. 'railwaypostgresql://') which caused the full URL string to be
+# used as the database NAME, exceeding PostgreSQL's 63-character limit.
 _db_url = _env('DATABASE_URL')
-# Railway sometimes provides DATABASE_URL with a 'railwaypostgresql://' scheme
-# which dj_database_url does not recognise, causing the full URL to be used as
-# the database NAME and triggering PostgreSQL's 63-character name limit error.
-# Normalise any Railway-specific scheme variants to the standard 'postgresql://'.
 if _db_url:
-    _db_url = _db_url.replace('railwaypostgresql://', 'postgresql://', 1)
+    _parsed = urlparse(_db_url)
     DATABASES = {
-        'default': dj_database_url.parse(
-            _db_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': _parsed.path.lstrip('/'),
+            'USER': _parsed.username,
+            'PASSWORD': _parsed.password,
+            'HOST': _parsed.hostname,
+            'PORT': _parsed.port or 5432,
+            'CONN_MAX_AGE': 600,
+            'OPTIONS': {'connect_timeout': 10},
+        }
     }
 else:
     DATABASES = {
