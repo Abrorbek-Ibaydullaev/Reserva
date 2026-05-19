@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { fixMediaUrl } from '../../services/api';
 import { 
   StarIcon,
   ClockIcon,
@@ -62,7 +63,7 @@ const ServiceCard = ({ service }) => {
       {/* Service Image */}
       <div className="relative h-48 overflow-hidden bg-gray-100 flex-shrink-0">
         <img 
-          src={service.thumbnail || 'https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} 
+          src={fixMediaUrl(service.thumbnail) || 'https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
           alt={service.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {

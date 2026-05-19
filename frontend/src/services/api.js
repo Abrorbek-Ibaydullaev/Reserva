@@ -7,16 +7,15 @@ import axios from 'axios';
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
-const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
+// Strip /api suffix and force https in production to avoid Mixed Content blocks
+const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '').replace(/^http:\/\//, 'https://');
 
-/**
- * Fix profile_picture / image URLs that come back as bare /media/... paths.
- * Happens when the serializer was called without a request context
- * (e.g. data loaded from localStorage after an old login).
- */
 export const fixMediaUrl = (url) => {
     if (!url) return url;
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    // Already absolute — force https so Vercel doesn't block mixed content
+    if (url.startsWith('http://')) return url.replace('http://', 'https://');
+    if (url.startsWith('https://')) return url;
+    // Relative path — prepend backend origin
     if (url.startsWith('/')) return `${BACKEND_ORIGIN}${url}`;
     return url;
 };
