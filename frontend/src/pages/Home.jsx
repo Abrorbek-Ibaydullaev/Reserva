@@ -476,7 +476,7 @@ const Home = () => {
   const [businesses, setBusinesses] = useState([]);
   const [videoErr, setVideoErr] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
-  const [showAllCats, setShowAllCats] = useState(false);
+  const [marqueeHovered, setMarqueeHovered] = useState(false);
   const [categories, setCategories] = useState([]);
   const [cityModal, setCityModal] = useState(null); // pending category name
   const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
@@ -996,75 +996,64 @@ const Home = () => {
         <div ref={sentinelRef} className="absolute bottom-0 h-px w-full pointer-events-none" />
       </section>
 
-      {/* ── CATEGORY CIRCLES — fetched from backend ───────────────────────── */}
-      <section className="bg-[#0f1a18] pb-8 pt-4">
-        <div className="mx-auto max-w-6xl px-6">
-          {sortedCategories.length === 0 ? (
-            /* skeleton */
-            <div className="flex justify-center gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-3">
-                  <div className="h-[68px] w-[68px] sm:h-[90px] sm:w-[90px] rounded-full bg-[#1a2e2b] animate-pulse" />
-                  <div className="h-3 w-16 rounded bg-[#1a2e2b] animate-pulse" />
+      {/* ── CATEGORY CIRCLES — infinite marquee ───────────────────────── */}
+      <section className="bg-[#0f1a18] py-6 overflow-hidden">
+        {sortedCategories.length === 0 ? (
+          /* skeleton — shown while API loads */
+          <div className="flex justify-center gap-6 px-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-3">
+                <div className="h-[72px] w-[72px] rounded-full bg-[#1a2e2b] animate-pulse" />
+                <div className="h-3 w-16 rounded bg-[#1a2e2b] animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          /*
+           * Marquee technique:
+           *   - Render the category list TWICE side-by-side inside a flex row
+           *   - The row is 200% wide (each copy = 50%)
+           *   - CSS `marquee` animation slides it left by 50% (one full copy)
+           *   - When it reaches -50% it snaps back to 0% — seamless loop
+           *   - `animation-play-state: paused` on hover lets users click
+           */
+          <div
+            className="relative"
+            onMouseEnter={() => setMarqueeHovered(true)}
+            onMouseLeave={() => setMarqueeHovered(false)}
+          >
+            {/* Left fade edge */}
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-16 z-10 bg-gradient-to-r from-[#0f1a18] to-transparent" />
+            {/* Right fade edge */}
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10 bg-gradient-to-l from-[#0f1a18] to-transparent" />
+
+            <div
+              className="flex items-start animate-marquee"
+              style={{
+                animationPlayState: marqueeHovered ? 'paused' : 'running',
+                width: 'max-content',
+              }}
+            >
+              {/* Render list twice for seamless loop */}
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex items-start gap-2 px-3">
+                  {sortedCategories.map((cat) => (
+                    <button
+                      key={`${copy}-${cat.id}`}
+                      onClick={() => handleCatClick(cat.name)}
+                      className="group flex flex-shrink-0 flex-col items-center gap-2 px-3 py-1"
+                    >
+                      <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#1a2e2b] text-white transition-all duration-200 group-hover:bg-[#243d3a] group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-emerald-900/30">
+                        <span className="h-9 w-9 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
+                      </div>
+                      <span className="w-[80px] text-center text-[11px] font-bold leading-tight text-white">{cat.name}</span>
+                    </button>
+                  ))}
                 </div>
               ))}
             </div>
-          ) : (
-            <>
-              {/* Primary row — first 8 */}
-              <div className="flex items-start justify-center gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {sortedCategories.slice(0, 8).map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleCatClick(cat.name)}
-                    className="group flex flex-shrink-0 flex-col items-center gap-3"
-                  >
-                    <div className="flex h-[68px] w-[68px] sm:h-[90px] sm:w-[90px] items-center justify-center rounded-full bg-[#1a2e2b] text-white transition-all duration-200 group-hover:bg-[#243d3a] group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-emerald-900/30">
-                      <span className="h-8 w-8 sm:h-11 sm:w-11 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
-                    </div>
-                    <span className="max-w-[90px] text-center text-xs font-bold leading-tight text-white">{cat.name}</span>
-                  </button>
-                ))}
-
-                {/* More... circle — only show if there are more than 8 */}
-                {sortedCategories.length > 8 && (
-                  <button
-                    onClick={() => setShowAllCats((v) => !v)}
-                    className="group flex flex-shrink-0 flex-col items-center gap-3"
-                  >
-                    <div className={`flex h-[68px] w-[68px] sm:h-[90px] sm:w-[90px] items-center justify-center rounded-full transition-all duration-200 group-hover:scale-105 ${showAllCats ? 'bg-emerald-700/40 text-emerald-300' : 'bg-[#1a2e2b] text-white/60 group-hover:bg-[#243d3a]'}`}>
-                      <span className="text-2xl font-light tracking-widest">{showAllCats ? '✕' : '···'}</span>
-                    </div>
-                    <span className="text-xs font-bold text-white/60">{showAllCats ? 'Less' : 'More...'}</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Expandable row — remaining categories */}
-              {sortedCategories.length > 8 && (
-                <div
-                  className="overflow-hidden transition-all duration-500 ease-in-out"
-                  style={{ maxHeight: showAllCats ? '220px' : '0px', opacity: showAllCats ? 1 : 0 }}
-                >
-                  <div className="mt-6 flex items-start justify-center gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {sortedCategories.slice(8).map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => handleCatClick(cat.name)}
-                        className="group flex flex-shrink-0 flex-col items-center gap-3"
-                      >
-                        <div className="flex h-[68px] w-[68px] sm:h-[90px] sm:w-[90px] items-center justify-center rounded-full bg-[#1a2e2b] text-white transition-all duration-200 group-hover:bg-[#243d3a] group-hover:scale-105">
-                          <span className="h-8 w-8 sm:h-11 sm:w-11 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
-                        </div>
-                        <span className="max-w-[90px] text-center text-xs font-bold leading-tight text-white">{cat.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+          </div>
+        )}
       </section>
 
       {/* ── BUSINESS CAROUSELS ───────────────────────────────────────────── */}
