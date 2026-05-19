@@ -227,7 +227,8 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://reserva-production.up.railway.app'
+    'https://reserva-production.up.railway.app',
+    'https://reserva-plum.vercel.app'
 ]
 
 # ---------------------------------------------------------------------------
