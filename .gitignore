@@ -7,7 +7,7 @@ __pycache__/
 *$py.class
 db.sqlite3
 .env
-media/
+# media/ — tracked so demo images deploy with the code
 static_root/
 
 # --- Node / React ---

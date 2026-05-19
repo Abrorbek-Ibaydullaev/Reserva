@@ -476,7 +476,7 @@ const Home = () => {
   const [businesses, setBusinesses] = useState([]);
   const [videoErr, setVideoErr] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
-  const [marqueeHovered, setMarqueeHovered] = useState(false);
+  const catScrollRef = useRef(null);
   const [categories, setCategories] = useState([]);
   const [cityModal, setCityModal] = useState(null); // pending category name
   const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
@@ -692,6 +692,81 @@ const Home = () => {
     else if (savedCity) p.set('city', savedCity);
     navigate(`/services?${p.toString()}`);
   };
+
+  // ── Infinite-scroll categories ───────────────────────────────────────────────
+  // The track renders the list THREE times. On mount (and whenever categories
+  // change) we silently jump to the start of the middle copy so the user can
+  // scroll left or right without ever hitting an end.
+  useEffect(() => {
+    const el = catScrollRef.current;
+    if (!el || sortedCategories.length === 0) return;
+
+    // Each item is ~104 px wide (72px circle + 2×px-3 padding = ~96px + 8px gap)
+    // We measure the first copy's actual width instead of hard-coding.
+    const measureCopy = () => {
+      const copy = el.querySelector('[data-cat-copy="0"]');
+      return copy ? copy.offsetWidth : 0;
+    };
+
+    const jumpToMiddle = () => {
+      const copyW = measureCopy();
+      if (copyW > 0) el.scrollLeft = copyW;
+    };
+
+    jumpToMiddle();
+
+    const onScroll = () => {
+      const copyW = measureCopy();
+      if (!copyW) return;
+      // Past the end of the second copy → jump back to middle copy
+      if (el.scrollLeft >= copyW * 2) {
+        el.scrollLeft -= copyW;
+      }
+      // Before the start of the middle copy → jump forward to middle copy
+      if (el.scrollLeft <= 0) {
+        el.scrollLeft += copyW;
+      }
+    };
+
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [sortedCategories]);
+
+  // Mouse-drag-to-scroll for desktop
+  useEffect(() => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+
+    const onMouseDown = (e) => {
+      isDown = true;
+      startX = e.pageX;
+      startScroll = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+      el.style.userSelect = 'none';
+    };
+    const onMouseMove = (e) => {
+      if (!isDown) return;
+      const delta = startX - e.pageX;
+      el.scrollLeft = startScroll + delta;
+    };
+    const onMouseUp = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+      el.style.userSelect = '';
+    };
+
+    el.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
 
   const whenLabel = when
     ? new Date(when + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -996,13 +1071,13 @@ const Home = () => {
         <div ref={sentinelRef} className="absolute bottom-0 h-px w-full pointer-events-none" />
       </section>
 
-      {/* ── CATEGORY CIRCLES — infinite marquee ───────────────────────── */}
-      <section className="bg-[#0f1a18] py-6 overflow-hidden">
+      {/* ── CATEGORY CIRCLES — infinite scroll (user-driven, no auto-play) ── */}
+      <section className="bg-[#0f1a18] py-6">
         {sortedCategories.length === 0 ? (
           /* skeleton — shown while API loads */
-          <div className="flex justify-center gap-6 px-6">
+          <div className="flex gap-6 overflow-hidden px-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="flex flex-col items-center gap-3">
+              <div key={i} className="flex flex-shrink-0 flex-col items-center gap-3">
                 <div className="h-[72px] w-[72px] rounded-full bg-[#1a2e2b] animate-pulse" />
                 <div className="h-3 w-16 rounded bg-[#1a2e2b] animate-pulse" />
               </div>
@@ -1010,33 +1085,32 @@ const Home = () => {
           </div>
         ) : (
           /*
-           * Marquee technique:
-           *   - Render the category list TWICE side-by-side inside a flex row
-           *   - The row is 200% wide (each copy = 50%)
-           *   - CSS `marquee` animation slides it left by 50% (one full copy)
-           *   - When it reaches -50% it snaps back to 0% — seamless loop
-           *   - `animation-play-state: paused` on hover lets users click
+           * Infinite-scroll technique (no auto-play):
+           *   - Render the list THREE times side-by-side.
+           *   - On mount, silently jump scrollLeft to the width of copy 0 so
+           *     the user starts in the middle copy.
+           *   - A scroll listener teleports back/forward by one copy width
+           *     when the user approaches either edge — imperceptible to the eye.
+           *   - Desktop: mouse-drag via mousedown/mousemove listeners.
+           *   - Mobile: native touch scrolling (overflow-x: auto).
            */
-          <div
-            className="relative"
-            onMouseEnter={() => setMarqueeHovered(true)}
-            onMouseLeave={() => setMarqueeHovered(false)}
-          >
-            {/* Left fade edge */}
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-16 z-10 bg-gradient-to-r from-[#0f1a18] to-transparent" />
-            {/* Right fade edge */}
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 z-10 bg-gradient-to-l from-[#0f1a18] to-transparent" />
+          <div className="relative">
+            {/* Left edge fade */}
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-10 z-10 bg-gradient-to-r from-[#0f1a18] to-transparent" />
+            {/* Right edge fade */}
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 z-10 bg-gradient-to-l from-[#0f1a18] to-transparent" />
 
             <div
-              className="flex items-start animate-marquee"
-              style={{
-                animationPlayState: marqueeHovered ? 'paused' : 'running',
-                width: 'max-content',
-              }}
+              ref={catScrollRef}
+              className="flex items-start overflow-x-auto pl-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ cursor: 'grab' }}
             >
-              {/* Render list twice for seamless loop */}
-              {[0, 1].map((copy) => (
-                <div key={copy} className="flex items-start gap-2 px-3">
+              {[0, 1, 2].map((copy) => (
+                <div
+                  key={copy}
+                  data-cat-copy={copy}
+                  className="flex flex-shrink-0 items-start"
+                >
                   {sortedCategories.map((cat) => (
                     <button
                       key={`${copy}-${cat.id}`}

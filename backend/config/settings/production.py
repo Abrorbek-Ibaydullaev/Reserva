@@ -173,9 +173,8 @@ STORAGES = {
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-# Railway volume is mounted at /data — media files persist across deploys
 MEDIA_URL = '/media/'
-MEDIA_ROOT = _env('MEDIA_ROOT', '/data/media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ---------------------------------------------------------------------------
 # Custom user model
