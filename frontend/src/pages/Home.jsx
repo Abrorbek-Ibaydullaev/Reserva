@@ -152,15 +152,6 @@ const HARDCODED_EXTRAS = [
   'Tattoo', 'Physiotherapy', 'Holistic', 'Diet & training',
 ];
 
-const CATEGORY_ICONS = {
-  Barber: '✂️', Hair: '💇', Nail: '💅', Massage: '💆',
-  Spa: '🧖', Makeup: '💄', Tattoo: '🖊️', Fitness: '🏋️',
-  Dental: '🦷', Beauty: '✨', Skin: '🧴', Brow: '👁️',
-};
-const catIcon = (name = '') => {
-  const k = Object.keys(CATEGORY_ICONS).find((k) => name.toLowerCase().includes(k.toLowerCase()));
-  return k ? CATEGORY_ICONS[k] : '🏪';
-};
 
 const UZ_CITIES = [
   'Toshkent','Samarqand','Buxoro','Namangan','Andijon',
@@ -1147,7 +1138,7 @@ const Home = () => {
           grouped.map(([cat, list]) => (
             <div key={cat} className="mx-auto mb-10 max-w-6xl px-4 sm:px-8">
               <div className="mb-5 flex items-end justify-between">
-                <h2 className="text-xl font-bold text-slate-900">{catIcon(cat)} {cat} near you</h2>
+                <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
                 <button
                   onClick={() => handleCatClick(cat)}
                   className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
