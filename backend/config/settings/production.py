@@ -226,6 +226,9 @@ CORS_ALLOWED_ORIGINS = [
     for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://reserva-production.up.railway.app'
+]
 
 # ---------------------------------------------------------------------------
 # Security headers (production hardening)
@@ -242,6 +245,7 @@ SECURE_HSTS_SECONDS = 31536000 if SECURE_SSL_REDIRECT else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_SSL_REDIRECT
 SECURE_HSTS_PRELOAD = SECURE_SSL_REDIRECT
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # ---------------------------------------------------------------------------
 # Email
