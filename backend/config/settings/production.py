@@ -241,6 +241,7 @@ CSRF_COOKIE_SECURE = _env('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 SECURE_HSTS_SECONDS = 31536000 if SECURE_SSL_REDIRECT else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_SSL_REDIRECT
 SECURE_HSTS_PRELOAD = SECURE_SSL_REDIRECT
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ---------------------------------------------------------------------------
 # Email
