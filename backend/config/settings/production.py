@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _env(key, default=None, required=False):
@@ -174,7 +174,7 @@ STORAGES = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = Path('/data/media')
+MEDIA_ROOT = Path(_env('MEDIA_ROOT', '/data'))
 
 # ---------------------------------------------------------------------------
 # Custom user model
