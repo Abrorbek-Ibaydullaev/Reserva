@@ -174,7 +174,7 @@ STORAGES = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = Path(_env('MEDIA_ROOT', '/data'))
+MEDIA_ROOT = Path(_env('MEDIA_ROOT', '/data')).resolve()  # Use Railway Volume or fallback to local 'data' dir
 
 # ---------------------------------------------------------------------------
 # Custom user model

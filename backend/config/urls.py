@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 from django.conf import settings
-from django.conf.urls.static import static
+from django.views.static import serve  # 👈 Crucial import for production serving
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.users.views import CustomTokenObtainPairView, UserRegistrationView, UserProfileView, ChangePasswordView
 
@@ -39,4 +39,12 @@ urlpatterns = [
     path('api/appointments/', include('apps.appointments.urls')),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# 🛠️ Fix: Explicitly serve media from your Railway Volume in both Dev and Prod
+if settings.MEDIA_URL:
+    urlpatterns += [
+        path(
+            f"{settings.MEDIA_URL.lstrip('/')}<path:path>",
+            serve,
+            {"document_root": settings.MEDIA_ROOT},
+        )
+    ]
