@@ -28,6 +28,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
     recaptcha_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    phone_number = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default=''
+    )
 
     class Meta:
         model = User
