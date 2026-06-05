@@ -33,64 +33,98 @@ const COUNTRIES = [
   { code: 'AE', flag: '🇦🇪', dial: '+971', name: 'UAE' },
 ];
 
-const PhoneInput = ({ value, onChange }) => {
+// Format UZ number digits as: XX XXX XX XX  (9 digits → "34 738 92 74")
+const formatUZ = (digits) => {
+  const d = digits.slice(0, 9);
+  let out = d.slice(0, 2);
+  if (d.length > 2) out += ' ' + d.slice(2, 5);
+  if (d.length > 5) out += ' ' + d.slice(5, 7);
+  if (d.length > 7) out += ' ' + d.slice(7, 9);
+  return out;
+};
+
+const PhoneInput = ({ onDigitsChange }) => {
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [open, setOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [display, setDisplay] = useState('');
+  const [digits, setDigits] = useState('');
+  const [touched, setTouched] = useState(false);
+  const inputRef = useRef(null);
+
+  const isUZ = country.code === 'UZ';
+  const maxDigits = isUZ ? 9 : 15;
+  const isComplete = digits.length === 0 || digits.length === maxDigits;
+  const showError = touched && digits.length > 0 && digits.length < maxDigits;
+
+  const handleNumberChange = (e) => {
+    // Strip everything except digits, enforce max length
+    const raw = e.target.value.replace(/\D/g, '').slice(0, maxDigits);
+    setDigits(raw);
+    const formatted = isUZ ? formatUZ(raw) : raw;
+    setDisplay(formatted);
+    // Emit full number (or empty string so backend skips validation)
+    onDigitsChange(raw.length > 0 ? `${country.dial}${raw}` : '');
+  };
 
   const handleCountrySelect = (c) => {
     setCountry(c);
     setOpen(false);
-    // Re-trigger onChange so parent has the updated full number
-    onChange(value ? `${c.dial}${value}` : '');
-  };
-
-  const handleNumberChange = (e) => {
-    const digits = e.target.value.replace(/[^\d\s\-]/g, '');
-    onChange(digits ? `${country.dial}${digits}` : '');
-    e.target.value = digits;
+    setDigits('');
+    setDisplay('');
+    setTouched(false);
+    onDigitsChange('');
+    if (inputRef.current) inputRef.current.focus();
   };
 
   return (
-    <div className="relative flex rounded-xl border border-slate-200 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
-      {/* Country selector */}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-      >
-        <span className="text-lg leading-none">{country.flag}</span>
-        <span className="text-slate-600">{country.dial}</span>
-        <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
-      </button>
-
-      {/* Number input */}
-      <input
-        type="tel"
-        placeholder="Raqamni kiriting"
-        onChange={handleNumberChange}
-        className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none"
-      />
-
-      {/* Dropdown */}
-      {open && (
-        <div
-          ref={dropdownRef}
-          className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+    <div>
+      <div className={`relative flex rounded-xl border bg-white transition-shadow ${showError ? 'border-red-400 ring-2 ring-red-400/20' : 'border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20'}`}>
+        {/* Country selector */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
         >
-          {COUNTRIES.map((c) => (
-            <button
-              key={c.code}
-              type="button"
-              onClick={() => handleCountrySelect(c)}
-              className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 ${c.code === country.code ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700'}`}
-            >
-              <span className="text-base">{c.flag}</span>
-              <span className="flex-1 text-left">{c.name}</span>
-              <span className="text-slate-400">{c.dial}</span>
-            </button>
-          ))}
-        </div>
+          <span className="text-lg leading-none">{country.flag}</span>
+          <span className="tabular-nums text-slate-600">{country.dial}</span>
+          <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
+        </button>
+
+        {/* Number input — controlled */}
+        <input
+          ref={inputRef}
+          type="tel"
+          inputMode="numeric"
+          placeholder={isUZ ? '90 123 45 67' : 'Phone number'}
+          value={display}
+          onChange={handleNumberChange}
+          onBlur={() => setTouched(true)}
+          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 tabular-nums text-slate-900 placeholder:text-slate-400 focus:outline-none"
+        />
+
+        {/* Country dropdown */}
+        {open && (
+          <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+            {COUNTRIES.map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => handleCountrySelect(c)}
+                className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 ${c.code === country.code ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700'}`}
+              >
+                <span className="text-base">{c.flag}</span>
+                <span className="flex-1 text-left">{c.name}</span>
+                <span className="text-slate-400">{c.dial}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showError && (
+        <p className="mt-1 text-xs text-red-600">
+          {isUZ ? `${maxDigits - digits.length} ta raqam qoldi` : 'Raqamni to\'liq kiriting'}
+        </p>
       )}
     </div>
   );
@@ -132,6 +166,7 @@ const Register = () => {
   const [userType, setUserType] = useState('customer');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const recaptchaRef = useRef(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -142,6 +177,14 @@ const Register = () => {
       setError('Please complete the reCAPTCHA check before creating your account.');
       return;
     }
+
+    // Block submission if phone was started but is incomplete
+    if (phoneNumber && phoneNumber.replace(/\D/g, '').length < 11) {
+      // dial(3) + 9 digits = 12 chars min for UZ; just check raw digits count
+      setPhoneError('Telefon raqamini to\'liq kiriting yoki bo\'sh qoldiring.');
+      return;
+    }
+    setPhoneError('');
 
     try {
       setIsLoading(true);
@@ -313,8 +356,8 @@ const Register = () => {
               />
             </Field>
 
-            <Field label="Telefon raqamingiz" optional>
-              <PhoneInput value={phoneNumber} onChange={setPhoneNumber} />
+            <Field label="Telefon raqamingiz" error={phoneError} optional>
+              <PhoneInput onDigitsChange={setPhoneNumber} />
             </Field>
 
             {userType === 'business_owner' && (
