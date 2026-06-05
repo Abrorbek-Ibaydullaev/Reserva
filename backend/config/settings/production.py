@@ -183,16 +183,16 @@ STORAGES = {
 # ==============================================================================
 # Supabase Storage Configuration (Direct Integration)
 # ==============================================================================
-import os
+
 
 # 1. Fetch raw strings directly from os.environ to prevent env-casting issues
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'reserva-media')
+AWS_STORAGE_BUCKET_NAME = 'reserva-media'
 
 # 2. Hardcode your project endpoint to remove string parsing errors
-AWS_S3_ENDPOINT_URL = 'https://supabase.co'
-AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-central-1')
+AWS_S3_ENDPOINT_URL = 'https://pnxxcbgqzmiiwzgtmqvc.storage.supabase.co/storage/v1/s3'
+AWS_S3_REGION_NAME = 'eu-central-1'
 
 # 3. Core S3 parameters required by Supabase
 AWS_S3_CUSTOM_DOMAIN = None
