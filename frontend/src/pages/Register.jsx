@@ -11,9 +11,90 @@ import {
   EyeSlashIcon,
   BuildingOfficeIcon,
   UserGroupIcon,
-  PhoneIcon,
+  ChevronDownIcon,
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
+
+// Common countries with flag emoji and dial code
+const COUNTRIES = [
+  { code: 'UZ', flag: '🇺🇿', dial: '+998', name: 'Uzbekistan' },
+  { code: 'RU', flag: '🇷🇺', dial: '+7',   name: 'Russia' },
+  { code: 'KZ', flag: '🇰🇿', dial: '+7',   name: 'Kazakhstan' },
+  { code: 'KG', flag: '🇰🇬', dial: '+996', name: 'Kyrgyzstan' },
+  { code: 'TJ', flag: '🇹🇯', dial: '+992', name: 'Tajikistan' },
+  { code: 'TM', flag: '🇹🇲', dial: '+993', name: 'Turkmenistan' },
+  { code: 'AZ', flag: '🇦🇿', dial: '+994', name: 'Azerbaijan' },
+  { code: 'TR', flag: '🇹🇷', dial: '+90',  name: 'Turkey' },
+  { code: 'US', flag: '🇺🇸', dial: '+1',   name: 'USA' },
+  { code: 'GB', flag: '🇬🇧', dial: '+44',  name: 'UK' },
+  { code: 'DE', flag: '🇩🇪', dial: '+49',  name: 'Germany' },
+  { code: 'CN', flag: '🇨🇳', dial: '+86',  name: 'China' },
+  { code: 'KR', flag: '🇰🇷', dial: '+82',  name: 'South Korea' },
+  { code: 'AE', flag: '🇦🇪', dial: '+971', name: 'UAE' },
+];
+
+const PhoneInput = ({ value, onChange }) => {
+  const [country, setCountry] = useState(COUNTRIES[0]);
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const handleCountrySelect = (c) => {
+    setCountry(c);
+    setOpen(false);
+    // Re-trigger onChange so parent has the updated full number
+    onChange(value ? `${c.dial}${value}` : '');
+  };
+
+  const handleNumberChange = (e) => {
+    const digits = e.target.value.replace(/[^\d\s\-]/g, '');
+    onChange(digits ? `${country.dial}${digits}` : '');
+    e.target.value = digits;
+  };
+
+  return (
+    <div className="relative flex rounded-xl border border-slate-200 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+      {/* Country selector */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+      >
+        <span className="text-lg leading-none">{country.flag}</span>
+        <span className="text-slate-600">{country.dial}</span>
+        <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
+      </button>
+
+      {/* Number input */}
+      <input
+        type="tel"
+        placeholder="Raqamni kiriting"
+        onChange={handleNumberChange}
+        className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none"
+      />
+
+      {/* Dropdown */}
+      {open && (
+        <div
+          ref={dropdownRef}
+          className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+        >
+          {COUNTRIES.map((c) => (
+            <button
+              key={c.code}
+              type="button"
+              onClick={() => handleCountrySelect(c)}
+              className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 ${c.code === country.code ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700'}`}
+            >
+              <span className="text-base">{c.flag}</span>
+              <span className="flex-1 text-left">{c.name}</span>
+              <span className="text-slate-400">{c.dial}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
@@ -50,6 +131,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [userType, setUserType] = useState('customer');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const recaptchaRef = useRef(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -71,7 +153,7 @@ const Register = () => {
         password2: data.password2,
         first_name: data.first_name,
         last_name: data.last_name,
-        phone_number: data.phone_number || '',
+        phone_number: phoneNumber || '',
         user_type: userType,
         recaptcha_token: recaptchaToken,
       };
@@ -79,11 +161,7 @@ const Register = () => {
       const result = await authRegister(payload);
 
       if (result.success) {
-        if (userType === 'business_owner') {
-          navigate('/dashboard', { replace: true });
-        } else {
-          navigate('/services', { replace: true });
-        }
+        navigate('/', { replace: true });
       } else {
         const msg = result.message;
         if (typeof msg === 'string') {
@@ -235,15 +313,8 @@ const Register = () => {
               />
             </Field>
 
-            <Field label="Phone number" error={errors.phone_number?.message} optional>
-              <Input
-                icon={PhoneIcon}
-                type="tel"
-                placeholder="+998 90 000 00 00"
-                {...register('phone_number', {
-                  pattern: { value: /^[+]?[\d\s\-()]+$/, message: 'Invalid format' },
-                })}
-              />
+            <Field label="Telefon raqamingiz" optional>
+              <PhoneInput value={phoneNumber} onChange={setPhoneNumber} />
             </Field>
 
             {userType === 'business_owner' && (
