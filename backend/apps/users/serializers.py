@@ -11,9 +11,11 @@ User = get_user_model()
 def build_absolute_media_url(request, value):
     if not value:
         return value
+    # R2/S3 storage already returns a full URL — return it unchanged.
+    if str(value).startswith(('http://', 'https://')):
+        return str(value)
     if request:
         return request.build_absolute_uri(value)
-    # Fallback: prepend backend base URL for relative /media/ paths
     from django.conf import settings
     base = getattr(settings, 'SITE_URL', 'http://localhost:8000')
     if str(value).startswith('/'):
