@@ -174,33 +174,44 @@ STORAGES = {
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = Path(_env('MEDIA_ROOT', '/data')).resolve()
+
 
 # ---------------------------------------------------------------------------
 # Supabase Storage (activated when SUPABASE_URL + bucket env vars are present)
 # Uses Supabase's S3-compatible API via django-storages[boto3].
 # ---------------------------------------------------------------------------
-_supabase_url = _env('SUPABASE_URL')           # e.g. https://abcxyz.supabase.co
-_supabase_bucket = _env('AWS_STORAGE_BUCKET_NAME')  # e.g. reserva-media
-if _supabase_url and _supabase_bucket:
-    AWS_ACCESS_KEY_ID = _env('AWS_ACCESS_KEY_ID')       # Supabase S3 access key ID
-    AWS_SECRET_ACCESS_KEY = _env('AWS_SECRET_ACCESS_KEY')  # Supabase S3 secret key
-    AWS_STORAGE_BUCKET_NAME = _supabase_bucket
-    AWS_S3_ENDPOINT_URL = f'{_supabase_url.rstrip("/")}/storage/v1/s3'
-    AWS_S3_REGION_NAME = _env('AWS_S3_REGION_NAME', 'ap-southeast-1')
-    AWS_S3_ADDRESSING_STYLE = 'path'   # Supabase requires path-style, not virtual-hosted
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
-    AWS_QUERYSTRING_AUTH = False
+# ==============================================================================
+# Supabase Storage Configuration (Direct Integration)
+# ==============================================================================
+import os
 
-    STORAGES = {
-        'default': {'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage'},
-        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+# 1. Fetch raw strings directly from os.environ to prevent env-casting issues
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'reserva-media')
+
+# 2. Hardcode your project endpoint to remove string parsing errors
+AWS_S3_ENDPOINT_URL = 'https://supabase.co'
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-central-1')
+
+# 3. Core S3 parameters required by Supabase
+AWS_S3_CUSTOM_DOMAIN = None
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+
+# 4. Explicitly tell Django's global STORAGES block to use S3 for file media uploads
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage'
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     }
+}
 
-    # Public URL for uploaded files: Supabase public bucket URL format
-    MEDIA_URL = f'{_supabase_url.rstrip("/")}/storage/v1/object/public/{_supabase_bucket}/'
+# 5. Define the exact public asset directory URL path for your React UI
+MEDIA_URL = 'https://supabase.co'
 
 # ---------------------------------------------------------------------------
 # Custom user model
