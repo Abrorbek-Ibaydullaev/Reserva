@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService, userService } from '../services/api';
+import { authService, userService, fixMediaUrl } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -75,30 +75,35 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * REGISTER
+   * The backend returns access + refresh tokens alongside the new user, so
+   * no separate login request (and therefore no second reCAPTCHA) is needed.
    */
   const register = async (userData) => {
     try {
       setLoading(true);
 
-      // Ensure password2
       const payload = {
         ...userData,
         password2: userData.password2 || userData.password,
       };
 
-      // 1. Register
-      await authService.register(payload);
+      // Registration endpoint now returns { access, refresh, user }
+      const response = await authService.register(payload);
+      const { access, refresh, user: registeredUser } = response.data;
 
-      // 2. Auto-login
-      await authService.login(payload.email, payload.password);
+      // Store tokens exactly as authService.login does
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+      const normalizedUser = {
+        ...registeredUser,
+        profile_picture: fixMediaUrl(registeredUser.profile_picture),
+      };
+      localStorage.setItem('user_data', JSON.stringify(normalizedUser));
 
-      // 3. Load user
-      const currentUser = authService.getCurrentUser();
-
-      setUser(currentUser);
+      setUser(normalizedUser);
       setIsAuthenticated(true);
 
-      return { success: true, user: currentUser };
+      return { success: true, user: normalizedUser };
     } catch (error) {
       return {
         success: false,
