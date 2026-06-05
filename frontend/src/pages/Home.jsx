@@ -791,7 +791,7 @@ const Home = () => {
       {/* ── STICKY BAR ─────────────────────────────────────────────────── */}
       {sticky && (
         <div className={`fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e] shadow-xl transition-all duration-[280ms] ${stickyIn ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
-          <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
             <Link to="/" className="mr-1 flex-shrink-0 text-lg font-extrabold text-white hidden sm:block">Reserva</Link>
 
             <form onSubmit={doSearch} className="flex flex-1 items-center gap-2 min-w-0">
@@ -803,8 +803,8 @@ const Home = () => {
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setShowSearchDrop(true); }}
                     onFocus={() => setShowSearchDrop(true)}
-                    placeholder="Search services or businesses"
-                    className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                    placeholder="Search…"
+                    className="w-full min-w-0 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
                   />
                   {search && (
                     <button type="button" onClick={() => { setSearch(''); setShowSearchDrop(true); }} className="flex-shrink-0 text-slate-400 hover:text-white transition">
@@ -970,12 +970,19 @@ const Home = () => {
                 <span className={when ? 'text-white' : 'text-slate-500'}>{whenLabel}</span>
               </button>
 
-              <button type="submit" className="flex-shrink-0 rounded-xl bg-[#2eadd0] px-5 py-2 text-sm font-semibold text-white hover:bg-[#29a0c0] transition">
-                Search
+              {/* Submit: icon-only on mobile, text on sm+ */}
+              <button
+                type="submit"
+                className="flex-shrink-0 flex items-center justify-center gap-1.5 rounded-xl bg-[#2eadd0] px-3 py-2 text-sm font-semibold text-white hover:bg-[#29a0c0] transition sm:px-5"
+                aria-label="Search"
+              >
+                <MagnifyingGlassIcon className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">Search</span>
               </button>
             </form>
 
-            <div className="flex-shrink-0 flex items-center gap-3 ml-1">
+            {/* Right: hidden on mobile to avoid overflow */}
+            <div className="flex-shrink-0 hidden sm:flex items-center gap-3 ml-1">
               {isAuthenticated
                 ? <UserMenu dark />
                 : <>
@@ -1039,17 +1046,23 @@ const Home = () => {
 
           {/* Search bar — single field like Booksy */}
           <form onSubmit={doSearch} className="w-full max-w-xl px-2 sm:px-0">
-            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 shadow-2xl sm:px-5 sm:py-3">
+            <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-2xl sm:px-5 sm:py-3">
               <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search services or businesses"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none text-sm"
+                className="min-w-0 flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none text-sm"
               />
-              <button type="submit" className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
-                Search
+              {/* On very small screens: icon-only button; on sm+: full text button */}
+              <button
+                type="submit"
+                className="flex-shrink-0 flex items-center justify-center gap-1.5 rounded-full bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition sm:px-6"
+                aria-label="Search"
+              >
+                <MagnifyingGlassIcon className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">Search</span>
               </button>
             </div>
           </form>
