@@ -28,11 +28,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
     recaptcha_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    # Explicit declaration prevents the model's RegexValidator from running
+    # on empty submissions — DRF only skips validators for blank when the
+    # field is declared with allow_blank=True at the serializer level.
     phone_number = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        default=''
-    )
+        required=False, allow_blank=True, allow_null=True, default='')
 
     class Meta:
         model = User
