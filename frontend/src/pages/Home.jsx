@@ -411,7 +411,7 @@ const BizCard = ({ biz }) => {
     <Link
       to={`/business/${biz.id}`}
       data-card
-      className="group/card flex-shrink-0 w-56 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+      className="group/card flex-shrink-0 w-44 sm:w-56 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
     >
       <div className="relative h-44 overflow-hidden bg-slate-100">
         {img ? (
@@ -786,7 +786,7 @@ const Home = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa]">
 
       {/* ── STICKY BAR ─────────────────────────────────────────────────── */}
       {sticky && (
@@ -815,7 +815,7 @@ const Home = () => {
 
                 {/* Search dropdown */}
                 {showSearchDrop && (
-                  <div className="absolute left-0 top-full mt-3 w-full min-w-[340px] rounded-2xl bg-white shadow-2xl z-[200]">
+                  <div className="absolute left-0 top-full mt-3 w-full min-w-0 rounded-2xl bg-white shadow-2xl z-[200] sm:min-w-[340px]">
                     <div className="absolute -top-2 left-8 h-0 w-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white" />
 
                     <div className="p-4">
@@ -1001,7 +1001,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70" />
 
         {/* Navbar */}
-        <div className="relative z-10 flex items-center justify-between px-8 py-5">
+        <div className="relative z-10 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <Link to="/" className="text-2xl font-extrabold text-white tracking-tight">Reserva</Link>
           <div className="flex items-center gap-3">
             {isAuthenticated
@@ -1018,7 +1018,7 @@ const Home = () => {
 
         {/* Centre content */}
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 text-center">
-          <h1 className="mb-4 min-h-[6rem] text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
+          <h1 className="mb-4 min-h-[5rem] text-2xl font-extrabold leading-tight text-white sm:min-h-[6rem] sm:text-4xl md:text-5xl">
             {/* line 1 */}
             <span>
               {tw.l1}
@@ -1035,11 +1035,11 @@ const Home = () => {
               )}
             </span>
           </h1>
-          <p className="mb-7 text-base text-white/70">Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering</p>
+          <p className="mb-7 px-2 text-sm text-white/70 sm:text-base">Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering</p>
 
           {/* Search bar — single field like Booksy */}
-          <form onSubmit={doSearch} className="w-full max-w-xl">
-            <div className="flex items-center gap-2 rounded-full bg-white px-5 py-3 shadow-2xl">
+          <form onSubmit={doSearch} className="w-full max-w-xl px-2 sm:px-0">
+            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 shadow-2xl sm:px-5 sm:py-3">
               <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
               <input
                 type="text"
@@ -1136,7 +1136,7 @@ const Home = () => {
           </div>
         ) : (
           grouped.map(([cat, list]) => (
-            <div key={cat} className="mx-auto mb-10 max-w-6xl px-4 sm:px-8">
+            <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
               <div className="mb-5 flex items-end justify-between">
                 <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
                 <button

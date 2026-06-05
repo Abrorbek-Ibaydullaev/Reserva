@@ -90,11 +90,11 @@ const Services = () => {
   }, [businesses, search, selectedCategory, cityFilter]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50">
       {/* Hero / Search bar */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-10">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-8 sm:py-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-1 text-3xl font-extrabold text-white">
+          <h1 className="mb-1 text-2xl font-extrabold text-white sm:text-3xl">
             {selectedCategory !== 'All' ? selectedCategory : 'Find a service near you'}
           </h1>
           {cityFilter && (
@@ -128,7 +128,7 @@ const Services = () => {
       </div>
 
       {/* Category chips */}
-      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="sticky top-16 z-10 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div className="mx-auto max-w-7xl">
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {categories.map((cat) => (

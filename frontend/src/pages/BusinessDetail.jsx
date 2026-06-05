@@ -663,7 +663,7 @@ const BusinessDetail = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-6 gap-1 border-t border-gray-100 bg-white p-1 md:gap-0 md:p-0">
+      <div className="grid grid-cols-4 gap-1 border-t border-gray-100 bg-white p-1 sm:grid-cols-6 md:gap-0 md:p-0">
         {thumbnailImages.map((image, index) => (
           <button
             key={`${image}-${index}`}
@@ -899,7 +899,7 @@ const BusinessDetail = () => {
   ) : null;
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen overflow-x-hidden bg-gray-100">
       {localBusinessSchema ? (
         <script type="application/ld+json">
           {JSON.stringify(localBusinessSchema)}
@@ -931,16 +931,16 @@ const BusinessDetail = () => {
       </div>
 
       {/* Main Content: Two Columns */}
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto overflow-x-hidden px-3 py-6 grid grid-cols-1 xl:grid-cols-3 gap-6 sm:px-4 sm:py-8 sm:gap-8">
         {/* Left: Services */}
         <div className="order-2 xl:order-1 xl:col-span-2">
           {businessHeroSection ? <div className="mb-8">{businessHeroSection}</div> : null}
 
-          <div className="mb-5 flex items-center gap-3">
-            <h3 className="shrink-0 text-[2rem] font-bold leading-none text-gray-900">
+          <div className="mb-5 flex flex-wrap items-center gap-3">
+            <h3 className="shrink-0 text-2xl font-bold leading-none text-gray-900 sm:text-[2rem]">
                 {hasBookingDraftForBusiness ? 'Select services' : 'Popular Services'}
             </h3>
-            <div className="flex min-w-0 flex-1 items-center rounded-2xl border border-gray-200 bg-[#f5f5f5] px-3 py-2">
+            <div className="flex min-w-0 flex-1 basis-full items-center rounded-2xl border border-gray-200 bg-[#f5f5f5] px-3 py-2 sm:basis-auto">
               <svg className="h-5 w-5 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.35-5.15a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input className="ml-2 min-w-0 flex-1 bg-transparent py-1 text-sm outline-none placeholder:text-gray-400" placeholder="Search for service" value={filters.search} onChange={(e) => setFilters({ search: e.target.value })} />
             </div>
@@ -1254,8 +1254,8 @@ const BusinessDetail = () => {
       ) : null}
 
       {showLoginModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6">
-          <div className="w-full max-w-sm rounded-[24px] bg-white p-8 shadow-xl text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-white p-6 shadow-xl text-center sm:p-8">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f6fb] text-[#2f95bb] mb-5">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
@@ -1291,27 +1291,27 @@ const BusinessDetail = () => {
       ) : null}
 
       {showDiscardModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-6">
-          <div className="w-full max-w-2xl rounded-[24px] bg-white p-6 shadow-xl">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-              <span className="text-5xl font-light">i</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-white p-5 shadow-xl sm:max-w-2xl sm:p-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
+              <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Discard booking?</h2>
-            <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-gray-600">
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">Discard booking?</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">
               Are you sure you want to abort the booking process? Unsaved changes will be lost.
             </p>
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-3">
               <button
                 type="button"
                 onClick={handleDiscardDraft}
-                className="w-full rounded-2xl bg-[#2f95bb] px-6 py-4 text-lg font-semibold text-white"
+                className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg"
               >
                 Yes, discard
               </button>
               <button
                 type="button"
                 onClick={() => setShowDiscardModal(false)}
-                className="w-full rounded-2xl border border-gray-300 px-6 py-4 text-lg font-semibold text-gray-900"
+                className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg"
               >
                 Continue booking
               </button>

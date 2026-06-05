@@ -501,10 +501,10 @@ const BookAppointment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbfa] px-4 py-8 lg:px-10">
+    <div className="min-h-screen bg-[#fbfbfa] overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
       {showConfirmation && confirmedBooking ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-6">
-          <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 bg-white p-8 text-center shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-4">
+          <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 bg-white p-6 text-center shadow-xl sm:p-8">
             <button
               type="button"
               onClick={handleClose}
@@ -532,27 +532,27 @@ const BookAppointment = () => {
       ) : null}
 
       {showDiscardModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-6">
-          <div className="w-full max-w-2xl rounded-[24px] bg-white p-6 shadow-xl">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-              <span className="text-5xl font-light">i</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-white p-5 shadow-xl sm:max-w-2xl sm:p-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
+              <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Discard booking?</h2>
-            <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-gray-600">
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">Discard booking?</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">
               Are you sure you want to abort the booking process? Unsaved changes will be lost.
             </p>
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-3">
               <button
                 type="button"
                 onClick={handleDiscardBooking}
-                className="w-full rounded-2xl bg-[#2f95bb] px-6 py-4 text-lg font-semibold text-white"
+                className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg"
               >
                 Yes, discard
               </button>
               <button
                 type="button"
                 onClick={() => setShowDiscardModal(false)}
-                className="w-full rounded-2xl border border-gray-300 px-6 py-4 text-lg font-semibold text-gray-900"
+                className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg"
               >
                 Continue booking
               </button>
@@ -674,7 +674,7 @@ const BookAppointment = () => {
                       className="flex flex-col items-center justify-center py-1"
                     >
                       <div
-                        className={`flex h-14 w-14 items-center justify-center rounded-full border text-lg font-medium transition ${
+                        className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-medium transition sm:h-14 sm:w-14 sm:text-lg ${
                           active
                             ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
                             : inMonth
@@ -725,7 +725,7 @@ const BookAppointment = () => {
                     className="min-w-[76px] text-center"
                   >
                     <div
-                      className={`mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full border text-base md:text-xl font-medium transition ${
+                      className={`mx-auto flex h-11 w-11 md:h-14 md:w-14 lg:h-16 lg:w-16 items-center justify-center rounded-full border text-sm md:text-base lg:text-xl font-medium transition ${
                         active
                           ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
                           : 'border-gray-200 bg-[#f2f2f1] text-gray-900'
@@ -744,7 +744,7 @@ const BookAppointment = () => {
           )}
 
           <div className="mt-8 border-t border-gray-200 pt-8">
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-3">
               {['Morning', 'Afternoon', 'Evening'].map((label) => (
                 <div key={label}>
                   <p className="mb-4 text-center text-sm text-gray-500">

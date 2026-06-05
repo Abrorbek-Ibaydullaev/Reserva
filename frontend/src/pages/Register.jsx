@@ -198,7 +198,7 @@ const Register = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="First name" error={errors.first_name?.message}>
                 <Input
                   icon={UserIcon}
@@ -259,7 +259,7 @@ const Register = () => {
               </Field>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Password" error={errors.password?.message}>
                 <div className="relative">
                   <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />

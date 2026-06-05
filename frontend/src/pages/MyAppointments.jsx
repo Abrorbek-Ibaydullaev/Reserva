@@ -91,9 +91,9 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-4 pb-4">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <h2 className="text-base font-bold text-slate-900">Rate your experience</h2>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
@@ -158,9 +158,9 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
       .filter(Boolean).join(' ') || a.customer_details?.email || 'Customer';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-4 pb-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <h2 className="text-base font-bold text-slate-900">Appointment details</h2>
@@ -184,12 +184,12 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
           </div>
 
           {/* Info grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <CalendarDaysIcon className="h-4 w-4" /> Date
               </div>
-              <p className="text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
+              <p className="break-words text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
             </div>
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
@@ -340,13 +340,13 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
         <span className="flex items-center gap-1">
-          <CalendarDaysIcon className="h-3.5 w-3.5" />
+          <CalendarDaysIcon className="h-3.5 w-3.5 flex-shrink-0" />
           {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>
         <span className="flex items-center gap-1">
-          <ClockIcon className="h-3.5 w-3.5" />
+          <ClockIcon className="h-3.5 w-3.5 flex-shrink-0" />
           {fmtTime(a.start_time)} · {a.duration} min
         </span>
         <span className="ml-auto font-semibold text-slate-700">

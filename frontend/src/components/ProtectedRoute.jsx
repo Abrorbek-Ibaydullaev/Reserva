@@ -24,8 +24,8 @@ const ProtectedRoute = ({ children, allowedUserTypes = [], redirectTo = '/' }) =
         }
 
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6">
-                <div className="w-full max-w-sm rounded-[24px] bg-white p-8 shadow-xl text-center">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                <div className="mx-4 w-full max-w-sm rounded-[24px] bg-white p-6 shadow-xl text-center sm:mx-0 sm:p-8">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f6fb] text-[#2f95bb] mb-5">
                         <svg className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />

@@ -226,7 +226,7 @@ const Navbar = () => {
             
             {isAuthenticated ? (
               <div className="border-t border-gray-200 pb-3 pt-4">
-                <div className="flex items-center px-4">
+                <div className="flex min-w-0 items-center px-4">
                   {user?.profile_picture ? (
                     <img
                       className="h-10 w-10 rounded-full"
@@ -236,11 +236,11 @@ const Navbar = () => {
                   ) : (
                     <UserCircleIcon className="h-10 w-10 text-gray-400" />
                   )}
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">
+                  <div className="ml-3 min-w-0">
+                    <div className="truncate text-base font-medium text-gray-800">
                       {user?.first_name} {user?.last_name}
                     </div>
-                    <div className="text-sm font-medium text-gray-500">
+                    <div className="truncate text-sm font-medium text-gray-500">
                       {user?.email}
                     </div>
                   </div>

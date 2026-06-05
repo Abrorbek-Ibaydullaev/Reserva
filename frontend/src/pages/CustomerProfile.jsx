@@ -293,7 +293,7 @@ const CustomerProfile = () => {
             <h2 className="mb-5 text-base font-bold text-slate-900">Personal Information</h2>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="First name">
                   <TextInput name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First name" />
                 </Field>
@@ -317,7 +317,7 @@ const CustomerProfile = () => {
                     <TextInput name="address" value={formData.address} onChange={handleChange} placeholder="Street address" />
                   </Field>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label="City">
                       <TextInput name="city" value={formData.city} onChange={handleChange} placeholder="Toshkent" />
                     </Field>
@@ -326,7 +326,7 @@ const CustomerProfile = () => {
                     </Field>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label="Country">
                       <TextInput name="country" value={formData.country} onChange={handleChange} placeholder="Uzbekistan" />
                     </Field>

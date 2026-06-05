@@ -97,17 +97,17 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="mt-8 pt-8 border-t border-gray-800 dark:border-gray-600">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center space-x-3">
-              <EnvelopeIcon className="h-5 w-5 text-primary-400" />
-              <span className="text-gray-400 dark:text-gray-300">support@Reserva.com</span>
+            <div className="flex items-center space-x-3 min-w-0">
+              <EnvelopeIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
+              <span className="truncate text-gray-400 dark:text-gray-300">support@Reserva.com</span>
             </div>
-            <div className="flex items-center space-x-3">
-              <PhoneIcon className="h-5 w-5 text-primary-400" />
+            <div className="flex items-center space-x-3 min-w-0">
+              <PhoneIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
               <span className="text-gray-400 dark:text-gray-300">+1 (555) 123-4567</span>
             </div>
-            <div className="flex items-center space-x-3">
-              <MapPinIcon className="h-5 w-5 text-primary-400" />
-              <span className="text-gray-400 dark:text-gray-300">123 Business St, San Francisco, CA</span>
+            <div className="flex items-center space-x-3 min-w-0">
+              <MapPinIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
+              <span className="truncate text-gray-400 dark:text-gray-300">123 Business St, San Francisco, CA</span>
             </div>
           </div>
         </div>
