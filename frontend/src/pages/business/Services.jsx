@@ -111,15 +111,15 @@ const BusinessServices = () => {
     <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-              <p className="mt-2 text-gray-500">Manage what customers can book.</p>
+              <p className="mt-1 text-gray-500">Manage what customers can book.</p>
             </div>
             <button
               type="button"
               onClick={resetForm}
-              className="inline-flex items-center rounded-2xl bg-[#4a90b0] px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex w-fit items-center rounded-2xl bg-[#4a90b0] px-4 py-2 text-sm font-semibold text-white"
             >
               <PlusIcon className="mr-2 h-5 w-5" />
               New service

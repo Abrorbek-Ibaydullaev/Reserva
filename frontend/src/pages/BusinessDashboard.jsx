@@ -50,23 +50,22 @@ const delta = (v) => `${v >= 0 ? '+' : ''}${v}%`;
 
 // ── Compact stat card ────────────────────────────────────────────────────────
 const StatCard = ({ title, value, sub, icon: Icon, color, trend }) => (
-  <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
-    <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
-      <Icon className="h-6 w-6" />
+  <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm">
+    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
+      <Icon className="h-5 w-5" />
     </div>
     <div className="min-w-0 flex-1">
       <p className="truncate text-xs font-medium text-slate-500">{title}</p>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <div className="flex flex-wrap items-baseline gap-x-1.5">
+        <p className="text-xl font-bold leading-tight text-slate-900">{value}</p>
+        {trend !== undefined && (
+          <span className={`text-xs font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+            {trend >= 0 ? '↑' : '↓'}{Math.abs(trend)}%
+          </span>
+        )}
+      </div>
       {sub && <p className="truncate text-xs text-slate-400">{sub}</p>}
     </div>
-    {trend !== undefined && (
-      <div className={`flex items-center gap-1 text-xs font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-        {trend >= 0
-          ? <ArrowTrendingUpIcon className="h-4 w-4" />
-          : <ArrowTrendingDownIcon className="h-4 w-4" />}
-        {Math.abs(trend)}%
-      </div>
-    )}
   </div>
 );
 
@@ -135,7 +134,7 @@ const BusinessDashboard = () => {
   }));
 
   return (
-    <div className="flex h-full flex-col gap-4 p-5 overflow-hidden">
+    <div className="flex flex-col gap-4 p-4 sm:p-5">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
@@ -194,7 +193,7 @@ const BusinessDashboard = () => {
       </div>
 
       {/* ── Middle row ─────────────────────────────────────────────────── */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
 
         {/* Employee list */}
         <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
@@ -237,25 +236,27 @@ const BusinessDashboard = () => {
             <h2 className="text-sm font-semibold text-slate-900">Appointment Status</h2>
             <span className="text-xs text-slate-400">{overview.completion_rate}% complete</span>
           </div>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="60%">
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius="40%"
-                  outerRadius="70%"
-                  paddingAngle={3}
-                >
-                  {statusData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => [v, 'appointments']} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-1 grid grid-cols-2 gap-1.5">
+          <div>
+            <div className="h-[130px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius="40%"
+                    outerRadius="70%"
+                    paddingAngle={3}
+                  >
+                    {statusData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v) => [v, 'appointments']} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-1.5">
               {statusData.map((item) => (
                 <div key={item.name} className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2 py-1">
                   <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
@@ -273,7 +274,7 @@ const BusinessDashboard = () => {
             <h2 className="text-sm font-semibold text-slate-900">Booking Trend</h2>
             <span className="text-xs text-slate-400">Last 14 days</span>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trends} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <defs>
@@ -301,7 +302,7 @@ const BusinessDashboard = () => {
       </div>
 
       {/* ── Bottom row ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2" style={{ height: '180px' }}>
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
 
         {/* Busiest days */}
         <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
@@ -309,7 +310,7 @@ const BusinessDashboard = () => {
             <h2 className="text-sm font-semibold text-slate-900">Busiest Days</h2>
             <span className="text-xs text-slate-400">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="h-[150px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={busiest_days} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
                 <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
@@ -330,7 +331,7 @@ const BusinessDashboard = () => {
               Manage <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="h-[150px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serviceBarData} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
                 <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
