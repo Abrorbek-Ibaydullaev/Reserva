@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 def _env(key, default=None, required=False):
