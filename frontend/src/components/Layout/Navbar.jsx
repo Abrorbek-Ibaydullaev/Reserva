@@ -1,36 +1,37 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import {
-  Bars3Icon,
-  XMarkIcon,
+import { 
+  Bars3Icon, 
+  XMarkIcon, 
   CalendarIcon,
   UserCircleIcon,
+  BellIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   HomeIcon,
   BriefcaseIcon,
-  ClipboardDocumentListIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ThemeToggle';
-import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const publicNavigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Services', href: '/services' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Home', href: '/', current: true },
+    { name: 'Services', href: '/services', current: false },
+    { name: 'About', href: '/about', current: false },
+    { name: 'Contact', href: '/contact', current: false },
   ];
 
   const staffFacingNavigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Home', href: '/', current: true },
+    { name: 'About', href: '/about', current: false },
+    { name: 'Contact', href: '/contact', current: false },
   ];
 
   const userNavigation = [
@@ -41,15 +42,16 @@ const Navbar = () => {
 
   const businessNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Profile', href: '/dashboard/profile', icon: UserCircleIcon },
+    { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'My Appointments', href: '/appointments', icon: ClipboardDocumentListIcon },
     { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
     { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
   ];
 
   const employeeNavigation = [
     { name: 'Dashboard', href: '/employee/dashboard', icon: HomeIcon },
-    { name: 'Appointments', href: '/employee/appointments', icon: CalendarIcon },
-    { name: 'Profile', href: '/employee/profile', icon: UserCircleIcon },
+    { name: 'My Appointments', href: '/employee/appointments', icon: CalendarIcon },
+    { name: 'Profile', href: '/profile', icon: UserCircleIcon },
   ];
 
   const handleLogout = () => {
@@ -72,155 +74,217 @@ const Navbar = () => {
     return publicNavigation;
   };
 
-  const userInitial = user?.first_name?.[0]?.toUpperCase() || 'U';
-
   return (
-    <Disclosure as="nav" className="nav-shell">
+    <Disclosure as="nav" className="bg-white dark:bg-gray-900 shadow-lg">
       {({ open }) => (
         <>
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <div className="flex min-w-0 items-center gap-8">
-              <Link to="/" className="flex items-center gap-3">
-                <span className="metric-icon h-10 w-10">
-                  <CalendarIcon className="h-5 w-5" />
-                </span>
-                <span className="text-xl font-bold tracking-normal text-token">Reserva</span>
-              </Link>
-
-              <div className="hidden items-center gap-1 sm:flex">
-                {getTopNavigation().map((item) => (
-                  <Link key={item.name} to={item.href} className="nav-link">
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="hidden items-center gap-3 sm:flex">
-              <ThemeToggle />
-              {isAuthenticated ? <NotificationBell /> : null}
-
-              {isAuthenticated ? (
-                <Menu as="div" className="relative">
-                  <Menu.Button className="btn-secondary min-h-0 px-2 py-1.5">
-                    {user?.profile_picture ? (
-                      <img
-                        className="h-8 w-8 rounded-full object-cover"
-                        src={user.profile_picture}
-                        alt={user.first_name || 'User'}
-                      />
-                    ) : (
-                      <span className="avatar-token h-8 w-8 text-sm">{userInitial}</span>
-                    )}
-                    <span className="hidden max-w-28 truncate text-sm md:block">
-                      {user?.first_name || 'User'}
-                    </span>
-                  </Menu.Button>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-150"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95"
-                  >
-                    <Menu.Items className="dropdown-panel right-0 mt-3 w-60 min-w-0 origin-top-right p-2 focus:outline-none">
-                      {getNavigationItems().map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <Link
-                              to={item.href}
-                              className={`dropdown-item ${active ? 'bg-muted-token' : ''}`}
-                            >
-                              <item.icon className="h-5 w-5 text-muted" />
-                              <span className="font-semibold">{item.name}</span>
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      ))}
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            type="button"
-                            onClick={handleLogout}
-                            className={`dropdown-item text-danger ${active ? 'bg-muted-token' : ''}`}
-                          >
-                            <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                            <span className="font-semibold">Logout</span>
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Link to="/login" className="btn-ghost">
-                    Login
-                  </Link>
-                  <Link to="/register" className="btn-primary">
-                    Sign Up
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-16 justify-between">
+              {/* Logo and Desktop Navigation */}
+              <div className="flex">
+                <div className="flex flex-shrink-0 items-center">
+                  <Link to="/" className="flex items-center space-x-2">
+                    <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">Reserva</span>
                   </Link>
                 </div>
-              )}
-            </div>
+                
+                {/* Desktop Navigation Links */}
+                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                  {getTopNavigation().map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 border-b-2 border-transparent hover:border-primary-600 dark:hover:border-primary-400"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
 
-            <div className="flex items-center gap-2 sm:hidden">
-              <ThemeToggle />
-              <Disclosure.Button className="icon-button">
-                <span className="sr-only">Open main menu</span>
-                {open ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
-              </Disclosure.Button>
+              {/* Right side items */}
+              <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
+                {/* Notifications */}
+                {isAuthenticated && (
+                  <button className="relative p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none">
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-6 w-6" />
+                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
+                  </button>
+                )}
+
+                {/* User Menu */}
+                {isAuthenticated ? (
+                  <Menu as="div" className="relative ml-3">
+                    <div>
+                      <Menu.Button className="flex items-center space-x-2 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                        {user?.profile_picture ? (
+                          <img
+                            className="h-8 w-8 rounded-full"
+                            src={user.profile_picture}
+                            alt={user.first_name}
+                          />
+                        ) : (
+                          <UserCircleIcon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                        )}
+                        <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {user?.first_name || 'User'}
+                        </span>
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-200"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {getNavigationItems().map((item) => (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <Link
+                                to={item.href}
+                                className={`${
+                                  active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                                } flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                              >
+                                <item.icon className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                {item.name}
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        ))}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={handleLogout}
+                              className={`${
+                                active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              } flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                            >
+                              <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                              Logout
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                ) : (
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/login"
+                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                        className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile menu button */}
+              <div className="flex items-center sm:hidden">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+                  <span className="sr-only">Open main menu</span>
+                  {open ? (
+                    <XMarkIcon className="block h-6 w-6" />
+                  ) : (
+                    <Bars3Icon className="block h-6 w-6" />
+                  )}
+                </Disclosure.Button>
+              </div>
             </div>
           </div>
 
-          <Disclosure.Panel className="border-t border-token bg-surface-token sm:hidden">
-            <div className="space-y-1 p-3">
+          {/* Mobile menu */}
+          <Disclosure.Panel className="sm:hidden">
+            <div className="space-y-1 pb-3 pt-2">
               {getTopNavigation().map((item) => (
-                <Disclosure.Button key={item.name} as={Link} to={item.href} className="nav-link w-full">
+                <Disclosure.Button
+                  key={item.name}
+                  as={Link}
+                  to={item.href}
+                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 dark:text-gray-400 hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200"
+                >
                   {item.name}
                 </Disclosure.Button>
               ))}
             </div>
-
-            <div className="border-t border-token p-3">
-              {isAuthenticated ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3 px-3 py-3">
-                    {user?.profile_picture ? (
-                      <img className="h-10 w-10 rounded-full object-cover" src={user.profile_picture} alt="" />
-                    ) : (
-                      <span className="avatar-token h-10 w-10 text-sm">{userInitial}</span>
-                    )}
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-token">
-                        {user?.first_name} {user?.last_name}
-                      </p>
-                      <p className="truncate text-xs text-muted">{user?.email}</p>
+            
+            {isAuthenticated ? (
+              <div className="border-t border-gray-200 pb-3 pt-4">
+                <div className="flex min-w-0 items-center px-4">
+                  {user?.profile_picture ? (
+                    <img
+                      className="h-10 w-10 rounded-full"
+                      src={user.profile_picture}
+                      alt={user.first_name}
+                    />
+                  ) : (
+                    <UserCircleIcon className="h-10 w-10 text-gray-400" />
+                  )}
+                  <div className="ml-3 min-w-0">
+                    <div className="truncate text-base font-medium text-gray-800">
+                      {user?.first_name} {user?.last_name}
+                    </div>
+                    <div className="truncate text-sm font-medium text-gray-500">
+                      {user?.email}
                     </div>
                   </div>
+                </div>
+                <div className="mt-3 space-y-1">
                   {getNavigationItems().map((item) => (
-                    <Disclosure.Button key={item.name} as={Link} to={item.href} className="nav-link w-full">
+                    <Disclosure.Button
+                      key={item.name}
+                      as={Link}
+                      to={item.href}
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    >
                       {item.name}
                     </Disclosure.Button>
                   ))}
-                  <Disclosure.Button as="button" onClick={handleLogout} className="nav-link w-full text-danger">
+                  <Disclosure.Button
+                    as="button"
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                  >
                     Logout
                   </Disclosure.Button>
                 </div>
-              ) : (
-                <div className="grid gap-2">
-                  <Disclosure.Button as={Link} to="/login" className="btn-secondary">
+              </div>
+            ) : (
+              <div className="border-t border-gray-200 pb-3 pt-4">
+                <div className="space-y-1">
+                  <Disclosure.Button
+                    as={Link}
+                    to="/login"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                  >
                     Login
                   </Disclosure.Button>
-                  <Disclosure.Button as={Link} to="/register" className="btn-primary">
+                  <Disclosure.Button
+                    as={Link}
+                    to="/register"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                  >
                     Sign Up
                   </Disclosure.Button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </Disclosure.Panel>
         </>
       )}

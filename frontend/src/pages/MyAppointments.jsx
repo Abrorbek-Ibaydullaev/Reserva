@@ -13,30 +13,31 @@ import {
 import { StarIcon } from '@heroicons/react/24/solid';
 import { appointmentService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import {
-  compareAppointmentAsc,
-  compareAppointmentDesc,
-  formatCalendarDate,
-  formatClockTime,
-  formatStatus,
-  getAppointmentStart,
-  responseList,
-} from '../utils/data';
 
 const fmtDate = (d) =>
-  formatCalendarDate(d, {
+  new Date(`${d}T00:00:00`).toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
   });
 
-const fmtTime = (t) => formatClockTime(t);
+const fmtTime = (t) => {
+  const [h, m] = t.split(':').map(Number);
+  const d = new Date(); d.setHours(h, m);
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const apptStart = (a) => {
+  const [h, m] = a.start_time.split(':').map(Number);
+  const d = new Date(`${a.date}T00:00:00`); d.setHours(h, m);
+  return d;
+};
 
 const STATUS_STYLE = {
-  pending:     'bg-muted-token text-warning',
-  confirmed:   'bg-muted-token text-brand',
-  completed:   'bg-muted-token text-success',
-  cancelled:   'bg-muted-token text-danger',
-  rescheduled: 'bg-muted-token text-brand',
-  no_show:     'bg-muted-token text-soft',
+  pending:     'bg-amber-100 text-amber-800',
+  confirmed:   'bg-blue-100 text-blue-800',
+  completed:   'bg-emerald-100 text-emerald-800',
+  cancelled:   'bg-red-100 text-red-800',
+  rescheduled: 'bg-violet-100 text-violet-800',
+  no_show:     'bg-slate-100 text-slate-600',
 };
 
 const TABS = ['Upcoming', 'Past', 'Cancelled'];
@@ -52,7 +53,7 @@ const StarPicker = ({ value, onChange }) => (
         className="focus:outline-none"
       >
         <StarIcon
-          className={`h-8 w-8 transition-colors ${n <= value ? 'text-warning' : 'text-muted hover:text-warning'}`}
+          className={`h-8 w-8 transition-colors ${n <= value ? 'text-amber-400' : 'text-slate-200 hover:text-amber-200'}`}
         />
       </button>
     ))}
@@ -71,10 +72,6 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
     if (!comment.trim()) { toast.error('Please write a comment.'); return; }
     try {
       setSubmitting(true);
-      if (!a.service_details?.id) {
-        toast.error('This appointment is missing service details.');
-        return;
-      }
       await serviceService.addReview(a.service_details.id, { rating, comment });
       toast.success('Review submitted — thank you!');
       onSubmitted(a.service_details.id);
@@ -94,43 +91,43 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-4 pb-4">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[var(--radius-lg)] bg-surface-token shadow-2xl">
-        <div className="flex items-center justify-between border-b border-token px-6 py-4">
-          <h2 className="text-base font-bold text-token">Rate your experience</h2>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-muted-token">
-            <XMarkIcon className="h-5 w-5 text-muted" />
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900">Rate your experience</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
+            <XMarkIcon className="h-5 w-5 text-slate-500" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
-            <p className="mb-1 text-sm font-semibold text-soft">{a.service_details?.name}</p>
-            <p className="text-xs text-muted">How would you rate this service?</p>
+            <p className="mb-1 text-sm font-semibold text-slate-700">{a.service_details?.name}</p>
+            <p className="text-xs text-slate-400">How would you rate this service?</p>
           </div>
 
-          <div className="flex flex-col items-center gap-2 rounded-[var(--radius-lg)] bg-app py-5">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-slate-50 py-5">
             <StarPicker value={rating} onChange={setRating} />
-            <p className="text-sm font-medium text-soft">
+            <p className="text-sm font-medium text-slate-600">
               {rating === 0 ? 'Tap to rate' : ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][rating]}
             </p>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-soft">Your review</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">Your review</label>
             <textarea
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Share your experience with this service…"
-              className="w-full resize-none rounded-xl border border-token p-3 text-sm text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition hover:bg-primary disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : 'Submit review'}
           </button>
@@ -144,13 +141,11 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
 const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onReview, isEmployee, isBusinessOwner, cancellingId, statusBusyId, reviewedIds }) => {
   if (!a) return null;
   const now = new Date();
-  const start = getAppointmentStart(a);
   const canCancel =
     !isBusinessOwner &&
     !isEmployee &&
     ['pending', 'confirmed', 'rescheduled'].includes(a.status) &&
-    start &&
-    start > now;
+    apptStart(a) > now;
 
   const bName =
     [a.business_owner_details?.first_name, a.business_owner_details?.last_name]
@@ -163,14 +158,14 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
       .filter(Boolean).join(' ') || a.customer_details?.email || 'Customer';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-4 pb-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[var(--radius-lg)] bg-surface-token shadow-2xl">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-token px-6 py-4">
-          <h2 className="text-base font-bold text-token">Appointment details</h2>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-muted-token">
-            <XMarkIcon className="h-5 w-5 text-muted" />
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900">Appointment details</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
+            <XMarkIcon className="h-5 w-5 text-slate-500" />
           </button>
         </div>
 
@@ -178,75 +173,75 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
           {/* Service + status */}
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xl font-bold text-token">{a.service_details?.name}</p>
+              <p className="text-xl font-bold text-slate-900">{a.service_details?.name}</p>
               {a.service_details?.category_name && (
-                <p className="text-sm text-muted">{a.service_details.category_name}</p>
+                <p className="text-sm text-slate-500">{a.service_details.category_name}</p>
               )}
             </div>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-muted-token text-soft'}`}>
-              {formatStatus(a.status)}
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+              {a.status?.replace('_', ' ')}
             </span>
           </div>
 
           {/* Info grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-[var(--radius-lg)] bg-app p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-muted">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <CalendarDaysIcon className="h-4 w-4" /> Date
               </div>
-              <p className="text-sm font-semibold text-token">{fmtDate(a.date)}</p>
+              <p className="break-words text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
             </div>
-            <div className="rounded-[var(--radius-lg)] bg-app p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-muted">
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <ClockIcon className="h-4 w-4" /> Time
               </div>
-              <p className="text-sm font-semibold text-token">
-                {fmtTime(a.start_time)} · {a.duration || 0} min
+              <p className="text-sm font-semibold text-slate-900">
+                {fmtTime(a.start_time)} · {a.duration} min
               </p>
             </div>
-            <div className="rounded-[var(--radius-lg)] bg-app p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-muted">
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <CurrencyDollarIcon className="h-4 w-4" /> Amount
               </div>
-              <p className="text-sm font-semibold text-token">
+              <p className="text-sm font-semibold text-slate-900">
                 ${Number(a.total_amount || 0).toFixed(2)}
               </p>
             </div>
-            <div className="rounded-[var(--radius-lg)] bg-app p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-muted">
+            <div className="rounded-2xl bg-slate-50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
                 <BriefcaseIcon className="h-4 w-4" /> Ref
               </div>
-              <p className="text-xs font-semibold text-soft truncate">#{a.appointment_number}</p>
+              <p className="text-xs font-semibold text-slate-700 truncate">#{a.appointment_number}</p>
             </div>
           </div>
 
           {/* People */}
-          <div className="rounded-[var(--radius-lg)] border border-token p-4 space-y-2">
+          <div className="rounded-2xl border border-slate-100 p-4 space-y-2">
             {(isBusinessOwner || isEmployee) && (
               <div className="flex items-center gap-2 text-sm">
-                <UserCircleIcon className="h-5 w-5 text-muted" />
-                <span className="text-muted">Customer:</span>
-                <span className="font-medium text-token">{custName}</span>
+                <UserCircleIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Customer:</span>
+                <span className="font-medium text-slate-900">{custName}</span>
               </div>
             )}
             {!isEmployee && !isBusinessOwner && (
               <div className="flex items-center gap-2 text-sm">
-                <BriefcaseIcon className="h-5 w-5 text-muted" />
-                <span className="text-muted">Business:</span>
-                <span className="font-medium text-token">{bName}</span>
+                <BriefcaseIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Business:</span>
+                <span className="font-medium text-slate-900">{bName}</span>
               </div>
             )}
             {empName && (
               <div className="flex items-center gap-2 text-sm">
-                <UserCircleIcon className="h-5 w-5 text-muted" />
-                <span className="text-muted">Staff:</span>
-                <span className="font-medium text-token">{empName}</span>
+                <UserCircleIcon className="h-5 w-5 text-slate-400" />
+                <span className="text-slate-500">Staff:</span>
+                <span className="font-medium text-slate-900">{empName}</span>
               </div>
             )}
           </div>
 
           {a.customer_notes && (
-            <div className="rounded-[var(--radius-lg)] bg-muted-token p-4 text-sm text-warning">
+            <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">
               <p className="font-semibold mb-1">Note</p>
               <p>{a.customer_notes}</p>
             </div>
@@ -259,7 +254,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
                 <button
                   onClick={() => onStatusUpdate(a.id, 'confirmed')}
                   disabled={statusBusyId === a.id}
-                  className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+                  className="flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
                 >
                   Confirm
                 </button>
@@ -267,14 +262,14 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
               <button
                 onClick={() => onStatusUpdate(a.id, 'completed')}
                 disabled={statusBusyId === a.id}
-                className="flex-1 rounded-xl bg-success py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+                className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
               >
                 Complete
               </button>
               <button
                 onClick={() => onCancel(a.id)}
                 disabled={cancellingId === a.id}
-                className="rounded-xl border border-token px-4 py-2.5 text-sm font-semibold text-danger disabled:opacity-60"
+                className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -285,7 +280,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
             <button
               onClick={() => onCancel(a.id)}
               disabled={cancellingId === a.id}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-token py-2.5 text-sm font-semibold text-danger hover:bg-muted-token disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
             >
               <XCircleIcon className="h-5 w-5" />
               {cancellingId === a.id ? 'Cancelling…' : 'Cancel appointment'}
@@ -295,14 +290,14 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
           {/* Review button — only for customers with completed appointments */}
           {!isBusinessOwner && !isEmployee && a.status === 'completed' && a.service_details?.id && (
             reviewedIds.has(a.service_details.id) ? (
-              <div className="flex items-center justify-center gap-2 rounded-xl bg-muted-token py-2.5 text-sm font-semibold text-success">
-                <StarIcon className="h-4 w-4 text-warning" />
+              <div className="flex items-center justify-center gap-2 rounded-xl bg-emerald-50 py-2.5 text-sm font-semibold text-emerald-700">
+                <StarIcon className="h-4 w-4 text-amber-400" />
                 Review submitted — thank you!
               </div>
             ) : (
               <button
                 onClick={() => onReview(a)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-token bg-muted-token py-2.5 text-sm font-semibold text-warning hover:bg-muted-token transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
               >
                 <StarIcon className="h-4 w-4" />
                 Leave a review
@@ -328,33 +323,33 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-[var(--radius-lg)] border border-token bg-surface-token p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-muted-token">
-            <CalendarDaysIcon className="h-5 w-5 text-brand" />
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-semibold text-token">{a.service_details?.name}</p>
-            <p className="truncate text-xs text-muted">{displayName}</p>
+            <p className="truncate font-semibold text-slate-900">{a.service_details?.name}</p>
+            <p className="truncate text-xs text-slate-500">{displayName}</p>
           </div>
         </div>
-        <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-muted-token text-soft'}`}>
-          {formatStatus(a.status)}
+        <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+          {a.status?.replace('_', ' ')}
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-4 text-xs text-muted">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
         <span className="flex items-center gap-1">
-          <CalendarDaysIcon className="h-3.5 w-3.5" />
-          {formatCalendarDate(a.date, { month: 'short', day: 'numeric', year: 'numeric' })}
+          <CalendarDaysIcon className="h-3.5 w-3.5 flex-shrink-0" />
+          {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>
         <span className="flex items-center gap-1">
-          <ClockIcon className="h-3.5 w-3.5" />
-          {fmtTime(a.start_time)} · {a.duration || 0} min
+          <ClockIcon className="h-3.5 w-3.5 flex-shrink-0" />
+          {fmtTime(a.start_time)} · {a.duration} min
         </span>
-        <span className="ml-auto font-semibold text-soft">
+        <span className="ml-auto font-semibold text-slate-700">
           ${Number(a.total_amount || 0).toFixed(2)}
         </span>
       </div>
@@ -381,7 +376,7 @@ const MyAppointments = () => {
     try {
       setLoading(true);
       const r = await appointmentService.getAllAppointments();
-      setAppointments(responseList(r));
+      setAppointments(r.data.results || r.data || []);
     } catch {
       toast.error('Failed to load appointments.');
     } finally {
@@ -425,24 +420,24 @@ const MyAppointments = () => {
 
   const buckets = {
     Upcoming: appointments.filter(
-      (a) => ['pending', 'confirmed', 'rescheduled'].includes(a.status) && (getAppointmentStart(a)?.getTime() ?? 0) > now.getTime()
-    ).sort(compareAppointmentAsc),
+      (a) => ['pending', 'confirmed', 'rescheduled'].includes(a.status) && apptStart(a) > now
+    ).sort((a, b) => apptStart(a) - apptStart(b)),
     Past: appointments.filter(
-      (a) => a.status === 'completed' || ((getAppointmentStart(a)?.getTime() ?? Number.MAX_SAFE_INTEGER) <= now.getTime() && !['cancelled', 'no_show'].includes(a.status))
-    ).sort(compareAppointmentDesc),
+      (a) => a.status === 'completed' || (apptStart(a) <= now && !['cancelled', 'no_show'].includes(a.status))
+    ).sort((a, b) => apptStart(b) - apptStart(a)),
     Cancelled: appointments.filter((a) => ['cancelled', 'no_show'].includes(a.status))
-      .sort(compareAppointmentDesc),
+      .sort((a, b) => apptStart(b) - apptStart(a)),
   };
 
   const pageTitle = isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments';
 
   return (
-    <div className="app-page p-0">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="border-b border-token bg-surface-token px-4 py-6 backdrop-blur-xl border-token bg-surface-token">
+      <div className="border-b border-slate-200 bg-white px-4 py-6">
         <div className="mx-auto max-w-3xl">
-          <h1 className="app-title">{pageTitle}</h1>
-          <p className="app-subtitle">
+          <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
+          <p className="mt-1 text-sm text-slate-500">
             {isBusinessOwner
               ? 'Customer bookings for your services'
               : isEmployee
@@ -451,17 +446,17 @@ const MyAppointments = () => {
           </p>
 
           {/* Tabs */}
-          <div className="surface-subtle mt-5 flex gap-1 rounded-xl p-1">
+          <div className="mt-5 flex gap-1 rounded-xl bg-slate-100 p-1">
             {TABS.map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${
-                  tab === t ? 'bg-surface-token text-token shadow-sm bg-muted-token text-token' : 'text-muted hover:text-soft'
+                  tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 {t}
-                <span className={`rounded-full px-1.5 py-0.5 text-xs ${tab === t ? 'bg-muted-token text-brand' : 'bg-muted-token text-muted'}`}>
+                <span className={`rounded-full px-1.5 py-0.5 text-xs ${tab === t ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-500'}`}>
                   {buckets[t].length}
                 </span>
               </button>
@@ -474,20 +469,20 @@ const MyAppointments = () => {
       <div className="mx-auto max-w-3xl px-4 py-6">
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="app-spinner" />
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
           </div>
         ) : buckets[tab].length === 0 ? (
-          <div className="ui-empty p-10 text-center">
+          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
             <p className="text-3xl mb-3">
               {tab === 'Upcoming' ? '📅' : tab === 'Past' ? '🗂️' : '❌'}
             </p>
-            <h2 className="text-base font-semibold text-token">
+            <h2 className="text-base font-semibold text-slate-900">
               No {tab.toLowerCase()} appointments
             </h2>
             {tab === 'Upcoming' && !isBusinessOwner && !isEmployee && (
               <Link
                 to="/services"
-                className="btn-primary mt-4"
+                className="mt-4 inline-flex rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Browse services
               </Link>

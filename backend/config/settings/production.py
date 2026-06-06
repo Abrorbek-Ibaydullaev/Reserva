@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _env(key, default=None, required=False):
@@ -52,8 +52,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
+    'storages',
 
     # Local apps
+    'apps.core',
     'apps.users',
     'apps.services',
     'apps.telegram_bot',
@@ -168,13 +170,33 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ---------------------------------------------------------------------------
+# Supabase Storage
+
+# ---------------------------------------------------------------------------
+_SUPABASE_PROJECT = 'pnxxcbgqzmiiwzgtmqvc'
+_SUPABASE_BUCKET  = 'reserva-media'
+
+AWS_ACCESS_KEY_ID       = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY   = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = _SUPABASE_BUCKET
+AWS_S3_ENDPOINT_URL     = f'https://{_SUPABASE_PROJECT}.supabase.co/storage/v1/s3'
+AWS_S3_REGION_NAME      = 'eu-central-1'
+AWS_S3_CUSTOM_DOMAIN    = f'{_SUPABASE_PROJECT}.supabase.co/storage/v1/object/public/{_SUPABASE_BUCKET}'
+AWS_S3_FILE_OVERWRITE   = False
+AWS_DEFAULT_ACL         = None
+AWS_QUERYSTRING_AUTH    = False
+
 STORAGES = {
-    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = Path('/data/media')
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
 # ---------------------------------------------------------------------------
 # Custom user model
@@ -225,9 +247,12 @@ CORS_ALLOWED_ORIGINS = [
     for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 CSRF_TRUSTED_ORIGINS = [
     'https://reserva-production.up.railway.app',
-    'https://reserva-plum.vercel.app'
+    'https://reserva-plum.vercel.app',
 ]
 
 # ---------------------------------------------------------------------------

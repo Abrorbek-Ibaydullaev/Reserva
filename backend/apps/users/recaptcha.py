@@ -30,13 +30,17 @@ def verify_recaptcha(token: str | None, remote_ip: str | None = None) -> bool:
     Verify a reCAPTCHA v2 token with Google's API.
 
     Returns True when the token is valid.
-    Returns True (skips check) when the secret key is still the placeholder,
-    so local development works without real keys.
-    Returns False on any verification failure.
+    Returns True (skips check) when DEBUG=True or when the secret key is
+    still the placeholder — so local development works without real tokens.
+    Returns False on any verification failure in production.
     """
+    # Skip entirely in DEBUG mode (local development)
+    if getattr(settings, 'DEBUG', False):
+        return True
+
     secret = getattr(settings, 'RECAPTCHA_SECRET_KEY', _SKIP_SENTINEL)
 
-    # Allow local dev to proceed without a real secret key
+    # Also skip when the secret key is still the dev placeholder
     if secret == _SKIP_SENTINEL:
         return True
 

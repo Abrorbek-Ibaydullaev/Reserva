@@ -52,12 +52,8 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, max_length=254)
     user_type = models.CharField(
         max_length=20, choices=USER_TYPE_CHOICES, default='customer')
-    phone_regex = RegexValidator(
-        regex=r'^\+998\d{9}$',
-        message="Phone number must be a valid Uzbek number: '+998901234567'."
-    )
     phone_number = models.CharField(
-        validators=[phone_regex], max_length=13, blank=True)
+        max_length=20, blank=True, null=True, default='')
     profile_picture = models.ImageField(
         upload_to='profile_pics/', blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)

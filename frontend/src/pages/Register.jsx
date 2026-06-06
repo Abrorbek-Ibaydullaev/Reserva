@@ -11,35 +11,150 @@ import {
   EyeSlashIcon,
   BuildingOfficeIcon,
   UserGroupIcon,
-  PhoneIcon,
+  ChevronDownIcon,
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
-const RECAPTCHA_TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || RECAPTCHA_TEST_SITE_KEY;
+// Common countries with flag emoji and dial code
+const COUNTRIES = [
+  { code: 'UZ', flag: '🇺🇿', dial: '+998', name: 'Uzbekistan' },
+  { code: 'RU', flag: '🇷🇺', dial: '+7',   name: 'Russia' },
+  { code: 'KZ', flag: '🇰🇿', dial: '+7',   name: 'Kazakhstan' },
+  { code: 'KG', flag: '🇰🇬', dial: '+996', name: 'Kyrgyzstan' },
+  { code: 'TJ', flag: '🇹🇯', dial: '+992', name: 'Tajikistan' },
+  { code: 'TM', flag: '🇹🇲', dial: '+993', name: 'Turkmenistan' },
+  { code: 'AZ', flag: '🇦🇿', dial: '+994', name: 'Azerbaijan' },
+  { code: 'TR', flag: '🇹🇷', dial: '+90',  name: 'Turkey' },
+  { code: 'US', flag: '🇺🇸', dial: '+1',   name: 'USA' },
+  { code: 'GB', flag: '🇬🇧', dial: '+44',  name: 'UK' },
+  { code: 'DE', flag: '🇩🇪', dial: '+49',  name: 'Germany' },
+  { code: 'CN', flag: '🇨🇳', dial: '+86',  name: 'China' },
+  { code: 'KR', flag: '🇰🇷', dial: '+82',  name: 'South Korea' },
+  { code: 'AE', flag: '🇦🇪', dial: '+971', name: 'UAE' },
+];
+
+// Format UZ number digits as: XX XXX XX XX  (9 digits → "34 738 92 74")
+const formatUZ = (digits) => {
+  const d = digits.slice(0, 9);
+  let out = d.slice(0, 2);
+  if (d.length > 2) out += ' ' + d.slice(2, 5);
+  if (d.length > 5) out += ' ' + d.slice(5, 7);
+  if (d.length > 7) out += ' ' + d.slice(7, 9);
+  return out;
+};
+
+const PhoneInput = ({ onDigitsChange }) => {
+  const [country, setCountry] = useState(COUNTRIES[0]);
+  const [open, setOpen] = useState(false);
+  const [display, setDisplay] = useState('');
+  const [digits, setDigits] = useState('');
+  const [touched, setTouched] = useState(false);
+  const inputRef = useRef(null);
+
+  const isUZ = country.code === 'UZ';
+  const maxDigits = isUZ ? 9 : 15;
+  const isComplete = digits.length === 0 || digits.length === maxDigits;
+  const showError = touched && digits.length > 0 && digits.length < maxDigits;
+
+  const handleNumberChange = (e) => {
+    // Strip everything except digits, enforce max length
+    const raw = e.target.value.replace(/\D/g, '').slice(0, maxDigits);
+    setDigits(raw);
+    const formatted = isUZ ? formatUZ(raw) : raw;
+    setDisplay(formatted);
+    // Emit full number (or empty string so backend skips validation)
+    onDigitsChange(raw.length > 0 ? `${country.dial}${raw}` : '');
+  };
+
+  const handleCountrySelect = (c) => {
+    setCountry(c);
+    setOpen(false);
+    setDigits('');
+    setDisplay('');
+    setTouched(false);
+    onDigitsChange('');
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      <div className={`relative flex rounded-xl border bg-white transition-shadow ${showError ? 'border-red-400 ring-2 ring-red-400/20' : 'border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20'}`}>
+        {/* Country selector */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <span className="text-lg leading-none">{country.flag}</span>
+          <span className="tabular-nums text-slate-600">{country.dial}</span>
+          <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
+        </button>
+
+        {/* Number input — controlled */}
+        <input
+          ref={inputRef}
+          type="tel"
+          inputMode="numeric"
+          placeholder={isUZ ? '90 123 45 67' : 'Phone number'}
+          value={display}
+          onChange={handleNumberChange}
+          onBlur={() => setTouched(true)}
+          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 tabular-nums text-slate-900 placeholder:text-slate-400 focus:outline-none"
+        />
+
+        {/* Country dropdown */}
+        {open && (
+          <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+            {COUNTRIES.map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => handleCountrySelect(c)}
+                className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 ${c.code === country.code ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700'}`}
+              >
+                <span className="text-base">{c.flag}</span>
+                <span className="flex-1 text-left">{c.name}</span>
+                <span className="text-slate-400">{c.dial}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showError && (
+        <p className="mt-1 text-xs text-red-600">
+          {isUZ ? `${maxDigits - digits.length} ta raqam qoldi` : 'Raqamni to\'liq kiriting'}
+        </p>
+      )}
+    </div>
+  );
+};
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const Field = ({ label, error, children, optional }) => (
   <div>
-    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-soft">
+    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
       {label}
-      {optional && <span className="text-xs text-muted">(optional)</span>}
+      {optional && <span className="text-xs text-slate-400">(optional)</span>}
     </label>
     {children}
-    {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+    {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
   </div>
 );
 
-const Input = ({ icon: Icon, ...props }) => (
+const Input = React.forwardRef(({ icon: Icon, ...props }, ref) => (
   <div className="relative">
     {Icon && (
-      <Icon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
+      <Icon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
     )}
     <input
-      className={`w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 ${Icon ? 'auth-input' : 'px-3'}`}
+      ref={ref}
+      className={`w-full rounded-xl border border-slate-200 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${Icon ? 'pl-10 pr-3' : 'px-3'}`}
       {...props}
     />
   </div>
-);
+));
 
 const Register = () => {
   const { register: authRegister } = useAuth();
@@ -50,6 +165,8 @@ const Register = () => {
   const [error, setError] = useState('');
   const [userType, setUserType] = useState('customer');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const recaptchaRef = useRef(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -61,6 +178,14 @@ const Register = () => {
       return;
     }
 
+    // Block submission if phone was started but is incomplete
+    if (phoneNumber && phoneNumber.replace(/\D/g, '').length < 11) {
+      // dial(3) + 9 digits = 12 chars min for UZ; just check raw digits count
+      setPhoneError('Telefon raqamini to\'liq kiriting yoki bo\'sh qoldiring.');
+      return;
+    }
+    setPhoneError('');
+
     try {
       setIsLoading(true);
       setError('');
@@ -71,7 +196,7 @@ const Register = () => {
         password2: data.password2,
         first_name: data.first_name,
         last_name: data.last_name,
-        phone_number: data.phone_number || '',
+        phone_number: phoneNumber || '',
         user_type: userType,
         recaptcha_token: recaptchaToken,
       };
@@ -79,11 +204,7 @@ const Register = () => {
       const result = await authRegister(payload);
 
       if (result.success) {
-        if (userType === 'business_owner') {
-          navigate('/dashboard', { replace: true });
-        } else {
-          navigate('/services', { replace: true });
-        }
+        navigate('/', { replace: true });
       } else {
         const msg = result.message;
         if (typeof msg === 'string') {
@@ -110,11 +231,11 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-app">
+    <div className="flex min-h-screen bg-slate-50">
       {/* Left panel */}
-      <div className="hidden flex-col justify-between bg-primary p-12 text-white lg:flex lg:w-[42%]">
+      <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl hero-glass">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
@@ -124,7 +245,7 @@ const Register = () => {
           <h1 className="text-4xl font-extrabold leading-tight">
             Start managing your<br />bookings today
           </h1>
-          <p className="mt-4 text-white/80">
+          <p className="mt-4 text-blue-100">
             Join professionals and customers across Uzbekistan on the easiest appointment platform.
           </p>
 
@@ -136,13 +257,13 @@ const Register = () => {
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3">
                 <span className="text-xl">{item.emoji}</span>
-                <span className="text-sm text-white/85">{item.text}</span>
+                <span className="text-sm text-blue-50">{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-white/70">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
+        <p className="text-xs text-blue-200">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
       </div>
 
       {/* Right panel */}
@@ -150,29 +271,29 @@ const Register = () => {
         <div className="w-full max-w-lg">
           {/* Mobile logo */}
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-token">Reserva</span>
+            <span className="text-xl font-bold text-slate-900">Reserva</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-token">Create your account</h2>
-          <p className="mt-1 text-sm text-muted">
+          <h2 className="text-2xl font-bold text-slate-900">Create your account</h2>
+          <p className="mt-1 text-sm text-slate-500">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-brand hover:underline">
+            <Link to="/login" className="font-semibold text-blue-600 hover:underline">
               Sign in
             </Link>
           </p>
 
           {/* Account type toggle */}
-          <div className="mt-6 rounded-[var(--radius-lg)] border border-token bg-surface-token p-1 flex gap-1">
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-1 flex gap-1">
             <button
               type="button"
               onClick={() => setUserType('customer')}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'customer'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-muted hover:text-soft'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <UserGroupIcon className="h-4 w-4" /> Customer
@@ -182,8 +303,8 @@ const Register = () => {
               onClick={() => setUserType('business_owner')}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'business_owner'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-muted hover:text-soft'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <BuildingOfficeIcon className="h-4 w-4" /> Business Owner
@@ -193,12 +314,12 @@ const Register = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
             {error && (
-              <div className="rounded-xl border border-token bg-muted-token px-4 py-3 text-sm text-danger">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="First name" error={errors.first_name?.message}>
                 <Input
                   icon={UserIcon}
@@ -235,15 +356,8 @@ const Register = () => {
               />
             </Field>
 
-            <Field label="Phone number" error={errors.phone_number?.message} optional>
-              <Input
-                icon={PhoneIcon}
-                type="tel"
-                placeholder="+998 90 000 00 00"
-                {...register('phone_number', {
-                  pattern: { value: /^[+]?[\d\s\-()]+$/, message: 'Invalid format' },
-                })}
-              />
+            <Field label="Telefon raqamingiz" error={phoneError} optional>
+              <PhoneInput onDigitsChange={setPhoneNumber} />
             </Field>
 
             {userType === 'business_owner' && (
@@ -259,14 +373,14 @@ const Register = () => {
               </Field>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Password" error={errors.password?.message}>
                 <div className="relative">
-                  <LockClosedIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
+                  <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Min. 8 characters"
-                    className="auth-input-password w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: { value: 8, message: 'Min 8 characters' },
@@ -279,7 +393,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                   >
                     {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -288,11 +402,11 @@ const Register = () => {
 
               <Field label="Confirm password" error={errors.password2?.message}>
                 <div className="relative">
-                  <LockClosedIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
+                  <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
                     placeholder="Repeat password"
-                    className="auth-input-password w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password2', {
                       required: 'Please confirm your password',
                       validate: (v) => v === password || 'Passwords do not match',
@@ -301,7 +415,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                   >
                     {showConfirm ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -314,17 +428,17 @@ const Register = () => {
               <input
                 id="terms"
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-token text-brand focus:ring-primary"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 {...register('terms', { required: 'You must accept the terms' })}
               />
               <div>
-                <label htmlFor="terms" className="text-sm text-soft">
+                <label htmlFor="terms" className="text-sm text-slate-600">
                   I agree to the{' '}
-                  <Link to="/terms" className="font-medium text-brand hover:underline">Terms of Service</Link>
+                  <Link to="/terms" className="font-medium text-blue-600 hover:underline">Terms of Service</Link>
                   {' '}and{' '}
-                  <Link to="/privacy" className="font-medium text-brand hover:underline">Privacy Policy</Link>
+                  <Link to="/privacy" className="font-medium text-blue-600 hover:underline">Privacy Policy</Link>
                 </label>
-                {errors.terms && <p className="mt-0.5 text-xs text-danger">{errors.terms.message}</p>}
+                {errors.terms && <p className="mt-0.5 text-xs text-red-600">{errors.terms.message}</p>}
               </div>
             </div>
 
@@ -341,7 +455,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading || !recaptchaToken}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition hover:bg-primary disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (
                 <>

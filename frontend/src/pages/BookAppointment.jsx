@@ -25,14 +25,11 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
-import { appointmentService, scheduleService, serviceService, userService, fixMediaUrl } from '../services/api';
-import { asArray, asNumber, responseList } from '../utils/data';
+import { appointmentService, scheduleService, serviceService, userService } from '../services/api';
 
 const getToday = () => format(startOfToday(), 'yyyy-MM-dd');
-const normalizeList = responseList;
+const normalizeList = (response) => response.data?.results || response.data || [];
 const BOOKING_DRAFT_KEY = 'booking_draft';
-const slotsFromPayload = (payload) =>
-  Array.isArray(payload) ? payload : asArray(payload?.slots);
 
 const getDraft = () => {
   try {
@@ -66,14 +63,12 @@ const formatSlotTime = (timeValue) => {
 };
 
 const formatDuration = (minutes) => {
-  const total = asNumber(minutes);
-  if (!total) return '';
-  return `${total}min`;
+  if (!minutes) return '';
+  return `${minutes}min`;
 };
 
 const getDayBucket = (timeValue) => {
-  const hour = Number(String(timeValue || '').split(':')[0]);
-  if (!Number.isFinite(hour)) return 'Morning';
+  const hour = Number(timeValue.split(':')[0]);
   if (hour < 12) return 'Morning';
   if (hour < 18) return 'Afternoon';
   return 'Evening';
@@ -84,17 +79,16 @@ const isPastSlotForDate = (dateValue, timeValue, now) => {
     return false;
   }
 
-  const [hours, minutes] = String(timeValue || '').split(':').map(Number);
-  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return true;
+  const [hours, minutes] = timeValue.split(':').map(Number);
   const slotDate = new Date(now);
   slotDate.setHours(hours, minutes, 0, 0);
   return slotDate <= now;
 };
 
 const getAvailabilityTone = (count) => {
-  if (count >= 10) return 'bg-success';
-  if (count >= 6) return 'bg-warning';
-  if (count >= 1) return 'bg-warning';
+  if (count >= 10) return 'bg-[#7cc089]';
+  if (count >= 6) return 'bg-[#f3c400]';
+  if (count >= 1) return 'bg-[#e79a21]';
   return 'bg-transparent';
 };
 
@@ -294,9 +288,6 @@ const BookAppointment = () => {
 
       const serviceResponse = await serviceService.getServiceById(serviceId);
       const serviceData = serviceResponse.data;
-      if (!serviceData?.id) {
-        throw new Error('Service not found');
-      }
       setService(serviceData);
       persistCurrentServiceInDraft(serviceData);
 
@@ -309,12 +300,13 @@ const BookAppointment = () => {
       ]);
 
       const businesses = normalizeList(businessesResponse);
-      setBusiness(businesses.find((item) => Number(item.id) === Number(serviceData.business_owner)) || null);
+      setBusiness(businesses.find((item) => item.id === serviceData.business_owner) || null);
       setEmployees(normalizeList(employeesResponse));
       setSelectedDate(getToday());
       setVisibleStart(getToday());
       setCalendarMonth(startOfMonth(startOfToday()));
-    } catch {
+    } catch (err) {
+      console.error('Error loading booking page:', err);
       setError('Unable to load this booking page right now.');
     } finally {
       setLoading(false);
@@ -334,9 +326,10 @@ const BookAppointment = () => {
       });
 
       const payload = response.data || {};
-      setAvailableSlots(slotsFromPayload(payload));
+      setAvailableSlots(Array.isArray(payload) ? payload : payload.slots || []);
       setSlotsMessage(Array.isArray(payload) ? '' : payload.reason || '');
-    } catch {
+    } catch (err) {
+      console.error('Error loading slots:', err);
       setAvailableSlots([]);
       setSlotsMessage('Failed to load available slots.');
     } finally {
@@ -351,29 +344,25 @@ const BookAppointment = () => {
       const previews = {};
       const availability = {};
       const requests = filteredEmployees.map(async (employee) => {
-        try {
-          const response = await appointmentService.getAvailableSlots({
-            service_id: serviceId,
-            date: selectedDate,
-            employee_id: employee.id,
-          });
-          const payload = response.data || {};
-          const slots = slotsFromPayload(payload);
-          const nextSlot = slots.find(
-            (slot) => !isPastSlotForDate(selectedDate, slot.start_time, new Date())
-          );
-          previews[employee.id] = nextSlot?.start_time || null;
-          availability[employee.id] = slots;
-        } catch {
-          previews[employee.id] = null;
-          availability[employee.id] = [];
-        }
+        const response = await appointmentService.getAvailableSlots({
+          service_id: serviceId,
+          date: selectedDate,
+          employee_id: employee.id,
+        });
+        const payload = response.data || {};
+        const slots = Array.isArray(payload) ? payload : payload.slots || [];
+        const nextSlot = slots.find(
+          (slot) => !isPastSlotForDate(selectedDate, slot.start_time, new Date())
+        );
+        previews[employee.id] = nextSlot?.start_time || null;
+        availability[employee.id] = slots;
       });
 
       await Promise.all(requests);
       setStaffPreviewSlots(previews);
       setStaffAvailableSlots(availability);
-    } catch {
+    } catch (err) {
+      console.error('Failed to load staff previews:', err);
       setStaffPreviewSlots({});
       setStaffAvailableSlots({});
     } finally {
@@ -407,6 +396,7 @@ const BookAppointment = () => {
       });
       setShowConfirmation(true);
     } catch (err) {
+      console.error('Booking failed:', err);
       toast.error(
         err.response?.data?.details ||
           err.response?.data?.error ||
@@ -491,18 +481,18 @@ const BookAppointment = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-token">
-        <div className="app-spinner h-12 w-12" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#4a90b0]" />
       </div>
     );
   }
 
   if (error || !service) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-token px-4">
-        <div className="rounded-[var(--radius-lg)] border border-token bg-surface-token p-8 text-center shadow-sm">
-          <p className="text-danger">{error || 'Booking page not found.'}</p>
-          <Link to="/services" className="mt-6 inline-flex rounded-[var(--radius-lg)] bg-primary px-5 py-3 font-semibold text-white">
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-red-600">{error || 'Booking page not found.'}</p>
+          <Link to="/services" className="mt-6 inline-flex rounded-2xl bg-[#4a90b0] px-5 py-3 font-semibold text-white">
             Back to services
           </Link>
         </div>
@@ -511,29 +501,29 @@ const BookAppointment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-app px-4 py-8 lg:px-10">
+    <div className="min-h-screen bg-[#fbfbfa] overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
       {showConfirmation && confirmedBooking ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-token p-6">
-          <div className="relative w-full max-w-xl rounded-[var(--radius-lg)] border border-token bg-surface-token p-8 text-center shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-4">
+          <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 bg-white p-6 text-center shadow-xl sm:p-8">
             <button
               type="button"
               onClick={handleClose}
-              className="absolute right-6 top-6 text-muted"
+              className="absolute right-6 top-6 text-gray-500"
             >
               <XMarkIcon className="h-8 w-8" />
             </button>
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-muted-token">
-              <CheckIcon className="h-10 w-10 text-success" strokeWidth={2.5} />
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
+              <CheckIcon className="h-10 w-10 text-emerald-600" strokeWidth={2.5} />
             </div>
-            <h2 className="mt-8 text-2xl md:text-3xl font-bold text-token">Booking Confirmed</h2>
-            <p className="mt-4 text-base md:text-lg text-soft">
+            <h2 className="mt-8 text-2xl md:text-3xl font-bold text-gray-900">Booking Confirmed</h2>
+            <p className="mt-4 text-base md:text-lg text-gray-600">
               {format(parseISO(confirmedBooking.date), 'EEEE, dd MMM yyyy')} at{' '}
               {formatSlotTime(confirmedBooking.time)}
             </p>
             <button
               type="button"
               onClick={handleClose}
-              className="mt-8 rounded-[var(--radius-lg)] bg-primary px-5 py-3 text-base font-semibold text-white"
+              className="mt-8 rounded-2xl bg-[#4a90b0] px-5 py-3 text-base font-semibold text-white"
             >
               Done
             </button>
@@ -542,27 +532,27 @@ const BookAppointment = () => {
       ) : null}
 
       {showDiscardModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-6">
-          <div className="w-full max-w-2xl rounded-[var(--radius-lg)] bg-surface-token p-6 shadow-xl">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-muted-token text-muted">
-              <span className="text-5xl font-light">i</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-white p-5 shadow-xl sm:max-w-2xl sm:p-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
+              <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-6 text-center text-3xl font-bold text-token">Discard booking?</h2>
-            <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-soft">
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">Discard booking?</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">
               Are you sure you want to abort the booking process? Unsaved changes will be lost.
             </p>
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-3">
               <button
                 type="button"
                 onClick={handleDiscardBooking}
-                className="w-full rounded-[var(--radius-lg)] bg-primary px-6 py-4 text-lg font-semibold text-white"
+                className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg"
               >
                 Yes, discard
               </button>
               <button
                 type="button"
                 onClick={() => setShowDiscardModal(false)}
-                className="w-full rounded-[var(--radius-lg)] border border-token px-6 py-4 text-lg font-semibold text-token"
+                className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg"
               >
                 Continue booking
               </button>
@@ -587,14 +577,14 @@ const BookAppointment = () => {
         <button
           type="button"
           onClick={handleBackToServices}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-token"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900"
         >
           <ArrowLeftIcon className="h-7 w-7" />
         </button>
         <button
           type="button"
           onClick={() => setShowDiscardModal(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-token"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900"
         >
           <XMarkIcon className="h-7 w-7" />
         </button>
@@ -602,15 +592,15 @@ const BookAppointment = () => {
 
       <div className="mx-auto grid max-w-[1280px] items-start gap-8 xl:grid-cols-[1.35fr_0.85fr]">
         <section>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-token">Select Date & Time</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Select Date & Time</h1>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-token">{headerLabel}</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">{headerLabel}</h2>
               <button
                 type="button"
                 onClick={() => setCalendarOpen((prev) => !prev)}
-                className="inline-flex items-center gap-3 rounded-full border border-token px-4 py-2.5 text-soft"
+                className="inline-flex items-center gap-3 rounded-full border border-gray-300 px-4 py-2.5 text-gray-800"
               >
                 <CalendarDaysIcon className="h-5 w-5" />
                 <ChevronRightIcon className={`h-4 w-4 transition-transform ${calendarOpen ? '-rotate-90' : 'rotate-90'}`} />
@@ -628,7 +618,7 @@ const BookAppointment = () => {
                   const nextStart = format(addDays(parseISO(visibleStart), -7), 'yyyy-MM-dd');
                   setVisibleStart(nextStart < getToday() ? getToday() : nextStart);
                 }}
-                className="rounded-[var(--radius-lg)] border border-token p-3 text-token"
+                className="rounded-2xl border border-gray-300 p-3 text-gray-900"
               >
                 <ChevronLeftIcon className="h-4 w-4" />
               </button>
@@ -641,7 +631,7 @@ const BookAppointment = () => {
                   }
                   setVisibleStart(format(addDays(parseISO(visibleStart), 7), 'yyyy-MM-dd'));
                 }}
-                className="rounded-[var(--radius-lg)] border border-token p-3 text-token"
+                className="rounded-2xl border border-gray-300 p-3 text-gray-900"
               >
                 <ChevronRightIcon className="h-4 w-4" />
               </button>
@@ -649,10 +639,10 @@ const BookAppointment = () => {
           </div>
 
           {calendarOpen ? (
-            <div className="mt-8 max-w-[860px] rounded-[var(--radius-lg)] bg-surface-token p-1">
+            <div className="mt-8 max-w-[860px] rounded-[24px] bg-white/60 p-1">
               <div className="flex flex-wrap gap-2.5">
                 {['Morning', 'Afternoon', 'Evening'].map((label) => (
-                  <div key={label} className="rounded-full bg-muted-token px-4 py-2 text-sm text-token">
+                  <div key={label} className="rounded-full bg-[#efefee] px-4 py-2 text-sm text-gray-900">
                     {label}
                   </div>
                 ))}
@@ -660,7 +650,7 @@ const BookAppointment = () => {
 
               <div className="mt-6 grid grid-cols-7 gap-y-3">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-base text-muted">
+                  <div key={day} className="text-center text-base text-gray-500">
                     {day}
                   </div>
                 ))}
@@ -684,21 +674,21 @@ const BookAppointment = () => {
                       className="flex flex-col items-center justify-center py-1"
                     >
                       <div
-                        className={`flex h-14 w-14 items-center justify-center rounded-full border text-lg font-medium transition ${
+                        className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-medium transition sm:h-14 sm:w-14 sm:text-lg ${
                           active
-                            ? 'border-primary bg-primary text-white'
+                            ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
                             : inMonth
-                              ? 'border-token bg-muted-token text-token'
-                              : 'border-token bg-surface-token text-muted'
-                        } ${disabled ? 'bg-surface-token text-muted' : ''}`}
+                              ? 'border-gray-200 bg-[#f2f2f1] text-gray-900'
+                              : 'border-gray-200 bg-white text-gray-300'
+                        } ${disabled ? 'bg-white text-gray-300' : ''}`}
                       >
                         <span className="relative">
                           {format(day, 'd')}
                           {isPastDay ? (
-                            <span className="absolute left-1/2 top-1/2 h-[2px] w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-line" />
+                            <span className="absolute left-1/2 top-1/2 h-[2px] w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300" />
                           ) : null}
                           {inMonth && !isPastDay ? (
-                            <span className={`absolute -bottom-2.5 left-1/2 h-1.5 w-6 -translate-x-1/2 rounded-full ${active ? 'bg-muted-token' : availabilityTone}`} />
+                            <span className={`absolute -bottom-2.5 left-1/2 h-1.5 w-6 -translate-x-1/2 rounded-full ${active ? 'bg-[#f7eed2]' : availabilityTone}`} />
                           ) : null}
                         </span>
                       </div>
@@ -707,18 +697,18 @@ const BookAppointment = () => {
                 })}
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-muted">
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-gray-500">
                 <span>Available slots:</span>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-6 rounded-full bg-success" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#7cc089]" />
                   <span>+10</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-6 rounded-full bg-warning" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#f3c400]" />
                   <span>6-10</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-6 rounded-full bg-warning" />
+                  <span className="h-1.5 w-6 rounded-full bg-[#e79a21]" />
                   <span>1-5</span>
                 </div>
               </div>
@@ -735,29 +725,29 @@ const BookAppointment = () => {
                     className="min-w-[76px] text-center"
                   >
                     <div
-                      className={`mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full border text-base md:text-xl font-medium transition ${
+                      className={`mx-auto flex h-11 w-11 md:h-14 md:w-14 lg:h-16 lg:w-16 items-center justify-center rounded-full border text-sm md:text-base lg:text-xl font-medium transition ${
                         active
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-token bg-muted-token text-token'
+                          ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
+                          : 'border-gray-200 bg-[#f2f2f1] text-gray-900'
                       }`}
                     >
                       <span className="relative">
                         {format(day, 'd')}
-                        <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-muted-token' : 'bg-success'}`} />
+                        <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
                       </span>
                     </div>
-                    <div className="mt-2 text-sm md:text-base text-soft">{format(day, 'EEE')}</div>
+                    <div className="mt-2 text-sm md:text-base text-gray-800">{format(day, 'EEE')}</div>
                   </button>
                 );
               })}
             </div>
           )}
 
-          <div className="mt-8 border-t border-token pt-8">
-            <div className="grid gap-6 lg:grid-cols-3">
+          <div className="mt-8 border-t border-gray-200 pt-8">
+            <div className="grid gap-6 sm:grid-cols-3">
               {['Morning', 'Afternoon', 'Evening'].map((label) => (
                 <div key={label}>
-                  <p className="mb-4 text-center text-sm text-muted">
+                  <p className="mb-4 text-center text-sm text-gray-500">
                     {label} ({groupedSlots[label].length})
                   </p>
                   <div className="space-y-3">
@@ -771,8 +761,8 @@ const BookAppointment = () => {
                             onClick={() => setSelectedTime(slot.start_time)}
                             className={`w-full rounded-full px-4 py-3 text-sm md:text-base font-semibold transition ${
                               active
-                                ? 'border-2 border-primary bg-muted-token text-token'
-                                : 'bg-muted-token text-token'
+                                ? 'border-2 border-[#4a90b0] bg-[#dcedf6] text-gray-900'
+                                : 'bg-[#efefee] text-gray-900'
                             }`}
                           >
                             {formatSlotTime(slot.start_time)}
@@ -780,7 +770,7 @@ const BookAppointment = () => {
                         );
                       })
                     ) : (
-                      <div className="rounded-[var(--radius-lg)] bg-muted-token px-6 py-8 text-center text-sm text-muted">
+                      <div className="rounded-[24px] bg-[#f5f5f4] px-6 py-8 text-center text-sm text-gray-400">
                         No slots
                       </div>
                     )}
@@ -790,48 +780,48 @@ const BookAppointment = () => {
             </div>
 
             {(slotsLoading || slotsMessage) && (
-              <div className="mt-6 rounded-[var(--radius-lg)] bg-muted-token px-5 py-4 text-sm text-soft">
+              <div className="mt-6 rounded-2xl bg-[#f5f7f8] px-5 py-4 text-sm text-gray-600">
                 {slotsLoading ? 'Loading slots...' : slotsMessage}
               </div>
             )}
           </div>
         </section>
 
-        <aside className="h-fit self-start rounded-[var(--radius-lg)] border border-token bg-surface-token p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-token">Your order</h2>
+        <aside className="h-fit self-start rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">Your order</h2>
 
           <div className="mt-6 space-y-3">
             {draftServices.map((draftService) => {
               const isActiveDraftService = String(draftService.id) === String(serviceId);
 
               return (
-                <div key={draftService.id} className="rounded-[var(--radius-lg)] bg-muted-token p-4">
+                <div key={draftService.id} className="rounded-[24px] bg-[#f2f2f1] p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <p className="text-base md:text-lg text-token">{draftService.name}</p>
-                      <p className="mt-2 text-sm md:text-base text-muted">{formatDuration(draftService.duration)}</p>
+                      <p className="text-base md:text-lg text-gray-900">{draftService.name}</p>
+                      <p className="mt-2 text-sm md:text-base text-gray-500">{formatDuration(draftService.duration)}</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="text-right">
-                        <p className="text-lg md:text-xl font-semibold text-token">
+                        <p className="text-lg md:text-xl font-semibold text-gray-900">
                           {formatCurrency(draftService.price)}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveDraftService(draftService.id)}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted-token text-white"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 text-white"
                       >
                         <XMarkIcon className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="mt-5 border-t border-token pt-5">
+                  <div className="mt-5 border-t border-gray-200 pt-5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-sm text-soft">
+                      <div className="flex items-center gap-3 text-sm text-gray-700">
                         <span className="font-medium">Staff:</span>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-token text-muted">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-500">
                           <UserGroupIcon className="h-5 w-5" />
                         </div>
                         <span>
@@ -846,7 +836,7 @@ const BookAppointment = () => {
                         <button
                           type="button"
                           onClick={() => handleActivateDraftService(draftService.id)}
-                          className="rounded-[var(--radius-lg)] border border-token px-4 py-2 text-sm font-semibold text-token"
+                          className="rounded-2xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-900"
                         >
                           Change
                         </button>
@@ -857,14 +847,14 @@ const BookAppointment = () => {
               );
             })}
 
-            <div className="rounded-[var(--radius-lg)] bg-muted-token p-4">
+            <div className="rounded-[24px] bg-[#f2f2f1] p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg md:text-xl font-semibold text-token">Available staff</h3>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900">Available staff</h3>
                 <div className="flex gap-3">
-                  <button type="button" className="rounded-[var(--radius-lg)] border border-token p-2.5 text-token">
+                  <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900">
                     <ChevronLeftIcon className="h-4 w-4" />
                   </button>
-                  <button type="button" className="rounded-[var(--radius-lg)] border border-token p-2.5 text-token">
+                  <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900">
                     <ChevronRightIcon className="h-4 w-4" />
                   </button>
                 </div>
@@ -877,12 +867,12 @@ const BookAppointment = () => {
                   className="flex min-w-[92px] flex-col items-center text-center"
                 >
                   <div className="mb-1 h-6" />
-                  <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] ${selectedEmployee === 'none' ? 'border-primary' : 'border-token'} bg-surface-token text-muted`}>
+                  <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] ${selectedEmployee === 'none' ? 'border-[#4a90b0]' : 'border-gray-300'} bg-white text-gray-500`}>
                     <UserGroupIcon className="h-7 w-7" />
                   </div>
-                  <div className="mt-2 h-2.5 w-2.5 rounded-full bg-success" />
-                  <p className="mt-2 text-sm text-soft">No</p>
-                  <p className="text-sm text-soft">preference</p>
+                  <div className="mt-2 h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <p className="mt-2 text-sm text-gray-800">No</p>
+                  <p className="text-sm text-gray-800">preference</p>
                 </button>
 
                 {filteredEmployees.map((employee) => {
@@ -906,13 +896,13 @@ const BookAppointment = () => {
                         isBlockedForSelectedTime ? 'cursor-not-allowed opacity-40' : ''
                       }`}
                     >
-                      <div className="mb-1 h-6 text-center text-[11px] font-semibold uppercase tracking-wide text-warning">
+                      <div className="mb-1 h-6 text-center text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
                         {staffLoading ? '' : isBlockedForSelectedTime ? 'Unavailable' : label ? `From ${formatSlotTime(label)}` : ''}
                       </div>
-                      <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-primary' : 'border-transparent'} bg-muted-token text-xs font-semibold text-soft`}>
+                      <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-[#4a90b0]' : 'border-transparent'} bg-[#e9ecef] text-xs font-semibold text-gray-700`}>
                         {employee.user_details?.profile_picture ? (
                           <img
-                            src={fixMediaUrl(employee.user_details.profile_picture)}
+                            src={employee.user_details.profile_picture}
                             alt={employee.user_details.first_name}
                             className="h-full w-full object-cover"
                           />
@@ -920,8 +910,8 @@ const BookAppointment = () => {
                           initials
                         )}
                       </div>
-                      <div className={`mx-auto mt-2 h-2.5 w-2.5 rounded-full ${label ? 'bg-success' : 'bg-warning'}`} />
-                      <p className="mt-2 max-w-[92px] text-sm text-soft">
+                      <div className={`mx-auto mt-2 h-2.5 w-2.5 rounded-full ${label ? 'bg-green-500' : 'bg-orange-500'}`} />
+                      <p className="mt-2 max-w-[92px] text-sm text-gray-800">
                         {employee.user_details?.first_name || employee.user_details?.email}
                       </p>
                     </button>
@@ -934,14 +924,14 @@ const BookAppointment = () => {
           <button
             type="button"
             onClick={handleBackToServices}
-            className="mt-6 inline-flex items-center text-base text-brand"
+            className="mt-6 inline-flex items-center text-base text-[#4a90b0]"
           >
             <span className="mr-3 text-xl">+</span>
             Add another service
           </button>
 
-          <div className="mt-8 border-t border-token pt-5">
-            <div className="flex items-center justify-between text-lg md:text-xl font-semibold text-token">
+          <div className="mt-8 border-t border-gray-200 pt-5">
+            <div className="flex items-center justify-between text-lg md:text-xl font-semibold text-gray-900">
               <span>Total</span>
               <span>{formatCurrency(totalAmount)}</span>
             </div>
@@ -951,7 +941,7 @@ const BookAppointment = () => {
             type="button"
             onClick={handleBooking}
             disabled={!selectedSlot || submitting}
-            className="mt-6 w-full rounded-[var(--radius-lg)] bg-primary px-5 py-3 text-sm md:text-base font-semibold text-white disabled:opacity-50"
+            className="mt-6 w-full rounded-2xl bg-[#4a90b0] px-5 py-3 text-sm md:text-base font-semibold text-white disabled:opacity-50"
           >
             {submitting ? 'Booking...' : 'Continue'}
           </button>
