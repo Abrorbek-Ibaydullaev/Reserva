@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ServiceCard from './ServiceCard';
 import { serviceService } from '../../services/api';
+import { responseList } from '../../utils/data';
 import { 
   FunnelIcon,
   BarsArrowDownIcon,
@@ -40,10 +41,10 @@ const ServiceList = ({ limit = null }) => {
       setLoading(true);
       setError(null);
       const response = await serviceService.getAllServices();
-      setServices(response.data.results || response.data);
-      setFilteredServices(response.data.results || response.data);
-    } catch (err) {
-      console.error('Error fetching services:', err);
+      const items = responseList(response);
+      setServices(items);
+      setFilteredServices(items);
+    } catch {
       setError('Failed to load services. Please try again later.');
     } finally {
       setLoading(false);
@@ -53,10 +54,8 @@ const ServiceList = ({ limit = null }) => {
   const fetchCategories = async () => {
     try {
       const response = await serviceService.getCategories();
-      setCategories(response.data);
-    } catch (err) {
-      console.error('Error fetching categories:', err);
-    }
+      setCategories(responseList(response));
+    } catch {}
   };
 
   const applyFilters = () => {
@@ -66,8 +65,8 @@ const ServiceList = ({ limit = null }) => {
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(service =>
-        service.name.toLowerCase().includes(searchLower) ||
-        service.description.toLowerCase().includes(searchLower) ||
+        service.name?.toLowerCase().includes(searchLower) ||
+        service.description?.toLowerCase().includes(searchLower) ||
         (service.category_name && service.category_name.toLowerCase().includes(searchLower))
       );
     }
@@ -144,19 +143,19 @@ const ServiceList = ({ limit = null }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="flex items-center justify-center py-12">
+        <div className="app-spinner" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600 mb-4">{error}</p>
+      <div className="ui-empty py-12 text-center">
+        <p className="mb-4 text-danger text-danger">{error}</p>
         <button 
           onClick={fetchServices}
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          className="btn-primary"
         >
           Try Again
         </button>
@@ -167,23 +166,23 @@ const ServiceList = ({ limit = null }) => {
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="app-filterbar">
+        <div className="flex flex-col gap-4 md:flex-row">
           {/* Search Input */}
           <div className="flex-1">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 value={filters.search}
                 onChange={handleSearchChange}
                 placeholder="Search services, categories, or providers..."
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+                className="auth-input-password w-full"
               />
               {filters.search && (
                 <button 
                   onClick={() => setFilters(prev => ({ ...prev, search: '' }))}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted hover:text-token"
                 >
                   <XMarkIcon className="h-5 w-5" />
                 </button>
@@ -195,7 +194,7 @@ const ServiceList = ({ limit = null }) => {
           <div className="flex gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="btn-secondary"
             >
               <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2" />
               Filters
@@ -205,18 +204,18 @@ const ServiceList = ({ limit = null }) => {
 
         {/* Filters Panel */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-4 space-y-4 border-t border-token pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {/* Category Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="field-label">
                   Category
                 </label>
                 <select
                   name="category"
                   value={filters.category}
                   onChange={handleFilterChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+                  className="w-full"
                 >
                   <option value="">All Categories</option>
                   {categories.map(category => (
@@ -229,14 +228,14 @@ const ServiceList = ({ limit = null }) => {
 
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="field-label">
                   Sort By
                 </label>
                 <select
                   name="sortBy"
                   value={filters.sortBy}
                   onChange={handleFilterChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+                  className="w-full"
                 >
                   <option value="popular">Most Popular</option>
                   <option value="rating">Highest Rated</option>
@@ -247,7 +246,7 @@ const ServiceList = ({ limit = null }) => {
 
               {/* Price Range */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="field-label">
                   Price Range
                 </label>
                 <div className="flex gap-2">
@@ -257,17 +256,17 @@ const ServiceList = ({ limit = null }) => {
                     value={filters.minPrice}
                     onChange={handleFilterChange}
                     placeholder="Min"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+                    className="w-full"
                     min="0"
                   />
-                  <span className="self-center text-gray-500">to</span>
+                  <span className="self-center text-muted">to</span>
                   <input
                     type="number"
                     name="maxPrice"
                     value={filters.maxPrice}
                     onChange={handleFilterChange}
                     placeholder="Max"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+                    className="w-full"
                     min="0"
                   />
                 </div>
@@ -278,7 +277,7 @@ const ServiceList = ({ limit = null }) => {
             <div className="flex justify-end">
               <button
                 onClick={clearFilters}
-                className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                className="app-link text-sm"
               >
                 Clear all filters
               </button>
@@ -289,7 +288,7 @@ const ServiceList = ({ limit = null }) => {
 
       {/* Results Count */}
       <div className="flex justify-between items-center">
-        <p className="text-gray-600">
+        <p className="text-sm text-muted">
           Showing <span className="font-semibold">{filteredServices.length}</span> of{' '}
           <span className="font-semibold">{services.length}</span> services
         </p>
@@ -297,20 +296,20 @@ const ServiceList = ({ limit = null }) => {
 
       {/* Services Grid */}
       {filteredServices.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-          <FunnelIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No services found</h3>
-          <p className="text-gray-600 mb-4">Try adjusting your filters or search term</p>
+        <div className="ui-empty py-12 text-center">
+          <FunnelIcon className="mx-auto mb-4 h-12 w-12 text-muted" />
+          <h3 className="section-title mb-2">No services found</h3>
+          <p className="body-text mb-4">Try adjusting your filters or search term</p>
           <button
             onClick={clearFilters}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            className="btn-primary"
           >
             Clear Filters
           </button>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredServices.map(service => (
               <ServiceCard key={service.id} service={service} />
             ))}
@@ -318,7 +317,7 @@ const ServiceList = ({ limit = null }) => {
 
           {limit && filteredServices.length >= limit && (
             <div className="text-center">
-              <button className="px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 font-medium transition-colors">
+              <button className="btn-secondary">
                 View More Services
               </button>
             </div>

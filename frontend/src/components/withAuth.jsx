@@ -6,13 +6,13 @@ export const withAuth = (Component, allowedUserTypes = []) => {
     return function WithAuthComponent(props) {
         const { isAuthenticated, user, loading } = useAuth();
 
-        if (loading) {
-            return (
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            if (loading) {
+                return (
+                <div className="app-page flex items-center justify-center">
+                    <div className="app-spinner" />
                 </div>
-            );
-        }
+                );
+            }
 
         if (!isAuthenticated) {
             return <Navigate to="/login" replace />;

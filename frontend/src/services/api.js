@@ -40,6 +40,24 @@ const withPayloadConfig = (data) =>
           }
         : undefined;
 
+const unwrapApiEnvelope = (payload) => {
+    if (payload && typeof payload === 'object' && payload.status === 'success' && 'data' in payload) {
+        return payload.data;
+    }
+    return payload;
+};
+
+const normalizeApiErrorPayload = (payload) => {
+    if (payload && typeof payload === 'object' && payload.status === 'error') {
+        return {
+            error: payload.details?.error || payload.error,
+            message: payload.message,
+            details: payload.details?.details || payload.details,
+        };
+    }
+    return payload;
+};
+
 /**
  * Request interceptor – attach access token
  */
@@ -58,7 +76,10 @@ api.interceptors.request.use(
  * Response interceptor – refresh token on 401
  */
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        response.data = unwrapApiEnvelope(response.data);
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config;
 
@@ -78,7 +99,7 @@ api.interceptors.response.use(
                     { refresh: refreshToken }
                 );
 
-                const { access } = response.data;
+                const { access } = unwrapApiEnvelope(response.data);
                 localStorage.setItem('access_token', access);
 
                 originalRequest.headers.Authorization = `Bearer ${access}`;
@@ -90,6 +111,9 @@ api.interceptors.response.use(
             }
         }
 
+        if (error.response) {
+            error.response.data = normalizeApiErrorPayload(error.response.data);
+        }
         return Promise.reject(error);
     }
 );
@@ -110,7 +134,7 @@ export const authService = {
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            const raw = response.data.user || (await api.get('/users/me/')).data;
+            const raw = response.data.user || (await api.get('/users/me/')).data || {};
             const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
             localStorage.setItem('user_data', JSON.stringify(userData));
         }
@@ -139,23 +163,30 @@ export const authService = {
     },
 
     getCurrentUser: () => {
-        const data = localStorage.getItem('user_data');
-        if (!data) return null;
-        const user = JSON.parse(data);
-        // Fix stale relative media URLs from old sessions
-        return { ...user, profile_picture: fixMediaUrl(user.profile_picture) };
+        try {
+            const data = localStorage.getItem('user_data');
+            if (!data) return null;
+            const user = JSON.parse(data);
+            // Fix stale relative media URLs from old sessions
+            return { ...user, profile_picture: fixMediaUrl(user?.profile_picture) };
+        } catch {
+            localStorage.removeItem('user_data');
+            return null;
+        }
     },
 
     getUserProfile: async () => {
         const response = await api.get('/users/me/');
-        const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
+        const data = response.data || {};
+        const fixed = { ...data, profile_picture: fixMediaUrl(data.profile_picture) };
         localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },
 
     updateProfile: async (userData) => {
         const response = await api.put('/users/me/', userData, withPayloadConfig(userData));
-        const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
+        const data = response.data || {};
+        const fixed = { ...data, profile_picture: fixMediaUrl(data.profile_picture) };
         localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },

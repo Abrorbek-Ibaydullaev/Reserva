@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { userService } from '../services/api';
+import { fixMediaUrl, userService } from '../services/api';
 import {
   EnvelopeIcon,
   MapPinIcon,
@@ -16,14 +16,14 @@ import {
 
 const Field = ({ label, children }) => (
   <div>
-    <label className="mb-1.5 block text-sm font-medium text-slate-700">{label}</label>
+    <label className="mb-1.5 block text-sm font-medium text-soft">{label}</label>
     {children}
   </div>
 );
 
 const TextInput = (props) => (
   <input
-    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+    className="w-full rounded-xl border border-token bg-surface-token px-3 py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
     {...props}
   />
 );
@@ -69,15 +69,13 @@ const CustomerProfile = () => {
           country: p.country || '',
           postal_code: p.postal_code || '',
         });
-        if (m.profile_picture) setAvatarPreview(m.profile_picture);
+        if (m.profile_picture) setAvatarPreview(fixMediaUrl(m.profile_picture));
 
         // Load Telegram status separately so a failure doesn't break the profile
         try {
           const tg = await userService.getTelegramLink();
           if (tg?.data) setTelegram({ link: tg.data.link, connected: tg.data.connected });
-        } catch (tgErr) {
-          console.warn('Telegram link fetch failed:', tgErr?.response?.status, tgErr?.response?.data);
-        }
+        } catch {}
       } catch {
         toast.error('Failed to load profile.');
       } finally {
@@ -85,6 +83,14 @@ const CustomerProfile = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
 
   const handleDisconnectTelegram = async () => {
     try {
@@ -146,8 +152,8 @@ const CustomerProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
+      <div className="app-page flex min-h-screen items-center justify-center">
+        <div className="app-spinner" />
       </div>
     );
   }
@@ -156,12 +162,12 @@ const CustomerProfile = () => {
   const initials = [formData.first_name[0], formData.last_name[0]].filter(Boolean).join('').toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-page p-0">
       {/* Top bar */}
-      <div className="border-b border-slate-200 bg-white px-4 py-5">
+      <div className="border-b border-token bg-surface-token px-4 py-6 backdrop-blur-xl border-token bg-surface-token">
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage your personal information and contact details</p>
+          <h1 className="app-title">My Profile</h1>
+          <p className="app-subtitle">Manage your personal information and contact details</p>
         </div>
       </div>
 
@@ -170,7 +176,7 @@ const CustomerProfile = () => {
 
           {/* Left — avatar card */}
           <div className="space-y-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="app-card-pad">
               {/* Avatar */}
               <div className="flex flex-col items-center">
                 <div className="relative mb-4">
@@ -178,7 +184,7 @@ const CustomerProfile = () => {
                     {avatarPreview ? (
                       <img src={avatarPreview} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-blue-100 text-2xl font-bold text-blue-600">
+                      <div className="flex h-full w-full items-center justify-center bg-muted-token text-2xl font-bold text-brand">
                         {initials}
                       </div>
                     )}
@@ -186,7 +192,7 @@ const CustomerProfile = () => {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 shadow-md hover:bg-blue-700 transition-colors"
+                    className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary shadow-md hover:bg-primary transition-colors"
                   >
                     <CameraIcon className="h-4 w-4 text-white" />
                   </button>
@@ -198,27 +204,27 @@ const CustomerProfile = () => {
                     onChange={handleAvatarChange}
                   />
                 </div>
-                <p className="text-base font-bold text-slate-900">{displayName}</p>
-                <p className="text-xs text-slate-500">Customer</p>
+                <p className="text-base font-bold text-token">{displayName}</p>
+                <p className="text-xs text-muted">Customer</p>
                 {avatarFile && (
-                  <p className="mt-2 rounded-full bg-blue-50 px-3 py-0.5 text-xs text-blue-600">
+                  <p className="mt-2 rounded-full bg-muted-token px-3 py-0.5 text-xs text-brand">
                     New photo selected
                   </p>
                 )}
               </div>
 
               {/* Info summary */}
-              <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <EnvelopeIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+              <div className="mt-5 space-y-3 border-t border-token pt-5">
+                <div className="flex items-center gap-3 text-sm text-soft">
+                  <EnvelopeIcon className="h-4 w-4 flex-shrink-0 text-muted" />
                   <span className="truncate">{formData.email || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <PhoneIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <div className="flex items-center gap-3 text-sm text-soft">
+                  <PhoneIcon className="h-4 w-4 flex-shrink-0 text-muted" />
                   <span>{formData.phone_number || 'Not set'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <MapPinIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <div className="flex items-center gap-3 text-sm text-soft">
+                  <MapPinIcon className="h-4 w-4 flex-shrink-0 text-muted" />
                   <span className="truncate">
                     {[formData.city, formData.country].filter(Boolean).join(', ') || 'Not set'}
                   </span>
@@ -229,37 +235,37 @@ const CustomerProfile = () => {
             {/* Appointments quick link */}
             <Link
               to="/appointments"
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
+              className="app-card flex items-center justify-between px-5 py-4 transition-all hover:-translate-y-0.5"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
-                  <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted-token">
+                  <CalendarDaysIcon className="h-5 w-5 text-brand" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">My Appointments</p>
-                  <p className="text-xs text-slate-500">View upcoming & past</p>
+                  <p className="text-sm font-semibold text-token">My Appointments</p>
+                  <p className="text-xs text-muted">View upcoming & past</p>
                 </div>
               </div>
-              <ArrowRightIcon className="h-4 w-4 text-slate-400" />
+              <ArrowRightIcon className="h-4 w-4 text-muted" />
             </Link>
 
             {/* Telegram connect card */}
-            <div className={`rounded-2xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+            <div className={`app-card px-5 py-4 ${telegram.connected ? 'border-token bg-muted-token' : ''}`}>
               <div className="flex items-center gap-3 mb-3">
                 {/* Telegram logo */}
-                <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
+                <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-muted-token ${telegram.connected ? 'text-success' : 'text-brand'}`}>
+                  <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.24 13.4l-2.948-.924c-.642-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.836.959z"/>
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm font-semibold text-token">Telegram Notifications</p>
+                  <p className="text-xs text-muted">
                     {telegram.connected ? 'Connected — you\'ll receive booking alerts' : 'Get booking alerts on Telegram'}
                   </p>
                 </div>
                 {telegram.connected && (
-                  <CheckCircleIcon className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                  <CheckCircleIcon className="h-5 w-5 flex-shrink-0 text-success" />
                 )}
               </div>
 
@@ -268,7 +274,7 @@ const CustomerProfile = () => {
                   type="button"
                   onClick={handleDisconnectTelegram}
                   disabled={disconnecting}
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60 transition-colors"
+                  className="btn-secondary w-full py-2 text-xs"
                 >
                   {disconnecting ? 'Disconnecting…' : 'Disconnect'}
                 </button>
@@ -277,23 +283,23 @@ const CustomerProfile = () => {
                   href={telegram.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#229ed9] py-2 text-xs font-bold text-white hover:bg-[#1a8bbf] transition-colors"
+                  className="btn-primary w-full py-2 text-xs"
                 >
                   <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
                   Connect Telegram
                 </a>
               ) : (
-                <p className="text-center text-xs text-slate-400">Bot not configured yet</p>
+                <p className="text-center text-xs text-muted">Bot not configured yet</p>
               )}
             </div>
           </div>
 
           {/* Right — edit form */}
-          <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-5 text-base font-bold text-slate-900">Personal Information</h2>
+          <form onSubmit={handleSubmit} className="app-card-pad">
+            <h2 className="mb-5 text-base font-semibold text-token text-token">Personal Information</h2>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="First name">
                   <TextInput name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First name" />
                 </Field>
@@ -310,14 +316,14 @@ const CustomerProfile = () => {
                 <TextInput type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="+998 90 000 00 00" />
               </Field>
 
-              <div className="border-t border-slate-100 pt-4">
-                <h3 className="mb-4 text-sm font-semibold text-slate-700">Address</h3>
+              <div className="border-t border-token pt-4">
+                <h3 className="mb-4 text-sm font-semibold text-soft">Address</h3>
                 <div className="space-y-4">
                   <Field label="Street address">
                     <TextInput name="address" value={formData.address} onChange={handleChange} placeholder="Street address" />
                   </Field>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="City">
                       <TextInput name="city" value={formData.city} onChange={handleChange} placeholder="Toshkent" />
                     </Field>
@@ -326,7 +332,7 @@ const CustomerProfile = () => {
                     </Field>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Country">
                       <TextInput name="country" value={formData.country} onChange={handleChange} placeholder="Uzbekistan" />
                     </Field>
@@ -342,7 +348,7 @@ const CustomerProfile = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+                className="btn-primary"
               >
                 {saving ? (
                   <>

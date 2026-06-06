@@ -15,26 +15,27 @@ import {
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || RECAPTCHA_TEST_SITE_KEY;
 
 const Field = ({ label, error, children, optional }) => (
   <div>
-    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
+    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-soft">
       {label}
-      {optional && <span className="text-xs text-slate-400">(optional)</span>}
+      {optional && <span className="text-xs text-muted">(optional)</span>}
     </label>
     {children}
-    {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    {error && <p className="mt-1 text-xs text-danger">{error}</p>}
   </div>
 );
 
 const Input = ({ icon: Icon, ...props }) => (
   <div className="relative">
     {Icon && (
-      <Icon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <Icon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
     )}
     <input
-      className={`w-full rounded-xl border border-slate-200 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${Icon ? 'pl-10 pr-3' : 'px-3'}`}
+      className={`w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 ${Icon ? 'auth-input' : 'px-3'}`}
       {...props}
     />
   </div>
@@ -109,11 +110,11 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-app">
       {/* Left panel */}
-      <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
+      <div className="hidden flex-col justify-between bg-primary p-12 text-white lg:flex lg:w-[42%]">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl hero-glass">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
@@ -123,7 +124,7 @@ const Register = () => {
           <h1 className="text-4xl font-extrabold leading-tight">
             Start managing your<br />bookings today
           </h1>
-          <p className="mt-4 text-blue-100">
+          <p className="mt-4 text-white/80">
             Join professionals and customers across Uzbekistan on the easiest appointment platform.
           </p>
 
@@ -135,13 +136,13 @@ const Register = () => {
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3">
                 <span className="text-xl">{item.emoji}</span>
-                <span className="text-sm text-blue-50">{item.text}</span>
+                <span className="text-sm text-white/85">{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-blue-200">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
+        <p className="text-xs text-white/70">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
       </div>
 
       {/* Right panel */}
@@ -149,29 +150,29 @@ const Register = () => {
         <div className="w-full max-w-lg">
           {/* Mobile logo */}
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">Reserva</span>
+            <span className="text-xl font-bold text-token">Reserva</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900">Create your account</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-token">Create your account</h2>
+          <p className="mt-1 text-sm text-muted">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-blue-600 hover:underline">
+            <Link to="/login" className="font-semibold text-brand hover:underline">
               Sign in
             </Link>
           </p>
 
           {/* Account type toggle */}
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-1 flex gap-1">
+          <div className="mt-6 rounded-[var(--radius-lg)] border border-token bg-surface-token p-1 flex gap-1">
             <button
               type="button"
               onClick={() => setUserType('customer')}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'customer'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted hover:text-soft'
               }`}
             >
               <UserGroupIcon className="h-4 w-4" /> Customer
@@ -181,8 +182,8 @@ const Register = () => {
               onClick={() => setUserType('business_owner')}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'business_owner'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted hover:text-soft'
               }`}
             >
               <BuildingOfficeIcon className="h-4 w-4" /> Business Owner
@@ -192,12 +193,12 @@ const Register = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
             {error && (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-xl border border-token bg-muted-token px-4 py-3 text-sm text-danger">
                 {error}
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Field label="First name" error={errors.first_name?.message}>
                 <Input
                   icon={UserIcon}
@@ -258,14 +259,14 @@ const Register = () => {
               </Field>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Password" error={errors.password?.message}>
                 <div className="relative">
-                  <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <LockClosedIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Min. 8 characters"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="auth-input-password w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: { value: 8, message: 'Min 8 characters' },
@@ -278,7 +279,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted"
                   >
                     {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -287,11 +288,11 @@ const Register = () => {
 
               <Field label="Confirm password" error={errors.password2?.message}>
                 <div className="relative">
-                  <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <LockClosedIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
                     placeholder="Repeat password"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="auth-input-password w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     {...register('password2', {
                       required: 'Please confirm your password',
                       validate: (v) => v === password || 'Passwords do not match',
@@ -300,7 +301,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted"
                   >
                     {showConfirm ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -313,17 +314,17 @@ const Register = () => {
               <input
                 id="terms"
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 rounded border-token text-brand focus:ring-primary"
                 {...register('terms', { required: 'You must accept the terms' })}
               />
               <div>
-                <label htmlFor="terms" className="text-sm text-slate-600">
+                <label htmlFor="terms" className="text-sm text-soft">
                   I agree to the{' '}
-                  <Link to="/terms" className="font-medium text-blue-600 hover:underline">Terms of Service</Link>
+                  <Link to="/terms" className="font-medium text-brand hover:underline">Terms of Service</Link>
                   {' '}and{' '}
-                  <Link to="/privacy" className="font-medium text-blue-600 hover:underline">Privacy Policy</Link>
+                  <Link to="/privacy" className="font-medium text-brand hover:underline">Privacy Policy</Link>
                 </label>
-                {errors.terms && <p className="mt-0.5 text-xs text-red-600">{errors.terms.message}</p>}
+                {errors.terms && <p className="mt-0.5 text-xs text-danger">{errors.terms.message}</p>}
               </div>
             </div>
 
@@ -340,7 +341,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading || !recaptchaToken}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition hover:bg-primary disabled:opacity-60"
             >
               {isLoading ? (
                 <>

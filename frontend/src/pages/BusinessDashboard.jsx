@@ -27,17 +27,28 @@ import {
 import { format } from 'date-fns';
 import { appointmentService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { asNumber, responseList } from '../utils/data';
 
-const STATUS_COLORS = {
-  pending: '#f59e0b',
-  confirmed: '#3b82f6',
-  completed: '#10b981',
-  cancelled: '#ef4444',
-  no_show: '#64748b',
-  rescheduled: '#8b5cf6',
+const CHART = {
+  primary: 'rgb(var(--primary))',
+  accent: 'rgb(var(--accent))',
+  success: 'rgb(var(--success))',
+  warning: 'rgb(var(--warning))',
+  danger: 'rgb(var(--danger))',
+  muted: 'rgb(var(--text-muted))',
+  border: 'rgb(var(--border))',
 };
 
-const PIE_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
+const STATUS_COLORS = {
+  pending: CHART.warning,
+  confirmed: CHART.primary,
+  completed: CHART.success,
+  cancelled: CHART.danger,
+  no_show: CHART.muted,
+  rescheduled: CHART.accent,
+};
+
+const PIE_COLORS = [CHART.primary, CHART.accent, CHART.success, CHART.warning, CHART.danger, CHART.muted];
 
 const fmt = (v) =>
   new Intl.NumberFormat('en-US', {
@@ -50,17 +61,17 @@ const delta = (v) => `${v >= 0 ? '+' : ''}${v}%`;
 
 // ── Compact stat card ────────────────────────────────────────────────────────
 const StatCard = ({ title, value, sub, icon: Icon, color, trend }) => (
-  <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+  <div className="app-card flex items-center gap-4 p-4">
     <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
       <Icon className="h-6 w-6" />
     </div>
     <div className="min-w-0 flex-1">
-      <p className="truncate text-xs font-medium text-slate-500">{title}</p>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
-      {sub && <p className="truncate text-xs text-slate-400">{sub}</p>}
+      <p className="truncate text-xs font-medium text-muted">{title}</p>
+      <p className="text-2xl font-bold text-token">{value}</p>
+      {sub && <p className="truncate text-xs text-muted">{sub}</p>}
     </div>
     {trend !== undefined && (
-      <div className={`flex items-center gap-1 text-xs font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+      <div className={`flex items-center gap-1 text-xs font-semibold ${trend >= 0 ? 'text-success' : 'text-danger'}`}>
         {trend >= 0
           ? <ArrowTrendingUpIcon className="h-4 w-4" />
           : <ArrowTrendingDownIcon className="h-4 w-4" />}
@@ -73,15 +84,15 @@ const StatCard = ({ title, value, sub, icon: Icon, color, trend }) => (
 // ── Status badge ─────────────────────────────────────────────────────────────
 const Badge = ({ status }) => {
   const map = {
-    pending: 'bg-amber-100 text-amber-800',
-    confirmed: 'bg-blue-100 text-blue-800',
-    completed: 'bg-emerald-100 text-emerald-800',
-    cancelled: 'bg-red-100 text-red-800',
-    no_show: 'bg-slate-100 text-slate-600',
-    rescheduled: 'bg-violet-100 text-violet-800',
+    pending: 'badge-warning',
+    confirmed: 'badge-brand',
+    completed: 'badge-success',
+    cancelled: 'badge-danger',
+    no_show: 'badge-muted',
+    rescheduled: 'badge-brand',
   };
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${map[status] || 'bg-gray-100 text-gray-700'}`}>
+    <span className={`ui-chip capitalize ${map[status] || 'badge-muted'}`}>
       {status?.replace('_', ' ')}
     </span>
   );
@@ -105,54 +116,62 @@ const BusinessDashboard = () => {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
+        <div className="app-spinner" />
       </div>
     );
   }
 
   if (error || !dashboard) {
     return (
-      <div className="p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
+      <div className="app-page">
+        <div className="rounded-[var(--radius-lg)] border border-token bg-muted-token p-4 text-danger">
           {error || 'Dashboard data unavailable.'}
         </div>
       </div>
     );
   }
 
-  const { overview, trends, status_breakdown, busiest_days, top_services, top_employees } = dashboard;
+  const { overview = {}, schedule_overview = {} } = dashboard || {};
+  const trends = responseList(dashboard?.trends);
+  const status_breakdown = responseList(dashboard?.status_breakdown);
+  const busiest_days = responseList(dashboard?.busiest_days);
+  const top_services = responseList(dashboard?.top_services);
+  const top_employees = responseList(dashboard?.top_employees);
 
   const statusData = status_breakdown.map((item, i) => ({
-    name: item.status.replace('_', ' '),
-    value: item.count,
+    name: String(item.status || 'unknown').replace(/_/g, ' '),
+    value: asNumber(item.count),
     color: STATUS_COLORS[item.status] || PIE_COLORS[i % PIE_COLORS.length],
   }));
 
-  const serviceBarData = top_services.slice(0, 6).map((s) => ({
-    name: s.name.length > 12 ? s.name.slice(0, 12) + '…' : s.name,
-    bookings: s.appointments,
-    revenue: Number(s.revenue),
-  }));
+  const serviceBarData = top_services.slice(0, 6).map((s) => {
+    const name = String(s.name || 'Service');
+    return {
+      name: name.length > 12 ? `${name.slice(0, 12)}...` : name,
+      bookings: asNumber(s.appointments),
+      revenue: asNumber(s.revenue),
+    };
+  });
 
   return (
-    <div className="flex h-full flex-col gap-4 p-5 overflow-hidden">
+    <div className="app-page flex min-h-full flex-col gap-5">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">
+          <h1 className="app-title">
             Hello, {user?.first_name || 'there'} 👋
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="app-subtitle">
             {format(new Date(), 'EEEE, MMMM d, yyyy')}
-            {dashboard.schedule_overview.today_is_open
-              ? ` · Open ${dashboard.schedule_overview.today_opening_time || ''} – ${dashboard.schedule_overview.today_closing_time || ''}`
+            {schedule_overview.today_is_open
+              ? ` · Open ${schedule_overview.today_opening_time || ''} - ${schedule_overview.today_closing_time || ''}`
               : ' · Closed today'}
           </p>
         </div>
         <Link
           to="/dashboard/appointments"
-          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          className="btn-primary"
         >
           <CalendarDaysIcon className="h-4 w-4" />
           View appointments
@@ -163,68 +182,68 @@ const BusinessDashboard = () => {
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard
           title="Total Bookings"
-          value={overview.total_appointments}
-          sub={`${overview.upcoming_7_days} upcoming this week`}
+          value={asNumber(overview.total_appointments)}
+          sub={`${asNumber(overview.upcoming_7_days)} upcoming this week`}
           icon={CalendarDaysIcon}
-          color="bg-blue-50 text-blue-600"
-          trend={overview.appointment_delta_30_days}
+          color="bg-muted-token text-brand"
+          trend={asNumber(overview.appointment_delta_30_days)}
         />
         <StatCard
           title="Employees"
-          value={`${overview.active_employees}/${overview.total_employees}`}
-          sub={`${dashboard.schedule_overview.staff_on_duty_today} on duty today`}
+          value={`${asNumber(overview.active_employees)}/${asNumber(overview.total_employees)}`}
+          sub={`${asNumber(schedule_overview.staff_on_duty_today)} on duty today`}
           icon={UserGroupIcon}
-          color="bg-violet-50 text-violet-600"
+          color="bg-muted-token text-brand"
         />
         <StatCard
           title="Today's Appointments"
-          value={overview.today_appointments}
-          sub={`${overview.pending_appointments} pending approval`}
+          value={asNumber(overview.today_appointments)}
+          sub={`${asNumber(overview.pending_appointments)} pending approval`}
           icon={CheckCircleIcon}
-          color="bg-emerald-50 text-emerald-600"
+          color="bg-muted-token text-success"
         />
         <StatCard
           title="Total Revenue"
           value={fmt(overview.total_revenue)}
           sub={`${fmt(overview.revenue_30_days)} last 30 days`}
           icon={CurrencyDollarIcon}
-          color="bg-amber-50 text-amber-600"
-          trend={overview.revenue_delta_30_days}
+          color="bg-muted-token text-warning"
+          trend={asNumber(overview.revenue_delta_30_days)}
         />
       </div>
 
       {/* ── Middle row ─────────────────────────────────────────────────── */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
 
         {/* Employee list */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="app-card flex min-h-[280px] flex-col overflow-hidden p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Employees</h2>
-            <Link to="/dashboard/employees" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
+            <h2 className="text-sm font-semibold text-token">Employees</h2>
+            <Link to="/dashboard/employees" className="text-link flex items-center gap-1 text-xs">
               All <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
           {top_employees.length === 0 ? (
-            <p className="text-center text-xs text-slate-400 py-4">No employees yet.</p>
+            <p className="ui-empty text-center">No employees yet.</p>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              <div className="grid grid-cols-3 text-xs text-slate-400 font-medium px-2 mb-1">
+              <div className="grid grid-cols-3 text-xs text-muted font-medium px-2 mb-1">
                 <span>Name</span>
                 <span className="text-center">Status</span>
                 <span className="text-right">Done</span>
               </div>
               {top_employees.map((emp) => (
-                <div key={emp.id} className="grid grid-cols-3 items-center rounded-xl bg-slate-50 px-3 py-2">
+                <div key={emp.id} className="surface-subtle grid grid-cols-3 items-center rounded-xl px-3 py-2">
                   <div>
-                    <p className="text-xs font-semibold text-slate-900 truncate">{emp.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{emp.position || 'Staff'}</p>
+                    <p className="text-xs font-semibold text-token truncate">{emp.name}</p>
+                    <p className="text-xs text-muted truncate">{emp.position || 'Staff'}</p>
                   </div>
                   <div className="flex justify-center">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-muted-token text-success' : 'bg-muted-token text-muted'}`}>
                       {emp.is_active ? 'Active' : 'Off'}
                     </span>
                   </div>
-                  <p className="text-right text-sm font-bold text-slate-900">{emp.completed}</p>
+                  <p className="text-right text-sm font-bold text-token">{emp.completed}</p>
                 </div>
               ))}
             </div>
@@ -232,13 +251,13 @@ const BusinessDashboard = () => {
         </div>
 
         {/* Segmentation / Status donut */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="app-card flex min-h-[280px] flex-col overflow-hidden p-4">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Appointment Status</h2>
-            <span className="text-xs text-slate-400">{overview.completion_rate}% complete</span>
+            <h2 className="text-sm font-semibold text-token">Appointment Status</h2>
+            <span className="text-xs text-muted">{asNumber(overview.completion_rate)}% complete</span>
           </div>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="60%">
+          <div className="min-h-0 flex-1">
+            <ResponsiveContainer width="100%" height={170}>
               <PieChart>
                 <Pie
                   data={statusData}
@@ -257,10 +276,10 @@ const BusinessDashboard = () => {
             </ResponsiveContainer>
             <div className="mt-1 grid grid-cols-2 gap-1.5">
               {statusData.map((item) => (
-                <div key={item.name} className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2 py-1">
+                <div key={item.name} className="surface-subtle flex items-center gap-1.5 rounded-lg px-2 py-1">
                   <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="truncate text-xs text-slate-600 capitalize">{item.name}</span>
-                  <span className="ml-auto text-xs font-bold text-slate-900">{item.value}</span>
+                  <span className="truncate text-xs text-soft capitalize">{item.name}</span>
+                  <span className="ml-auto text-xs font-bold text-token">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -268,28 +287,28 @@ const BusinessDashboard = () => {
         </div>
 
         {/* Bookings trend */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="app-card flex min-h-[280px] flex-col overflow-hidden p-4">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Booking Trend</h2>
-            <span className="text-xs text-slate-400">Last 14 days</span>
+            <h2 className="text-sm font-semibold text-token">Booking Trend</h2>
+            <span className="text-xs text-muted">Last 14 days</span>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trends} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="bFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop offset="5%" stopColor={CHART.primary} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={CHART.primary} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-                <XAxis dataKey="label" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
-                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <CartesianGrid stroke={CHART.border} strokeDasharray="3 3" />
+                <XAxis dataKey="label" stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
+                <YAxis stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
                 <Tooltip formatter={(v, n) => [n === 'revenue' ? fmt(v) : v, n === 'revenue' ? 'Revenue' : 'Bookings']} />
                 <Area
                   dataKey="bookings"
                   type="monotone"
-                  stroke="#3b82f6"
+                  stroke={CHART.primary}
                   fill="url(#bFill)"
                   strokeWidth={2}
                   dot={false}
@@ -301,43 +320,43 @@ const BusinessDashboard = () => {
       </div>
 
       {/* ── Bottom row ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2" style={{ height: '180px' }}>
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
 
         {/* Busiest days */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="app-card flex h-56 flex-col overflow-hidden p-4">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Busiest Days</h2>
-            <span className="text-xs text-slate-400">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
+            <h2 className="text-sm font-semibold text-token">Busiest Days</h2>
+            <span className="text-xs text-muted">{delta(asNumber(overview.appointment_delta_30_days))} bookings vs last month</span>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={busiest_days} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
-                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
-                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <CartesianGrid stroke={CHART.border} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="day" stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
+                <YAxis stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
                 <Tooltip formatter={(v) => [v, 'Appointments']} />
-                <Bar dataKey="appointments" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
+                <Bar dataKey="appointments" fill={CHART.primary} radius={[4, 4, 0, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Services-wise bookings */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="app-card flex h-56 flex-col overflow-hidden p-4">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Services-wise Bookings</h2>
-            <Link to="/dashboard/services" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
+            <h2 className="text-sm font-semibold text-token">Services-wise Bookings</h2>
+            <Link to="/dashboard/services" className="text-link flex items-center gap-1 text-xs">
               Manage <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serviceBarData} margin={{ top: 2, right: 4, left: -22, bottom: 0 }}>
-                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
-                <YAxis stroke="#94a3b8" fontSize={10} tick={{ fill: '#94a3b8' }} />
+                <CartesianGrid stroke={CHART.border} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
+                <YAxis stroke={CHART.muted} fontSize={10} tick={{ fill: CHART.muted }} />
                 <Tooltip formatter={(v, n) => [n === 'revenue' ? fmt(v) : v, n === 'revenue' ? 'Revenue' : 'Bookings']} />
-                <Bar dataKey="bookings" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={20} />
+                <Bar dataKey="bookings" fill={CHART.accent} radius={[4, 4, 0, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>

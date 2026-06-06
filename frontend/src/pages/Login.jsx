@@ -12,7 +12,8 @@ import {
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY ;
+const RECAPTCHA_TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || RECAPTCHA_TEST_SITE_KEY;
 
 const Login = () => {
   const { login } = useAuth();
@@ -62,11 +63,11 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-app">
       {/* Left panel */}
-      <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
+      <div className="hidden flex-col justify-between bg-primary p-12 text-white lg:flex lg:w-[42%]">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl hero-glass">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
@@ -76,7 +77,7 @@ const Login = () => {
           <h1 className="text-4xl font-extrabold leading-tight">
             Welcome back to<br />Reserva
           </h1>
-          <p className="mt-4 text-blue-100">
+          <p className="mt-4 text-white/80">
             Sign in to manage your appointments, bookings, and business — all in one place.
           </p>
 
@@ -88,13 +89,13 @@ const Login = () => {
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3">
                 <span className="text-xl">{item.emoji}</span>
-                <span className="text-sm text-blue-50">{item.text}</span>
+                <span className="text-sm text-white/85">{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-blue-200">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
+        <p className="text-xs text-white/70">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
       </div>
 
       {/* Right panel */}
@@ -102,60 +103,60 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">Reserva</span>
+            <span className="text-xl font-bold text-token">Reserva</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900">Sign in to your account</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-token">Sign in to your account</h2>
+          <p className="mt-1 text-sm text-muted">
             Don't have an account?{' '}
-            <Link to="/register" className="font-semibold text-blue-600 hover:underline">
+            <Link to="/register" className="font-semibold text-brand hover:underline">
               Create one free
             </Link>
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
             {error && (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-xl border border-token bg-muted-token px-4 py-3 text-sm text-danger">
                 {error}
               </div>
             )}
 
             {/* Email */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              <label className="mb-1.5 block text-sm font-medium text-soft">
                 Email address
               </label>
               <div className="relative">
-                <EnvelopeIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <EnvelopeIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
                 <input
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="auth-input w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
                   })}
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-700">Password</label>
+                <label className="text-sm font-medium text-soft">Password</label>
               </div>
               <div className="relative">
-                <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <LockClosedIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   placeholder="Your password"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="auth-input-password w-full rounded-xl border border-token bg-surface-token py-2.5 text-token placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Min 6 characters' },
@@ -164,12 +165,12 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted hover:text-soft"
                 >
                   {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              {errors.password && <p className="mt-1 text-xs text-danger">{errors.password.message}</p>}
             </div>
 
             {/* reCAPTCHA */}
@@ -185,7 +186,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || !recaptchaToken}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition hover:bg-primary disabled:opacity-60"
             >
               {isLoading ? (
                 <>

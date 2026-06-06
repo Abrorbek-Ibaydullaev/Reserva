@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { userService } from '../services/api';
 import BusinessCard from '../components/Business/BusinessCard';
+import { asArray, responseList } from '../utils/data';
 
 const CATEGORY_ICONS = {
   'Barber': '✂️',
@@ -39,7 +40,7 @@ const Services = () => {
   useEffect(() => {
     userService
       .getBusinesses()
-      .then((r) => setBusinesses(r.data.results || r.data || []))
+      .then((r) => setBusinesses(responseList(r)))
       .catch(() => setError('Failed to load businesses. Please try again.'))
       .finally(() => setLoading(false));
   }, []);
@@ -47,7 +48,7 @@ const Services = () => {
   const categories = useMemo(() => {
     const set = new Set();
     businesses.forEach((b) =>
-      (b.services || []).forEach((s) => s.category_name && set.add(s.category_name))
+      asArray(b.services).forEach((s) => s.category_name && set.add(s.category_name))
     );
     return ['All', ...Array.from(set).sort()];
   }, [businesses]);
@@ -66,7 +67,7 @@ const Services = () => {
     // Filter by category (checks both services and services_active arrays)
     if (selectedCategory !== 'All') {
       list = list.filter((b) =>
-        [...(b.services || []), ...(b.services_active || [])].some(
+        [...asArray(b.services), ...asArray(b.services_active)].some(
           (s) => s.category_name === selectedCategory
         )
       );
@@ -80,7 +81,7 @@ const Services = () => {
           b.full_name?.toLowerCase().includes(q) ||
           b.profile?.business_name?.toLowerCase().includes(q) ||
           b.profile?.city?.toLowerCase().includes(q) ||
-          [...(b.services || []), ...(b.services_active || [])].some(
+          [...asArray(b.services), ...asArray(b.services_active)].some(
             (s) => s.name?.toLowerCase().includes(q) || s.category_name?.toLowerCase().includes(q)
           )
       );
@@ -90,35 +91,36 @@ const Services = () => {
   }, [businesses, search, selectedCategory, cityFilter]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-page p-0">
       {/* Hero / Search bar */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-10">
+      <div className="border-b border-token bg-surface-token px-4 py-12 border-token bg-app">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-1 text-3xl font-extrabold text-white">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-brand text-brand">Marketplace</p>
+          <h1 className="mb-2 text-4xl font-semibold tracking-tight text-token text-token">
             {selectedCategory !== 'All' ? selectedCategory : 'Find a service near you'}
           </h1>
           {cityFilter && (
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white">
+            <div className="ui-chip ui-badge-brand mb-3 inline-flex items-center gap-1.5">
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
               {cityFilter}
             </div>
           )}
-          <p className="mb-6 text-blue-100">
+          <p className="mx-auto mb-6 max-w-xl text-sm leading-6 text-muted text-muted">
             Browse trusted professionals and book instantly
           </p>
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <div className="relative mx-auto max-w-2xl">
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted" />
             <input
               type="text"
               placeholder="Search by business, service, or city…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-2xl border-0 py-3.5 pl-12 pr-12 text-slate-900 shadow-lg outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-blue-300"
+              className="auth-input-password w-full"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-muted hover:text-soft"
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
@@ -128,17 +130,17 @@ const Services = () => {
       </div>
 
       {/* Category chips */}
-      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="sticky top-0 z-10 border-b border-token bg-surface-token px-4 py-3 backdrop-blur-xl border-token bg-surface-token">
         <div className="mx-auto max-w-7xl">
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={`flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                   selectedCategory === cat
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600'
+                    ? 'bg-app text-white shadow-sm dark:bg-app dark:text-token'
+                    : 'border border-token bg-surface-token text-soft hover:border-token hover:text-brand border-token bg-surface-token text-soft'
                 }`}
               >
                 {cat !== 'All' && (
@@ -155,7 +157,7 @@ const Services = () => {
       <div className="mx-auto max-w-7xl px-4 py-8">
         {!loading && !error && (
           <div className="mb-5 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted">
               {filtered.length === 0
                 ? 'No businesses found'
                 : `${filtered.length} business${filtered.length !== 1 ? 'es' : ''} found`}
@@ -165,7 +167,7 @@ const Services = () => {
             {(search || selectedCategory !== 'All') && (
               <button
                 onClick={() => { setSearch(''); setSelectedCategory('All'); }}
-                className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                className="app-link flex items-center gap-1 text-sm"
               >
                 <XMarkIcon className="h-4 w-4" />
                 Clear filters
@@ -176,15 +178,15 @@ const Services = () => {
 
         {loading && (
           <div className="flex items-center justify-center py-24">
-            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
+            <div className="app-spinner" />
           </div>
         )}
 
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-700">
+          <div className="ui-empty border-token bg-muted-token p-6 text-center text-danger border-token bg-muted-token text-danger">
             {error}
             <button
-              className="mt-3 block mx-auto text-sm font-semibold underline"
+              className="app-link mx-auto mt-3 block text-sm"
               onClick={() => window.location.reload()}
             >
               Try again
@@ -193,15 +195,15 @@ const Services = () => {
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
+          <div className="ui-empty p-12 text-center">
             <p className="mb-3 text-4xl">🔍</p>
-            <h2 className="text-lg font-semibold text-slate-900">No results found</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-lg font-semibold text-token text-token">No results found</h2>
+            <p className="mt-1 text-sm text-muted">
               Try a different search term or category.
             </p>
             <button
               onClick={() => { setSearch(''); setSelectedCategory('All'); }}
-              className="mt-4 rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="btn-primary mt-4"
             >
               Show all businesses
             </button>

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { scheduleService, userService } from '../services/api';
+import { fixMediaUrl, scheduleService, userService } from '../services/api';
+import { responseList } from '../utils/data';
 import {
   BriefcaseIcon,
   CameraIcon,
@@ -8,7 +9,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 
-const normalizeList = (response) => response.data?.results || response.data || [];
+const normalizeList = responseList;
 
 const formatHumanDate = (value) => {
   if (!value) return '';
@@ -52,6 +53,14 @@ const EmployeeProfile = () => {
     loadEmployeeProfile();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (imagePreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   const loadEmployeeProfile = async () => {
     try {
       setLoading(true);
@@ -86,13 +95,12 @@ const EmployeeProfile = () => {
         max_daily_appointments: employee.max_daily_appointments ?? 10,
         appointment_buffer: employee.appointment_buffer ?? 15,
       });
-      setImagePreview(me.profile_picture || '');
+      setImagePreview(fixMediaUrl(me.profile_picture) || '');
       setDuties(dutiesData);
       if (tgResult.status === 'fulfilled' && tgResult.value?.data) {
         setTelegram({ link: tgResult.value.data.link, connected: tgResult.value.data.connected });
       }
-    } catch (error) {
-      console.error('Failed to load employee profile:', error);
+    } catch {
       toast.error('Failed to load employee profile.');
     } finally {
       setLoading(false);
@@ -160,8 +168,7 @@ const EmployeeProfile = () => {
       ]);
 
       toast.success('Employee profile updated.');
-    } catch (error) {
-      console.error('Failed to update employee profile:', error);
+    } catch {
       toast.error('Failed to update employee profile.');
     } finally {
       setSavingProfile(false);
@@ -190,8 +197,7 @@ const EmployeeProfile = () => {
         reason: '',
       });
       toast.success('Personal duty saved.');
-    } catch (error) {
-      console.error('Failed to save personal duty:', error);
+    } catch {
       toast.error('Failed to save personal duty.');
     } finally {
       setSavingDuty(false);
@@ -203,34 +209,33 @@ const EmployeeProfile = () => {
       await scheduleService.deleteMyTimeOff(id);
       setDuties((current) => current.filter((item) => item.id !== id));
       toast.success('Personal duty removed.');
-    } catch (error) {
-      console.error('Failed to remove personal duty:', error);
+    } catch {
       toast.error('Failed to remove personal duty.');
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#4a90b0]" />
+      <div className="app-page flex min-h-screen items-center justify-center">
+        <div className="app-spinner" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
+    <div className="app-page">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Employee Profile</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="app-title">Employee Profile</h1>
+          <p className="app-subtitle">
             Upload your profile photo, update your details, and block personal duty in advance.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <section className="app-card-pad">
             <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#e8f2f6] text-[#4a90b0]">
+              <div className="surface-subtle flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl text-brand text-brand">
                 {imagePreview ? (
                   <img src={imagePreview} alt={profileData.first_name || 'Employee'} className="h-full w-full object-cover" />
                 ) : (
@@ -238,15 +243,15 @@ const EmployeeProfile = () => {
                 )}
               </div>
               <div>
-                <p className="text-sm uppercase tracking-[0.18em] text-[#4a90b0]">Staff Profile</p>
-                <h2 className="mt-2 text-2xl font-bold text-gray-900">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand text-brand">Staff Profile</p>
+                <h2 className="mt-2 text-2xl font-semibold text-token text-token">
                   {profileData.first_name} {profileData.last_name}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">{profileData.position || 'Employee'}</p>
+                <p className="mt-1 text-sm text-muted">{profileData.position || 'Employee'}</p>
               </div>
             </div>
 
-            <label className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-900">
+            <label className="btn-secondary mt-6 cursor-pointer">
               <CameraIcon className="h-5 w-5" />
               Upload profile photo
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
@@ -255,109 +260,109 @@ const EmployeeProfile = () => {
             <form onSubmit={saveProfile} className="mt-8 grid gap-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">First name</label>
-                  <input name="first_name" value={profileData.first_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">First name</label>
+                  <input name="first_name" value={profileData.first_name} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Last name</label>
-                  <input name="last_name" value={profileData.last_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Last name</label>
+                  <input name="last_name" value={profileData.last_name} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Email</label>
-                  <input name="email" value={profileData.email} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Email</label>
+                  <input name="email" value={profileData.email} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Phone number</label>
-                  <input name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Phone number</label>
+                  <input name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Position</label>
-                  <input name="position" value={profileData.position} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Position</label>
+                  <input name="position" value={profileData.position} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Break between appointments</label>
-                  <input type="number" min="0" name="appointment_buffer" value={profileData.appointment_buffer} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Break between appointments</label>
+                  <input type="number" min="0" name="appointment_buffer" value={profileData.appointment_buffer} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Max daily appointments</label>
-                  <input type="number" min="1" name="max_daily_appointments" value={profileData.max_daily_appointments} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-token">Max daily appointments</label>
+                  <input type="number" min="1" name="max_daily_appointments" value={profileData.max_daily_appointments} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Bio</label>
-                <textarea name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-token">Bio</label>
+                <textarea name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
               </div>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 Break between appointments means how many minutes the system should keep free after one booking before the next booking can start.
               </p>
 
-              <button type="submit" disabled={savingProfile} className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white">
+              <button type="submit" disabled={savingProfile} className="btn-primary">
                 {savingProfile ? 'Saving...' : 'Save profile'}
               </button>
             </form>
           </section>
 
           <section>
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="app-card-pad">
               <div className="mb-4 flex items-center gap-3">
-                <ClockIcon className="h-5 w-5 text-[#4a90b0]" />
-                <h3 className="text-lg font-semibold text-gray-900">Personal Duty / Unavailable Time</h3>
+                <ClockIcon className="h-5 w-5 text-brand text-brand" />
+                <h3 className="text-lg font-semibold text-token text-token">Personal Duty / Unavailable Time</h3>
               </div>
-              <p className="mb-4 text-sm text-gray-500">
+              <p className="mb-4 text-sm text-muted">
                 Use this when you are busy, off-site, or unavailable. Those times will be blocked only for you.
               </p>
 
               <form onSubmit={addDuty} className="grid gap-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">Start date</label>
-                    <input type="date" name="start_date" value={dutyForm.start_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" required />
+                    <label className="mb-2 block text-sm font-semibold text-token">Start date</label>
+                    <input type="date" name="start_date" value={dutyForm.start_date} onChange={handleDutyChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" required />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">End date</label>
-                    <input type="date" name="end_date" value={dutyForm.end_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                    <label className="mb-2 block text-sm font-semibold text-token">End date</label>
+                    <input type="date" name="end_date" value={dutyForm.end_date} onChange={handleDutyChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">Start time</label>
-                    <input type="time" name="start_time" value={dutyForm.start_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" disabled={dutyForm.is_all_day} />
+                    <label className="mb-2 block text-sm font-semibold text-token">Start time</label>
+                    <input type="time" name="start_time" value={dutyForm.start_time} onChange={handleDutyChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" disabled={dutyForm.is_all_day} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">End time</label>
-                    <input type="time" name="end_time" value={dutyForm.end_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" disabled={dutyForm.is_all_day} />
+                    <label className="mb-2 block text-sm font-semibold text-token">End time</label>
+                    <input type="time" name="end_time" value={dutyForm.end_time} onChange={handleDutyChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" disabled={dutyForm.is_all_day} />
                   </div>
                 </div>
 
-                <label className="inline-flex items-center gap-3 text-sm text-gray-700">
+                <label className="inline-flex items-center gap-3 text-sm text-soft">
                   <input type="checkbox" name="is_all_day" checked={dutyForm.is_all_day} onChange={handleDutyChange} />
                   All day
                 </label>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Reason</label>
-                  <textarea name="reason" rows={3} value={dutyForm.reason} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" required />
+                  <label className="mb-2 block text-sm font-semibold text-token">Reason</label>
+                  <textarea name="reason" rows={3} value={dutyForm.reason} onChange={handleDutyChange} className="w-full rounded-[var(--radius-lg)] border border-token px-4 py-3" required />
                 </div>
 
-                <button type="submit" disabled={savingDuty} className="rounded-2xl bg-[#ef6b57] px-5 py-3 text-sm font-semibold text-white">
+                <button type="submit" disabled={savingDuty} className="btn-danger bg-danger text-white hover:bg-danger">
                   {savingDuty ? 'Saving...' : 'Add personal duty'}
                 </button>
               </form>
 
               <div className="mt-6 space-y-3">
                 {sortedDuties.length === 0 ? (
-                  <div className="rounded-2xl bg-gray-50 p-4 text-sm text-gray-500">No personal duty periods added yet.</div>
+                  <div className="ui-empty">No personal duty periods added yet.</div>
                 ) : (
                   sortedDuties.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between gap-4 rounded-2xl border border-gray-200 p-4">
+                    <div key={item.id} className="flex items-center justify-between gap-4 rounded-[var(--radius-lg)] border border-token p-4">
                       <div>
-                        <p className="font-semibold text-gray-900">{formatHumanDate(item.start_date)}</p>
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="font-semibold text-token">{formatHumanDate(item.start_date)}</p>
+                        <p className="mt-1 text-sm text-soft">
                           {item.is_all_day ? 'All day' : `${String(item.start_time || '').slice(0, 5)} - ${String(item.end_time || '').slice(0, 5)}`}
                         </p>
-                        <p className="mt-1 text-sm text-gray-500">{item.reason}</p>
+                        <p className="mt-1 text-sm text-muted">{item.reason}</p>
                       </div>
-                      <button type="button" onClick={() => deleteDuty(item.id)} className="rounded-full border border-gray-200 p-2 text-gray-500 hover:text-red-600">
+                      <button type="button" onClick={() => deleteDuty(item.id)} className="rounded-full border border-token p-2 text-muted hover:text-danger">
                         <TrashIcon className="h-5 w-5" />
                       </button>
                     </div>
@@ -367,17 +372,17 @@ const EmployeeProfile = () => {
             </div>
 
             {/* Telegram connect card */}
-            <div className={`rounded-3xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+            <div className={`app-card mt-6 px-5 py-4 ${telegram.connected ? 'border-token bg-muted-token' : ''}`}>
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
+                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-muted-token ${telegram.connected ? 'text-success' : 'text-brand'}`}>
+                    <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
                       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-sm font-semibold text-token">Telegram Notifications</p>
+                    <p className="text-xs text-muted mt-0.5">
                       {telegram.connected
                         ? 'Connected — you\'ll receive booking alerts and a weekly summary every Sunday'
                         : 'Connect to get booking alerts and your weekly appointment summary'}
@@ -388,7 +393,7 @@ const EmployeeProfile = () => {
                   <button
                     type="button"
                     onClick={handleDisconnectTelegram}
-                    className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                    className="btn-danger"
                   >
                     Disconnect
                   </button>
@@ -397,7 +402,7 @@ const EmployeeProfile = () => {
                     href={telegram.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-xl bg-[#229ed9] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1a8bbf] transition-colors"
+                    className="btn-primary"
                   >
                     Connect Telegram
                   </a>

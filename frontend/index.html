@@ -4,7 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva </title>
+    <title>Reserva</title>
+    <link rel="icon" href="/logo_v2.png">
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (error) {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 </head>
 
 <body>

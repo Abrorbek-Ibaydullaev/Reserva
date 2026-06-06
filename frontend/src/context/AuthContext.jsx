@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
       await authService.register(payload);
 
       // 2. Auto-login
-      await authService.login(payload.email, payload.password);
+      await authService.login(payload.email, payload.password, payload.recaptcha_token);
 
       // 3. Load user
       const currentUser = authService.getCurrentUser();

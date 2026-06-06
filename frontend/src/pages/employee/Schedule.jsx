@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { scheduleService } from '../../services/api';
+import { responseList } from '../../utils/data';
 
 const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const normalizeList = (response) => response.data?.results || response.data || [];
+const normalizeList = responseList;
 
 const EmployeeSchedule = () => {
   const [hours, setHours] = useState([]);
@@ -26,8 +27,7 @@ const EmployeeSchedule = () => {
           closing_time: item.closing_time ? item.closing_time.slice(0, 5) : '18:00',
         }))
       );
-    } catch (error) {
-      console.error('Failed to load schedule:', error);
+    } catch {
       toast.error('Failed to load your schedule.');
     } finally {
       setLoading(false);
@@ -48,9 +48,8 @@ const EmployeeSchedule = () => {
         closing_time: hour.is_working ? hour.closing_time : null,
       };
       await scheduleService.updateMyWeeklyHour(hour.id, payload);
-      toast.success(`${dayLabels[hour.day_of_week]} saved.`);
-    } catch (error) {
-      console.error('Failed to save schedule:', error);
+      toast.success(`${dayLabels[hour.day_of_week] || 'Schedule'} saved.`);
+    } catch {
       toast.error('Failed to save schedule.');
     } finally {
       setSavingId(null);
@@ -58,40 +57,40 @@ const EmployeeSchedule = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f3ff] p-4 md:p-6">
-      <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900">My Schedule</h1>
-        <p className="mt-2 text-gray-500">
+    <div className="app-page">
+      <div className="mx-auto max-w-5xl app-card-pad">
+        <h1 className="app-title">My Schedule</h1>
+        <p className="app-subtitle">
           Set the days and hours you are available to take appointments.
         </p>
 
         <div className="mt-8 space-y-4">
           {loading ? (
-            <div className="text-gray-500">Loading schedule...</div>
+            <div className="text-sm text-muted">Loading schedule...</div>
           ) : hours.length === 0 ? (
-            <div className="rounded-2xl bg-gray-50 p-8 text-gray-500">
+            <div className="ui-empty">
               No schedule found. Ask your employer to set up your schedule first.
             </div>
           ) : (
             hours.map((hour) => (
-              <div key={hour.id} className="rounded-2xl border border-gray-200 p-5">
+              <div key={hour.id} className="rounded-xl border border-token bg-surface-token p-5 transition hover:border-token hover:shadow-sm">
                 <div className="grid gap-4 lg:grid-cols-[180px_1fr_auto] lg:items-center">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-token">
                       {dayLabels[hour.day_of_week]}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-muted">
                       {hour.is_working ? 'Working' : 'Day off'}
                     </p>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700">
+                    <label className="inline-flex items-center gap-3 text-sm font-medium text-soft">
                       <input
                         type="checkbox"
                         checked={Boolean(hour.is_working)}
                         onChange={(e) => updateLocal(hour.id, { is_working: e.target.checked })}
-                        className="h-4 w-4 rounded border-gray-300 text-violet-600"
+                        className="h-4 w-4 rounded border-token text-brand focus:ring-primary"
                       />
                       Working
                     </label>
@@ -100,14 +99,14 @@ const EmployeeSchedule = () => {
                       value={hour.opening_time || '09:00'}
                       disabled={!hour.is_working}
                       onChange={(e) => updateLocal(hour.id, { opening_time: e.target.value })}
-                      className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-violet-500 disabled:bg-gray-100"
+                      className="disabled:bg-muted-token"
                     />
                     <input
                       type="time"
                       value={hour.closing_time || '18:00'}
                       disabled={!hour.is_working}
                       onChange={(e) => updateLocal(hour.id, { closing_time: e.target.value })}
-                      className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-violet-500 disabled:bg-gray-100"
+                      className="disabled:bg-muted-token"
                     />
                   </div>
 
@@ -115,7 +114,7 @@ const EmployeeSchedule = () => {
                     type="button"
                     onClick={() => save(hour)}
                     disabled={savingId === hour.id}
-                    className="rounded-2xl bg-violet-600 px-5 py-3 font-semibold text-white disabled:opacity-60"
+                    className="btn-primary"
                   >
                     {savingId === hour.id ? 'Saving...' : 'Save'}
                   </button>
