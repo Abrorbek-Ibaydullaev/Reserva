@@ -1122,7 +1122,10 @@ const Home = () => {
                       className="group flex flex-shrink-0 flex-col items-center gap-2 px-3 py-1"
                     >
                       <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#1a2e2b] text-white transition-all duration-200 group-hover:bg-[#243d3a] group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-emerald-900/30">
-                        <span className="h-9 w-9 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
+                        {cat.svg_icon_url
+                          ? <img src={cat.svg_icon_url} alt={cat.name} className="w-8 h-8 object-contain" />
+                          : <span className="h-9 w-9 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
+                        }
                       </div>
                       <span className="w-[80px] text-center text-[11px] font-bold leading-tight text-white">{cat.name}</span>
                     </button>
