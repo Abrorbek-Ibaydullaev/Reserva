@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _env(key, default=None, required=False):
@@ -169,7 +169,6 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR.parent / 'static']
 
 # ---------------------------------------------------------------------------
 # Supabase Storage

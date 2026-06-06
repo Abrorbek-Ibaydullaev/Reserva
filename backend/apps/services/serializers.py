@@ -17,21 +17,6 @@ def build_absolute_media_url(request, value):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    svg_icon_url = serializers.SerializerMethodField()
-
-    def get_svg_icon_url(self, obj):
-        if not obj.svg_icon:
-            return None
-        from django.conf import settings as django_settings
-        static_url = django_settings.STATIC_URL
-        # Ensure STATIC_URL ends with a slash
-        if not static_url.endswith('/'):
-            static_url += '/'
-        svg_path = obj.svg_icon.lstrip('/')
-        url = f'{static_url}{svg_path}'
-        request = self.context.get('request')
-        return request.build_absolute_uri(url) if request else url
-
     class Meta:
         model = Category
         fields = '__all__'

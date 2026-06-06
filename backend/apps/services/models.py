@@ -11,7 +11,6 @@ class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
     icon = models.CharField(max_length=100, blank=True, null=True)
-    svg_icon = models.CharField(max_length=255, blank=True, default='')
     color = models.CharField(max_length=20, blank=True, null=True)
     image = models.ImageField(
         upload_to='category_images/', blank=True, null=True)
