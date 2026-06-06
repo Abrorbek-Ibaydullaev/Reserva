@@ -4,9 +4,6 @@ import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { fixMediaUrl } from '../../services/api';
 
-const FALLBACK =
-  'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
-
 const BusinessCard = ({ business }) => {
   const services = business.services || [];
   // Use pre-aggregated fields from BusinessSerializer; fall back to per-service computation
@@ -33,23 +30,25 @@ const BusinessCard = ({ business }) => {
     >
       {/* Cover image */}
       <div className="relative h-44 w-full overflow-hidden bg-slate-100">
-        <img
-          src={
-            fixMediaUrl(business.gallery_images?.[0]?.image) ||
-            fixMediaUrl(business.profile_picture) ||
-            FALLBACK
-          }
-          alt={business.full_name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {(fixMediaUrl(business.gallery_images?.[0]?.image) || fixMediaUrl(business.profile_picture)) && (
+          <img
+            src={fixMediaUrl(business.gallery_images?.[0]?.image) || fixMediaUrl(business.profile_picture)}
+            alt={business.full_name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        )}
         {/* Avatar badge */}
         <div className="absolute bottom-3 left-3">
-          <div className="h-12 w-12 overflow-hidden rounded-xl border-2 border-white shadow-md">
-            <img
-              src={business.profile_picture || FALLBACK}
-              alt=""
-              className="h-full w-full object-cover"
-            />
+          <div className="h-12 w-12 overflow-hidden rounded-xl border-2 border-white shadow-md bg-slate-200">
+            {business.profile_picture && (
+              <img
+                src={fixMediaUrl(business.profile_picture)}
+                alt=""
+                className="h-full w-full object-cover"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            )}
           </div>
         </div>
         {/* Rating badge */}

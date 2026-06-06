@@ -23,8 +23,6 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 const BOOKING_DRAFT_KEY = 'booking_draft';
-const BUSINESS_FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const normalizeMediaUrl = (value) => {
@@ -288,10 +286,6 @@ const BusinessDetail = () => {
         .map((item) => normalizeMediaUrl(item.image))),
     ].filter((value, index, array) => value && array.indexOf(value) === index);
 
-    if (uniqueImages.length === 0) {
-      return [BUSINESS_FALLBACK_IMAGE];
-    }
-
     return uniqueImages;
   }, [business?.profile_picture, business?.gallery_images]);
 
@@ -317,7 +311,7 @@ const BusinessDetail = () => {
 
   const currentGalleryImages = activeGallerySection === 'portfolio' ? portfolioGallery : spaceGallery;
 
-  const primaryImage = spaceGallery[0] || BUSINESS_FALLBACK_IMAGE;
+  const primaryImage = spaceGallery[0] || null;
   const thumbnailImages = portfolioGallery.slice(0, 6);
   const orderedGalleryImages =
     activeGalleryIndex === null
@@ -645,15 +639,17 @@ const BusinessDetail = () => {
   const businessHeroSection = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm">
       <div className="relative">
-        <img
-          src={primaryImage}
-          alt={publicBusinessName || 'Business'}
-          className="h-64 w-full object-cover md:h-[420px]"
-          onClick={() => openGalleryAt(0, 'space')}
-          onError={(e) => {
-            e.target.src = BUSINESS_FALLBACK_IMAGE;
-          }}
-        />
+        {primaryImage ? (
+          <img
+            src={primaryImage}
+            alt={publicBusinessName || 'Business'}
+            className="h-64 w-full object-cover md:h-[420px]"
+            onClick={() => openGalleryAt(0, 'space')}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        ) : (
+          <div className="h-64 w-full bg-gray-100 md:h-[420px]" />
+        )}
         <button
           type="button"
           onClick={() => openGalleryAt(0, 'space')}
@@ -675,9 +671,7 @@ const BusinessDetail = () => {
               src={image}
               alt={`${publicBusinessName || 'Business'} ${index + 2}`}
               className="h-14 w-full object-cover md:h-[120px]"
-              onError={(e) => {
-                e.target.src = BUSINESS_FALLBACK_IMAGE;
-              }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
           </button>
         ))}
@@ -795,7 +789,7 @@ const BusinessDetail = () => {
                 <div className="mx-auto h-16 w-16 overflow-hidden rounded-full bg-gray-100">
                   {employee.user_details?.profile_picture ? (
                     <img
-                      src={normalizeMediaUrl(employee.user_details.profile_picture) || BUSINESS_FALLBACK_IMAGE}
+                      src={normalizeMediaUrl(employee.user_details.profile_picture)}
                       alt={firstName}
                       className="h-full w-full object-cover"
                     />
@@ -1119,7 +1113,7 @@ const BusinessDetail = () => {
                           <div className="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#e9ecef] text-xs font-semibold text-gray-700">
                             {employee.user_details?.profile_picture ? (
                               <img
-                                src={normalizeMediaUrl(employee.user_details.profile_picture) || BUSINESS_FALLBACK_IMAGE}
+                                src={normalizeMediaUrl(employee.user_details.profile_picture)}
                                 alt={employee.user_details.first_name}
                                 className="h-full w-full object-cover"
                               />
@@ -1226,7 +1220,7 @@ const BusinessDetail = () => {
                         alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`}
                         className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]"
                         onError={(e) => {
-                          e.target.src = BUSINESS_FALLBACK_IMAGE;
+                          e.target.style.display = 'none';
                         }}
                       />
                     </div>
@@ -1241,7 +1235,7 @@ const BusinessDetail = () => {
                         alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`}
                         className="max-h-[82vh] w-full object-contain bg-white"
                         onError={(e) => {
-                          e.target.src = BUSINESS_FALLBACK_IMAGE;
+                          e.target.style.display = 'none';
                         }}
                       />
                     </div>
