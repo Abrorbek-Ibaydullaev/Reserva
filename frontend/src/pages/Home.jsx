@@ -1072,7 +1072,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70" />
 
         {/* Navbar */}
-        <div className="relative z-10 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
+        <div className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <Link to="/" className="text-2xl font-extrabold text-white tracking-tight">Reserva</Link>
           <div className="flex items-center gap-3">
             {isAuthenticated
@@ -1088,7 +1088,7 @@ const Home = () => {
         </div>
 
         {/* Centre content */}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 text-center">
+        <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-4 text-center">
           <h1 className="mb-4 min-h-[5rem] text-2xl font-extrabold leading-tight text-white sm:min-h-[6rem] sm:text-4xl md:text-5xl">
             {/* line 1 */}
             <span>
