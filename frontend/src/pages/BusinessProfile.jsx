@@ -261,22 +261,21 @@ const BusinessProfile = () => {
       const existingPortfolioCount = galleryImages.filter((item) => item.image_type === 'portfolio').length;
 
       if (galleryEnabled && (selectedSpaceFiles.length > 0 || selectedPortfolioFiles.length > 0)) {
-        await Promise.all(
-          [
-            ...selectedSpaceFiles.map((file, index) => ({ file, imageType: 'space', order: existingSpaceCount + index })),
-            ...selectedPortfolioFiles.map((file, index) => ({
-              file,
-              imageType: 'portfolio',
-              order: existingPortfolioCount + index,
-            })),
-          ].map(({ file, imageType, order }) => {
-            const payload = new FormData();
-            payload.append('image', file);
-            payload.append('image_type', imageType);
-            payload.append('order', String(order));
-            return userService.uploadGalleryImage(payload);
-          }),
-        );
+        const galleryUploads = [
+          ...selectedSpaceFiles.map((file, index) => ({ file, imageType: 'space', order: existingSpaceCount + index })),
+          ...selectedPortfolioFiles.map((file, index) => ({
+            file,
+            imageType: 'portfolio',
+            order: existingPortfolioCount + index,
+          })),
+        ];
+        for (const { file, imageType, order } of galleryUploads) {
+          const payload = new FormData();
+          payload.append('image', file);
+          payload.append('image_type', imageType);
+          payload.append('order', String(order));
+          await userService.uploadGalleryImage(payload);
+        }
 
         const galleryResponse = await userService.getGalleryImages();
         setGalleryEnabled(true);
