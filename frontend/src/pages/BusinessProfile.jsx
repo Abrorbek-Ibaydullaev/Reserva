@@ -277,6 +277,10 @@ const BusinessProfile = () => {
             return userService.uploadGalleryImage(payload);
           }),
         );
+
+        const galleryResponse = await userService.getGalleryImages();
+        setGalleryEnabled(true);
+        setGalleryImages(galleryResponse.data?.results || galleryResponse.data || []);
       }
 
       await checkAuthStatus();
