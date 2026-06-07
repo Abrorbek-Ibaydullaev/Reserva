@@ -4,11 +4,13 @@ import axios from 'axios';
 /**
  * Base API URL — must NOT end with a slash
  */
-const API_BASE_URL =
+const rawApiBaseUrl =
     import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
         ? 'https://reserva-production.up.railway.app/api'
         : 'http://localhost:8000/api');
+const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
 
 // Strip /api suffix. Production builds force https to avoid Mixed Content blocks.
 const RAW_BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');

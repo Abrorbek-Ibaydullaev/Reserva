@@ -72,19 +72,19 @@ const BusinessProfile = () => {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const [meResponse, profileResponse, galleryResult, tgResult] = await Promise.allSettled([
+      
+      // Load core data first (must succeed)
+      const [meResponse, profileResponse] = await Promise.all([
         userService.getMe(),
         userService.getProfile(),
-        userService.getGalleryImages(),
-        userService.getTelegramLink(),
       ]);
 
-      if (meResponse.status !== 'fulfilled' || profileResponse.status !== 'fulfilled') {
-        throw meResponse.status !== 'fulfilled' ? meResponse.reason : profileResponse.reason;
+      if (!meResponse || !profileResponse) {
+        throw new Error('Failed to load user data');
       }
 
-      const me = meResponse.value.data || {};
-      const profile = profileResponse.value.data || {};
+      const me = meResponse.data || {};
+      const profile = profileResponse.data || {};
 
       setFormData({
         first_name: me.first_name || '',
@@ -107,20 +107,31 @@ const BusinessProfile = () => {
         facebook: profile.facebook || '',
       });
       setImagePreview(me.profile_picture || '');
-      if (galleryResult.status === 'fulfilled') {
-        setGalleryEnabled(true);
-        setGalleryImages(galleryResult.value.data?.results || galleryResult.value.data || []);
-      } else {
+      setLoading(false);
+
+      // Load optional gallery and telegram data in the background (don't block page load)
+      Promise.allSettled([
+        userService.getGalleryImages(),
+        userService.getTelegramLink(),
+      ]).then(([galleryResult, tgResult]) => {
+        if (galleryResult.status === 'fulfilled') {
+          setGalleryEnabled(true);
+          setGalleryImages(galleryResult.value.data?.results || galleryResult.value.data || []);
+        } else {
+          setGalleryEnabled(false);
+          setGalleryImages([]);
+        }
+        if (tgResult.status === 'fulfilled' && tgResult?.value?.data) {
+          setTelegram({ link: tgResult.value.data.link, connected: tgResult.value.data.connected });
+        }
+      }).catch((error) => {
+        console.error('Error loading optional data:', error);
         setGalleryEnabled(false);
         setGalleryImages([]);
-      }
-      if (tgResult.status === 'fulfilled' && tgResult.value?.data) {
-        setTelegram({ link: tgResult.value.data.link, connected: tgResult.value.data.connected });
-      }
+      });
     } catch (error) {
       console.error('Failed to load business profile:', error);
       toast.error('Failed to load business profile.');
-    } finally {
       setLoading(false);
     }
   };

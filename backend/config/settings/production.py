@@ -242,17 +242,23 @@ SIMPLE_JWT = {
 # CORS
 # ---------------------------------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+
+def _normalize_origin(origin):
+    return origin.strip().rstrip('/')
+
 CORS_ALLOWED_ORIGINS = [
-    origin.strip()
+    _normalize_origin(origin)
     for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",
+    r"^https://.*\.netlify\.app$",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://reserva-production.up.railway.app',
-    'https://reserva-plum.vercel.app',
+    _normalize_origin('https://reserva-production.up.railway.app'),
+    _normalize_origin('https://reserva-plum.vercel.app'),
 ]
 
 # ---------------------------------------------------------------------------
