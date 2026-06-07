@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService, userService, fixMediaUrl } from '../services/api';
+import { authService, userService, fixMediaUrl, api } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -18,6 +18,25 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('access_token');
+      const authSetAt = Number(localStorage.getItem('auth_set_at') || 0);
+      const now = Date.now();
+
+      // If tokens were set more than 24 hours ago, try to proactively refresh
+      if (token && authSetAt && now - authSetAt > 24 * 60 * 60 * 1000) {
+        try {
+          const refresh = localStorage.getItem('refresh_token');
+          if (!refresh) throw new Error('No refresh token');
+          const resp = await api.post('/auth/refresh/', { refresh });
+          const newAccess = resp.data?.access;
+          if (newAccess) {
+            localStorage.setItem('access_token', newAccess);
+            localStorage.setItem('auth_set_at', String(Date.now()));
+          }
+        } catch (e) {
+          clearAuthData();
+          return;
+        }
+      }
       const currentUser = authService.getCurrentUser();
 
       if (!token) {
@@ -56,6 +75,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, recaptchaToken = null) => {
     try {
       await authService.login(email, password, recaptchaToken);
+      try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
 
       const userData = authService.getCurrentUser();
       setUser(userData);
@@ -90,6 +110,7 @@ export const AuthProvider = ({ children }) => {
       // Store tokens exactly as authService.login does
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
+      try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
       const normalizedUser = {
         ...registeredUser,
         profile_picture: fixMediaUrl(registeredUser.profile_picture),

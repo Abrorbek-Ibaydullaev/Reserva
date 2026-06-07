@@ -96,6 +96,7 @@ api.interceptors.response.use(
 
                 const { access } = response.data;
                 localStorage.setItem('access_token', access);
+                try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
 
                 originalRequest.headers.Authorization = `Bearer ${access}`;
                 return api(originalRequest);
@@ -126,6 +127,7 @@ export const authService = {
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
+            try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
             const raw = response.data.user || (await api.get('/users/me/')).data;
             const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
             localStorage.setItem('user_data', JSON.stringify(userData));
