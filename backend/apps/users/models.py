@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator, EmailValidator
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -164,3 +165,24 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.user.email}"
+
+
+class PasswordResetToken(models.Model):
+    """Short-lived password reset token for account recovery."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    token = models.CharField(max_length=128, unique=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def is_valid(self):
+        return self.used_at is None and self.expires_at > timezone.now()
+
+    def __str__(self):
+        return f"Password reset for {self.user.email}"

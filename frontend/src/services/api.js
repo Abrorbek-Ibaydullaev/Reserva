@@ -166,6 +166,14 @@ export const authService = {
             new_password: new_password,
         });
     },
+
+    forgotPassword: async (email) => {
+        return api.post('/auth/forgot-password/', { email });
+    },
+
+    resetPassword: async ({ token, new_password }) => {
+        return api.post('/auth/reset-password/', { token, new_password });
+    },
 };
 
 /**

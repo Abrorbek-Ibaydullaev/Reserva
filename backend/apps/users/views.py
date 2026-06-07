@@ -4,10 +4,17 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.db import models
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+from datetime import timedelta
+import secrets
 from django.db.models import Avg, Count
-from .models import UserProfile, Notification, BusinessGalleryImage
+from .models import UserProfile, Notification, BusinessGalleryImage, PasswordResetToken
 from .recaptcha import verify_recaptcha
 from apps.services.models import Service
 from .serializers import (
@@ -117,6 +124,73 @@ class ChangePasswordView(generics.UpdateAPIView):
         user.save()
 
         return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordView(APIView):
+    """Generate a password reset token and email/log the reset link."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = User.objects.normalize_email(request.data.get('email', '')).strip()
+        if email:
+            user = User.objects.filter(email__iexact=email).first()
+            if user:
+                token = secrets.token_urlsafe(48)
+                PasswordResetToken.objects.create(
+                    user=user,
+                    token=token,
+                    expires_at=timezone.now() + timedelta(hours=1),
+                )
+                frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
+                reset_link = f'{frontend_url}/reset-password?token={token}'
+                print(f'Password reset link for {user.email}: {reset_link}')
+                try:
+                    send_mail(
+                        'Reset your Reserva password',
+                        f'Use this link to reset your Reserva password. It expires in 1 hour:\n\n{reset_link}',
+                        getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@reserva.uz'),
+                        [user.email],
+                        fail_silently=True,
+                    )
+                except Exception as exc:
+                    print(f'Password reset email failed for {user.email}: {exc}')
+
+        return Response(
+            {'detail': 'If this email exists, a reset link has been sent.'},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ResetPasswordView(APIView):
+    """Validate a reset token, update the password, and invalidate the token."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token', '')
+        new_password = request.data.get('new_password', '')
+        reset_token = PasswordResetToken.objects.select_related('user').filter(token=token).first()
+
+        if not reset_token or not reset_token.is_valid:
+            return Response(
+                {'detail': 'Invalid or expired reset token.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            validate_password(new_password, reset_token.user)
+        except ValidationError as exc:
+            return Response({'new_password': exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        reset_token.user.set_password(new_password)
+        reset_token.user.save(update_fields=['password'])
+        reset_token.used_at = timezone.now()
+        reset_token.save(update_fields=['used_at'])
+        PasswordResetToken.objects.filter(
+            user=reset_token.user,
+            used_at__isnull=True,
+        ).exclude(pk=reset_token.pk).update(used_at=timezone.now())
+
+        return Response({'detail': 'Password reset successfully.'}, status=status.HTTP_200_OK)
 
 
 class NotificationListView(generics.ListAPIView):

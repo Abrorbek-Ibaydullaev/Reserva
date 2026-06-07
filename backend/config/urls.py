@@ -24,6 +24,8 @@ from apps.users.views import (
     UserRegistrationView,
     UserProfileView,
     ChangePasswordView,
+    ForgotPasswordView,
+    ResetPasswordView,
     NotificationListView,
     MarkNotificationAsReadView,
     MarkAllNotificationsAsReadView,
@@ -39,6 +41,8 @@ urlpatterns = [
     path('api/auth/register/', UserRegistrationView.as_view(), name='register'),
     path('api/auth/profile/', UserProfileView.as_view(), name='user-profile'),
     path('api/auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
+    path('api/auth/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('api/auth/reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 
     # App endpoints
     path('api/notifications/', NotificationListView.as_view(),
