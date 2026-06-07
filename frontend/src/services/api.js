@@ -11,6 +11,7 @@ const rawApiBaseUrl =
         ? 'https://reserva-production.up.railway.app/api'
         : 'http://localhost:8000/api');
 const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
+const GALLERY_UPLOAD_TIMEOUT_MS = 60000;
 
 // Strip /api suffix. Production builds force https to avoid Mixed Content blocks.
 const RAW_BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
@@ -280,7 +281,7 @@ export const userService = {
     getProfile: () => api.get('/users/profile/'),
     updateProfile: (data) => api.patch('/users/profile/', data),
     getGalleryImages: () => api.get('/users/gallery/'),
-    uploadGalleryImage: (data) => api.post('/users/gallery/', data),
+    uploadGalleryImage: (data) => api.post('/users/gallery/', data, { timeout: GALLERY_UPLOAD_TIMEOUT_MS }),
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
     getTelegramLink: () => api.get('/users/telegram/'),
     disconnectTelegram: () => api.delete('/users/telegram/'),
