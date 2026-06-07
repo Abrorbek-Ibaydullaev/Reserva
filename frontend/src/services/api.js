@@ -5,15 +5,29 @@ import axios from 'axios';
  * Base API URL — must NOT end with a slash
  */
 const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+    import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.PROD
+        ? 'https://reserva-production.up.railway.app/api'
+        : 'http://localhost:8000/api');
 
-// Strip /api suffix and force https in production to avoid Mixed Content blocks
-const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '').replace(/^http:\/\//, 'https://');
+// Strip /api suffix. Production builds force https to avoid Mixed Content blocks.
+const RAW_BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
+const BACKEND_ORIGIN = import.meta.env.PROD
+    ? RAW_BACKEND_ORIGIN.replace(/^http:\/\//, 'https://')
+    : RAW_BACKEND_ORIGIN;
 
 export const fixMediaUrl = (url) => {
     if (!url) return url;
-    // Already absolute — force https so Vercel doesn't block mixed content
-    if (url.startsWith('http://')) return url.replace('http://', 'https://');
+    // Preserve localhost for Django dev; production uses https for remote media.
+    if (url.startsWith('http://')) {
+        try {
+            const parsed = new URL(url);
+            if (['localhost', '127.0.0.1'].includes(parsed.hostname)) return url;
+        } catch {
+            return url;
+        }
+        return import.meta.env.PROD ? url.replace('http://', 'https://') : url;
+    }
     if (url.startsWith('https://')) return url;
     // Relative path — prepend backend origin
     if (url.startsWith('/')) return `${BACKEND_ORIGIN}${url}`;
@@ -279,6 +293,8 @@ export const userService = {
         api.patch(`/notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
         api.patch('/notifications/read-all/'),
+    clearAllNotifications: () =>
+        api.delete('/notifications/clear-all/'),
     getBusinesses: (params) => api.get('/users/businesses/', { params }),
 };
 

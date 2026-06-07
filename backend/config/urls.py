@@ -29,6 +29,7 @@ from apps.users.views import (
     NotificationListView,
     MarkNotificationAsReadView,
     MarkAllNotificationsAsReadView,
+    ClearAllNotificationsView,
 )
 
 urlpatterns = [
@@ -51,6 +52,8 @@ urlpatterns = [
          MarkNotificationAsReadView.as_view(), name='mark-notification-read-root'),
     path('api/notifications/read-all/', MarkAllNotificationsAsReadView.as_view(),
          name='mark-all-notifications-read-root'),
+    path('api/notifications/clear-all/', ClearAllNotificationsView.as_view(),
+         name='clear-all-notifications-root'),
     path('api/users/', include('apps.users.urls')),
     path('api/services/', include('apps.services.urls')),
     path('api/schedules/', include('apps.schedules.urls')),

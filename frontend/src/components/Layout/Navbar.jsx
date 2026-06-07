@@ -81,7 +81,7 @@ const Navbar = () => {
   );
 
   return (
-    <Disclosure as="nav" className="relative z-50 bg-white dark:bg-gray-900 shadow-lg">
+    <Disclosure as="nav" className="relative z-[1000] bg-white dark:bg-gray-900 shadow-lg">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -151,7 +151,7 @@ const Navbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-[1000] mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         {getNavigationItems().map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (

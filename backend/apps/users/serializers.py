@@ -129,6 +129,7 @@ class BusinessSerializer(serializers.ModelSerializer):
     services_count = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
+    cover_images = serializers.SerializerMethodField()
     services = ServiceListSerializer(many=True, read_only=True, source='services_active')
     profile = UserProfileSerializer(read_only=True)
     gallery_images = BusinessGalleryImageSerializer(many=True, read_only=True)
@@ -137,7 +138,8 @@ class BusinessSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'full_name',
                   'phone_number', 'profile_picture', 'services_count',
-                  'avg_rating', 'review_count', 'services', 'profile', 'gallery_images')
+                  'avg_rating', 'review_count', 'cover_images', 'services',
+                  'profile', 'gallery_images')
 
     def get_full_name(self, obj):
         return obj.get_full_name()
@@ -153,6 +155,35 @@ class BusinessSerializer(serializers.ModelSerializer):
 
     def get_review_count(self, obj):
         return getattr(obj, 'review_count', 0)
+
+    def get_cover_images(self, obj):
+        request = self.context.get('request')
+        values = []
+        gallery_images = getattr(obj, 'gallery_images', [])
+        if hasattr(gallery_images, 'all'):
+            gallery_images = gallery_images.all()
+
+        if obj.profile_picture:
+            values.append(obj.profile_picture.url)
+
+        for image in gallery_images:
+            if image.image:
+                values.append(image.image.url)
+
+        for service in getattr(obj, 'services_active', []):
+            if service.thumbnail:
+                values.append(service.thumbnail.url)
+            values.extend(service.images or [])
+            for service_image in service.service_images.all():
+                if service_image.image:
+                    values.append(service_image.image.url)
+
+        result = []
+        for value in values:
+            absolute = build_absolute_media_url(request, value)
+            if absolute and absolute not in result:
+                result.append(absolute)
+        return result
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

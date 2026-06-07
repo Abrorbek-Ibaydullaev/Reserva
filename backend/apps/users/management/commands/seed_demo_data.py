@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 
 from apps.schedules.models import BusinessHours, Employee, EmployeeWeeklyHours
 from apps.services.models import Category, Service
-from apps.users.models import UserProfile
+from apps.users.models import BusinessGalleryImage, UserProfile
 
 
 User = get_user_model()
@@ -64,6 +64,19 @@ class Command(BaseCommand):
         profile.latitude = Decimal("41.367260")
         profile.longitude = Decimal("69.289090")
         profile.save()
+        if not owner.profile_picture:
+            owner.profile_picture = "profile_pics/barbershop.jpeg"
+            owner.save(update_fields=["profile_picture"])
+
+        BusinessGalleryImage.objects.update_or_create(
+            business_owner=owner,
+            image_type="space",
+            order=0,
+            defaults={
+                "image": "business_gallery/barbershop.jpeg",
+                "caption": "New Life barbershop",
+            },
+        )
 
         service_specs = [
             {
@@ -72,6 +85,8 @@ class Command(BaseCommand):
                 "price": Decimal("32.00"),
                 "duration": 15,
                 "slug": "barbershop-77-new-life",
+                "thumbnail": "service_thumbnails/barbershop.jpeg",
+                "images": ["/media/service_images/barbershop.jpeg"],
             },
             {
                 "name": "Kids barber",
@@ -79,6 +94,8 @@ class Command(BaseCommand):
                 "price": Decimal("10.00"),
                 "duration": 30,
                 "slug": "kids-barber-new-life",
+                "thumbnail": "service_thumbnails/barbershop.jpeg",
+                "images": ["/media/service_images/barbershop.jpeg"],
             },
         ]
         services = []
@@ -93,6 +110,8 @@ class Command(BaseCommand):
                     "duration": spec["duration"],
                     "is_active": True,
                     "slug": spec["slug"],
+                    "thumbnail": spec["thumbnail"],
+                    "images": spec["images"],
                 },
             )
             services.append(service)

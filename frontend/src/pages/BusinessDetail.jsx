@@ -337,6 +337,7 @@ const BusinessDetail = () => {
   const spaceGallery = useMemo(() => {
     const uniqueImages = [
       normalizeMediaUrl(business?.profile_picture),
+      ...((business?.cover_images || []).map((image) => normalizeMediaUrl(image))),
       ...((business?.gallery_images || [])
         .filter((item) => (item.image_type || 'space') === 'space')
         .map((item) => normalizeMediaUrl(item.image))),

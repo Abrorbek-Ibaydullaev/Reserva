@@ -411,7 +411,11 @@ const Carousel = ({ children }) => {
 const BizCard = ({ biz }) => {
   const name = biz.profile?.business_name || `${biz.first_name || ''} ${biz.last_name || ''}`.trim() || 'Business';
   const city = biz.profile?.city || '';
-  const img = fixMediaUrl(biz.profile_picture) || fixMediaUrl(biz.gallery_images?.[0]?.image) || null;
+  const img =
+    fixMediaUrl(biz.cover_images?.[0]) ||
+    fixMediaUrl(biz.gallery_images?.[0]?.image) ||
+    fixMediaUrl(biz.profile_picture) ||
+    null;
   const services = biz.services_active || biz.services || [];
   const rating = biz.avg_rating != null ? Number(biz.avg_rating).toFixed(1) : null;
   const reviewCount = biz.review_count || 0;

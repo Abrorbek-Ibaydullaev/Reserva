@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }) => {
    */
   const login = async (email, password, recaptchaToken = null) => {
     try {
-      setLoading(true);
       await authService.login(email, password, recaptchaToken);
 
       const userData = authService.getCurrentUser();
@@ -69,8 +68,6 @@ export const AuthProvider = ({ children }) => {
         status: error.response?.status,
         message: error.response?.data || 'Login failed',
       };
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -81,8 +78,6 @@ export const AuthProvider = ({ children }) => {
    */
   const register = async (userData) => {
     try {
-      setLoading(true);
-
       const payload = {
         ...userData,
         password2: userData.password2 || userData.password,
@@ -111,8 +106,6 @@ export const AuthProvider = ({ children }) => {
         status: error.response?.status,
         message: error.response?.data || 'Registration failed',
       };
-    } finally {
-      setLoading(false);
     }
   };
 

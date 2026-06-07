@@ -30,6 +30,13 @@ from .serializers import (
 User = get_user_model()
 
 
+CITY_ALIASES = {
+    'toshkent': ['toshkent', 'tashkent', 'ташкент'],
+    'tashkent': ['toshkent', 'tashkent', 'ташкент'],
+    'ташкент': ['toshkent', 'tashkent', 'ташкент'],
+}
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     """Custom token obtain view to include user data in response.
 
@@ -233,6 +240,18 @@ class MarkAllNotificationsAsReadView(APIView):
         return self.post(request)
 
 
+class ClearAllNotificationsView(APIView):
+    """Delete all notifications for the authenticated user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        deleted_count, _ = Notification.objects.filter(user=request.user).delete()
+        return Response(
+            {"message": "All notifications cleared.", "deleted": deleted_count},
+            status=status.HTTP_200_OK,
+        )
+
+
 class BusinessListView(generics.ListAPIView):
     """List all business owners with their service counts."""
     serializer_class = UserSerializer
@@ -246,12 +265,21 @@ class BusinessListView(generics.ListAPIView):
             avg_rating=Avg('services__reviews__rating'),
             review_count=Count('services__reviews', distinct=True),
         ).filter(services_count__gt=0).order_by('-services_count').prefetch_related(
-            models.Prefetch('services', queryset=Service.objects.filter(is_active=True), to_attr='services_active'),
+            models.Prefetch(
+                'services',
+                queryset=Service.objects.filter(is_active=True).prefetch_related('service_images'),
+                to_attr='services_active',
+            ),
             'gallery_images',
         )
         city = self.request.query_params.get('city')
         if city:
-            queryset = queryset.filter(profile__city__icontains=city)
+            city_value = city.strip().lower()
+            city_aliases = CITY_ALIASES.get(city_value, [city.strip()])
+            city_filter = models.Q()
+            for alias in city_aliases:
+                city_filter |= models.Q(profile__city__icontains=alias)
+            queryset = queryset.filter(city_filter)
         return queryset
 
     def get_serializer_class(self):
