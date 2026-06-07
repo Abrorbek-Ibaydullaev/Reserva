@@ -37,7 +37,7 @@ export const fixMediaUrl = (url) => {
 /**
  * Axios instance
  */
-const api = axios.create({
+export const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
