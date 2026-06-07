@@ -20,7 +20,8 @@ const Login = () => {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const recaptchaRef = useRef(null);
 
@@ -28,16 +29,20 @@ const Login = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const hasRecaptcha = Boolean(RECAPTCHA_SITE_KEY);
+  const clearSubmitErrors = () => {
+    setFormError('');
+    setSubmitError('');
+  };
 
   const onSubmit = async (data) => {
     if (hasRecaptcha && !recaptchaToken) {
-      setError('Please complete the reCAPTCHA check before signing in.');
+      setFormError('Please complete the reCAPTCHA check before signing in.');
       return;
     }
 
     try {
       setIsLoading(true);
-      setError('');
+      clearSubmitErrors();
       const result = await login(data.email, data.password, recaptchaToken);
       if (result.success) {
         const fallback =
@@ -48,13 +53,21 @@ const Login = () => {
             : '/';
         navigate(from === '/' ? fallback : from, { replace: true });
       } else {
-        setError('Invalid email or password. Please try again.');
+        setSubmitError(
+          result.status === 401
+            ? 'Incorrect email or password. Please try again.'
+            : 'Something went wrong. Please try again.'
+        );
         // Reset reCAPTCHA so the user can try again
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);
       }
-    } catch {
-      setError('An error occurred. Please try again.');
+    } catch (error) {
+      setSubmitError(
+        error.response?.status === 401
+          ? 'Incorrect email or password. Please try again.'
+          : 'Something went wrong. Please try again.'
+      );
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
     } finally {
@@ -122,9 +135,9 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-            {error && (
+            {formError && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {error}
+                {formError}
               </div>
             )}
 
@@ -143,6 +156,7 @@ const Login = () => {
                   {...register('email', {
                     required: 'Email is required',
                     pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                    onChange: clearSubmitErrors,
                   })}
                 />
               </div>
@@ -164,6 +178,7 @@ const Login = () => {
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Min 6 characters' },
+                    onChange: clearSubmitErrors,
                   })}
                 />
                 <button
@@ -180,6 +195,7 @@ const Login = () => {
                 </Link>
               </div>
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              {submitError && <p className="mt-1 text-xs text-red-600">{submitError}</p>}
             </div>
 
             {/* reCAPTCHA */}
