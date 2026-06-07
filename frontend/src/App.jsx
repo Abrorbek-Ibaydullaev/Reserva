@@ -25,6 +25,22 @@ import EmployeeProfile from './pages/EmployeeProfile';
 import MyAppointments from './pages/MyAppointments';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import BusinessDashboard from './pages/BusinessDashboard';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Features from './pages/Features';
+import Pricing from './pages/Pricing';
+import Api from './pages/Api';
+import Documentation from './pages/Documentation';
+import Blog from './pages/Blog';
+import Careers from './pages/Careers';
+import Press from './pages/Press';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Security from './pages/Security';
+import Cookies from './pages/Cookies';
+import Help from './pages/Help';
+import Status from './pages/Status';
+import Community from './pages/Community';
 import BusinessServices from './pages/business/Services';
 import BusinessAppointments from './pages/business/Appointments';
 import BusinessEmployees from './pages/business/Employees';
@@ -121,6 +137,22 @@ function App() {
                   <Routes>
 
                     <Route path="/services" element={<Services />} />
+                    <Route path="/features" element={<Features />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/api" element={<Api />} />
+                    <Route path="/docs" element={<Documentation />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/press" element={<Press />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/security" element={<Security />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/help" element={<Help />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/status" element={<Status />} />
+                    <Route path="/community" element={<Community />} />
                     <Route path="/business/:businessId" element={<BusinessDetail />} />
 
                     <Route
