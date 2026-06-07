@@ -1247,22 +1247,35 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          grouped.map(([cat, list]) => (
-            <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
-              <div className="mb-5 flex items-end justify-between">
-                <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
-                <button
-                  onClick={() => handleCatClick(cat)}
-                  className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
-                >
-                  See all <ArrowRightIcon className="h-4 w-4" />
-                </button>
+          <>
+            {grouped.length === 1 && businesses.length > 0 && (
+              <div key="all-businesses" className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
+                <div className="mb-5 flex items-end justify-between">
+                  <h2 className="text-xl font-bold text-slate-900">Businesses near you</h2>
+                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline">See all <ArrowRightIcon className="h-4 w-4" /></Link>
+                </div>
+                <Carousel>
+                  {businesses.map((b) => <BizCard key={b.id} biz={b} />)}
+                </Carousel>
               </div>
-              <Carousel>
-                {list.map((b) => <BizCard key={b.id} biz={b} />)}
-              </Carousel>
-            </div>
-          ))
+            )}
+            {grouped.map(([cat, list]) => (
+              <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
+                <div className="mb-5 flex items-end justify-between">
+                  <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
+                  <button
+                    onClick={() => handleCatClick(cat)}
+                    className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+                  >
+                    See all <ArrowRightIcon className="h-4 w-4" />
+                  </button>
+                </div>
+                <Carousel>
+                  {list.map((b) => <BizCard key={b.id} biz={b} />)}
+                </Carousel>
+              </div>
+            ))}
+          </>
         )}
       </div>
 

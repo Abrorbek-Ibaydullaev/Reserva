@@ -160,8 +160,13 @@ const BusinessDetail = () => {
       const foundBusiness = businesses.find(b => b.id === parseInt(businessId));
       if (!foundBusiness) throw new Error('Business not found');
       setBusiness(foundBusiness);
-      const servicesResponse = await serviceService.getAllServices({ business_owner: businessId });
-      setServices(servicesResponse.data.results || servicesResponse.data || []);
+      const bundledServices = foundBusiness.services || [];
+      if (bundledServices.length > 0) {
+        setServices(bundledServices);
+      } else {
+        const servicesResponse = await serviceService.getAllServices({ business_owner: businessId });
+        setServices(servicesResponse.data.results || servicesResponse.data || []);
+      }
     } catch (err) {
       console.error('Error fetching business details:', err);
       setError('Failed to load business details. Please try again later.');
@@ -204,22 +209,19 @@ const BusinessDetail = () => {
   const totalDraftAmount = (draft?.services || []).reduce((sum, item) => sum + Number(item.price || 0), 0);
 
   const spaceGallery = useMemo(() => {
-    return [
-      normalizeMediaUrl(business?.profile_picture),
-      ...((business?.gallery_images || []).filter((item) => (item.image_type || 'space') === 'space').map((item) => normalizeMediaUrl(item.image))),
-    ].filter((value, index, array) => value && array.indexOf(value) === index);
-  }, [business?.profile_picture, business?.gallery_images]);
+    return (business?.cover_images || []).map((image) => normalizeMediaUrl(image)).filter((value, index, array) => value && array.indexOf(value) === index);
+  }, [business?.cover_images]);
 
   const portfolioGallery = useMemo(() => {
-    const uniqueImages = [
-      ...((business?.gallery_images || []).filter((item) => item.image_type === 'portfolio').map((item) => normalizeMediaUrl(item.image))),
+    return [
+      ...((business?.gallery_images || [])
+        .filter((item) => item.image_type === 'portfolio')
+        .map((item) => normalizeMediaUrl(item.image))),
       ...(services || []).flatMap((service) => [
         normalizeMediaUrl(service.thumbnail),
-        ...(Array.isArray(service.images) ? service.images.map((image) => normalizeMediaUrl(image)) : []),
-        ...((service.service_images || []).map((item) => normalizeMediaUrl(item.image))),
+        ...(service.images || []).map((img) => normalizeMediaUrl(img)),
       ]),
     ].filter((value, index, array) => value && array.indexOf(value) === index);
-    return uniqueImages;
   }, [business?.gallery_images, services]);
 
   const currentGalleryImages = activeGallerySection === 'portfolio' ? portfolioGallery : spaceGallery;
