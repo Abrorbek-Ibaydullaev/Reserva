@@ -260,6 +260,11 @@ const BusinessProfile = () => {
       const existingSpaceCount = galleryImages.filter((item) => item.image_type === 'space').length;
       const existingPortfolioCount = galleryImages.filter((item) => item.image_type === 'portfolio').length;
 
+      let failedSpaceFiles = [];
+      let failedPortfolioFiles = [];
+      let galleryUploadCount = 0;
+      let failedGalleryUploadCount = 0;
+
       if (galleryEnabled && (selectedSpaceFiles.length > 0 || selectedPortfolioFiles.length > 0)) {
         const galleryUploads = [
           ...selectedSpaceFiles.map((file, index) => ({ file, imageType: 'space', order: existingSpaceCount + index })),
@@ -269,12 +274,25 @@ const BusinessProfile = () => {
             order: existingPortfolioCount + index,
           })),
         ];
+        galleryUploadCount = galleryUploads.length;
+
         for (const { file, imageType, order } of galleryUploads) {
           const payload = new FormData();
           payload.append('image', file);
           payload.append('image_type', imageType);
           payload.append('order', String(order));
-          await userService.uploadGalleryImage(payload);
+
+          try {
+            await userService.uploadGalleryImage(payload);
+          } catch (uploadError) {
+            failedGalleryUploadCount += 1;
+            if (imageType === 'portfolio') {
+              failedPortfolioFiles.push(file);
+            } else {
+              failedSpaceFiles.push(file);
+            }
+            console.error('Failed to upload gallery image:', uploadError?.response?.data || uploadError);
+          }
         }
 
         const galleryResponse = await userService.getGalleryImages();
@@ -283,9 +301,16 @@ const BusinessProfile = () => {
       }
 
       await checkAuthStatus();
-      setSelectedSpaceFiles([]);
-      setSelectedPortfolioFiles([]);
-      toast.success('Business profile updated.');
+      setSelectedSpaceFiles(failedSpaceFiles);
+      setSelectedPortfolioFiles(failedPortfolioFiles);
+
+      if (failedGalleryUploadCount > 0) {
+        toast.warn(
+          `Business profile saved, but ${failedGalleryUploadCount} of ${galleryUploadCount} gallery photos failed. The failed photos are still pending so you can try again.`
+        );
+      } else {
+        toast.success('Business profile updated.');
+      }
     } catch (error) {
       console.error('Failed to update business profile:', error?.response?.data || error);
       toast.error(getErrorMessage(error, 'Failed to update business profile.'));
