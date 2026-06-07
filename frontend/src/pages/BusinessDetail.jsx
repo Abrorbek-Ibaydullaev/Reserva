@@ -19,6 +19,7 @@ import {
   BuildingStorefrontIcon,
   UserGroupIcon,
   XMarkIcon,
+  MagnifyingGlassPlusIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
@@ -311,8 +312,6 @@ const BusinessDetail = () => {
 
   const currentGalleryImages = activeGallerySection === 'portfolio' ? portfolioGallery : spaceGallery;
 
-  const primaryImage = spaceGallery[0] || null;
-  const thumbnailImages = portfolioGallery.slice(0, 6);
   const orderedGalleryImages =
     activeGalleryIndex === null
       ? currentGalleryImages
@@ -627,43 +626,32 @@ const BusinessDetail = () => {
 
   const businessHeroSection = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm">
-      <div className="relative">
-        {primaryImage ? (
-          <img
-            src={primaryImage}
-            alt={publicBusinessName || 'Business'}
-            className="h-64 w-full object-cover md:h-[420px]"
-            onClick={() => openGalleryAt(0, 'space')}
-            onError={(e) => { e.target.style.display = 'none'; }}
-          />
+      <div className="grid grid-cols-2 gap-2 bg-white p-2">
+        {spaceGallery.length > 0 ? (
+          spaceGallery.map((image, index) => {
+            const isOddLast = spaceGallery.length % 2 === 1 && index === spaceGallery.length - 1;
+            return (
+              <button
+                key={`${image}-${index}-space-thumb`}
+                type="button"
+                onClick={() => openGalleryAt(index, 'space')}
+                className={`group relative overflow-hidden rounded-lg bg-gray-100 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
+              >
+                <img
+                  src={image}
+                  alt={`${publicBusinessName || 'Business'} space ${index + 1}`}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition group-hover:bg-black/25 group-hover:opacity-100">
+                  <MagnifyingGlassPlusIcon className="h-7 w-7" />
+                </span>
+              </button>
+            );
+          })
         ) : (
-          <div className="h-64 w-full bg-gray-100 md:h-[420px]" />
+          <div className="col-span-2 aspect-[2/1] rounded-lg bg-gray-100" />
         )}
-        <button
-          type="button"
-          onClick={() => openGalleryAt(0, 'space')}
-          className="absolute bottom-4 right-4 rounded-xl bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-md"
-        >
-          Show all photos
-        </button>
-      </div>
-
-      <div className="grid grid-cols-4 gap-1 border-t border-gray-100 bg-white p-1 sm:grid-cols-6 md:gap-0 md:p-0">
-        {thumbnailImages.map((image, index) => (
-          <button
-            key={`${image}-${index}`}
-            type="button"
-            onClick={() => openGalleryAt(index, 'portfolio')}
-            className="overflow-hidden rounded-xl bg-gray-100 md:rounded-none"
-          >
-            <img
-              src={image}
-              alt={`${publicBusinessName || 'Business'} ${index + 2}`}
-              className="h-14 w-full object-cover md:h-[120px]"
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-          </button>
-        ))}
       </div>
 
       <div className="px-6 pb-6 pt-5 md:px-6 md:pb-7 md:pt-6">
