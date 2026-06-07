@@ -61,6 +61,61 @@ const clearDraft = () => {
 
 const normalizeList = (response) => response.data?.results || response.data || [];
 
+const SocialIcon = ({ platform }) => {
+  const common = {
+    className: 'h-5 w-5',
+    fill: 'currentColor',
+    viewBox: '0 0 24 24',
+    'aria-hidden': true,
+  };
+
+  if (platform === 'instagram') {
+    return (
+      <svg {...common}>
+        <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm0 2a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H7zm5 4a4 4 0 110 8 4 4 0 010-8zm0 2a2 2 0 100 4 2 2 0 000-4zm5.25-2.75a1 1 0 110 2 1 1 0 010-2z" />
+      </svg>
+    );
+  }
+
+  if (platform === 'facebook') {
+    return (
+      <svg {...common}>
+        <path d="M14 8h2V5h-2.4C10.9 5 9 6.8 9 9.6V12H7v3h2v7h3v-7h2.4l.6-3h-3V9.8c0-1.1.5-1.8 2-1.8z" />
+      </svg>
+    );
+  }
+
+  if (platform === 'twitter') {
+    return (
+      <svg {...common}>
+        <path d="M16.7 3h3.1l-6.8 7.8L21 21h-6.3l-4.9-6.3L4.2 21H1l7.3-8.4L.6 3h6.5l4.4 5.7L16.7 3zm-1.1 16.2h1.7L6.2 4.7H4.4l11.2 14.5z" />
+      </svg>
+    );
+  }
+
+  if (platform === 'linkedin') {
+    return (
+      <svg {...common}>
+        <path d="M5.3 8.8H2.2V22h3.1V8.8zM3.8 3a1.8 1.8 0 100 3.6A1.8 1.8 0 003.8 3zm7.2 5.8H8V22h3.1v-6.8c0-1.8.3-3.5 2.5-3.5 2.1 0 2.1 2 2.1 3.6V22h3.1v-7.6c0-3.7-.8-6.5-5.1-6.5-2 0-3.3 1.1-3.9 2.1H9.8V8.8H11z" />
+      </svg>
+    );
+  }
+
+  if (platform === 'youtube') {
+    return (
+      <svg {...common}>
+        <path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5a3 3 0 00-2.1 2.1C2 9 2 12 2 12s0 3 .4 4.8a3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1C22 15 22 12 22 12s0-3-.4-4.8zM10 15.5v-7l6 3.5-6 3.5z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M14 3c.4 2.4 1.7 3.9 4 4.1v3a7 7 0 01-4-1.3v6.6c0 3.4-2.4 5.6-5.4 5.6A5.2 5.2 0 013.3 16c0-3.4 2.7-5.5 6.2-5v3.2c-1.8-.3-3 .5-3 1.9 0 1.2.9 2 2.1 2 1.4 0 2.3-.8 2.3-2.7V3h3.1z" />
+    </svg>
+  );
+};
+
 const getToday = () => new Date().toISOString().split('T')[0];
 const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const displayDayOrder = [0, 1, 2, 3, 4, 5, 6];
@@ -394,6 +449,14 @@ const BusinessDetail = () => {
       .join(', ');
   }, [business]);
   const profileData = business?.profile || {};
+  const socialLinks = [
+    { platform: 'instagram', label: 'Instagram', url: profileData.instagram },
+    { platform: 'facebook', label: 'Facebook', url: profileData.facebook },
+    { platform: 'twitter', label: 'Twitter/X', url: profileData.twitter },
+    { platform: 'linkedin', label: 'LinkedIn', url: profileData.linkedin },
+    { platform: 'youtube', label: 'YouTube', url: profileData.youtube },
+    { platform: 'tiktok', label: 'TikTok', url: profileData.tiktok },
+  ].filter((item) => item.url);
 
   const publicBusinessName = profileData.business_name || business?.full_name || '';
   const todayHours = useMemo(() => {
@@ -462,7 +525,7 @@ const BusinessDetail = () => {
             addressCountry: profileData.country || undefined,
           }
         : undefined,
-      sameAs: [profileData.facebook, profileData.instagram].filter(Boolean),
+      sameAs: socialLinks.map((item) => item.url),
       openingHoursSpecification: groupedOpeningHoursSpecification,
     };
 
@@ -656,6 +719,24 @@ const BusinessDetail = () => {
           {businessAddressLine || ' '}
         </p>
 
+        {socialLinks.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {socialLinks.map((item) => (
+              <a
+                key={item.platform}
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={item.label}
+                title={item.label}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#2f95bb] hover:text-[#2f95bb]"
+              >
+                <SocialIcon platform={item.platform} />
+              </a>
+            ))}
+          </div>
+        )}
+
         {businessReviewStats.reviewCount > 0 && (
           <div className="mt-3 flex items-center gap-2 text-xs md:text-sm">
             <span className="text-amber-400">★</span>
@@ -834,24 +915,6 @@ const BusinessDetail = () => {
         </div>
       </section>
 
-      <section className="border-t border-gray-100 px-6 py-7">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d]">Social Media</h3>
-        <div className="mt-5 flex justify-center gap-10">
-          {profileData.instagram ? (
-            <a href={profileData.instagram} target="_blank" rel="noreferrer" className="flex flex-col items-center text-gray-500 hover:text-gray-700">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#d0d0d0] text-lg text-white">I</div>
-              <span className="mt-2 text-xs">Instagram</span>
-            </a>
-          ) : null}
-          {profileData.facebook ? (
-            <a href={profileData.facebook} target="_blank" rel="noreferrer" className="flex flex-col items-center text-gray-500 hover:text-gray-700">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#d0d0d0] text-lg text-white">f</div>
-              <span className="mt-2 text-xs">Facebook</span>
-            </a>
-          ) : null}
-          {!profileData.instagram && !profileData.facebook ? <div className="h-5" /> : null}
-        </div>
-      </section>
     </div>
   ) : null;
 
