@@ -65,12 +65,12 @@ const Login = () => {
     <div className="flex min-h-screen bg-slate-50">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
-        </div>
+        </Link>
 
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">
@@ -101,12 +101,16 @@ const Login = () => {
       <div className="flex flex-1 items-center justify-center px-4 py-12 lg:px-12">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
+          <Link to="/" className="mb-6 flex items-center gap-3 lg:hidden">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">Reserva</span>
-          </div>
+          </Link>
+
+          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline">
+            &larr; Back to home
+          </Link>
 
           <h2 className="text-2xl font-bold text-slate-900">Sign in to your account</h2>
           <p className="mt-1 text-sm text-slate-500">
