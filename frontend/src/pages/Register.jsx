@@ -173,9 +173,10 @@ const Register = () => {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password', '');
+  const hasRecaptcha = Boolean(RECAPTCHA_SITE_KEY);
 
   const onSubmit = async (data) => {
-    if (!recaptchaToken) {
+    if (hasRecaptcha && !recaptchaToken) {
       setError('Please complete the reCAPTCHA check before creating your account.');
       return;
     }
@@ -458,18 +459,20 @@ const Register = () => {
             </div>
 
             {/* reCAPTCHA */}
-            <div>
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={(token) => setRecaptchaToken(token)}
-                onExpired={() => setRecaptchaToken(null)}
-              />
-            </div>
+            {hasRecaptcha && (
+              <div>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setRecaptchaToken(token)}
+                  onExpired={() => setRecaptchaToken(null)}
+                />
+              </div>
+            )}
 
             <button
               type="submit"
-              disabled={isLoading || !recaptchaToken}
+              disabled={isLoading || (hasRecaptcha && !recaptchaToken)}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (
