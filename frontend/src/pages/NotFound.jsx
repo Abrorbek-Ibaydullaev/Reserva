@@ -15,6 +15,7 @@ const NotFound = () => {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/"
+            aria-label="Go to Reserva home"
             className="rounded-xl bg-[#4a90b0] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3f7c97]"
           >
             Go home
