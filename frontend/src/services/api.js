@@ -263,11 +263,11 @@ export const userService = {
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
     getTelegramLink: () => api.get('/users/telegram/'),
     disconnectTelegram: () => api.delete('/users/telegram/'),
-    getNotifications: () => api.get('/users/notifications/'),
+    getNotifications: () => api.get('/notifications/'),
     markNotificationAsRead: (id) =>
-        api.put(`/users/notifications/${id}/read/`),
+        api.patch(`/notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
-        api.post('/users/notifications/read-all/'),
+        api.patch('/notifications/read-all/'),
     getBusinesses: () => api.get('/users/businesses/'),
 };
 

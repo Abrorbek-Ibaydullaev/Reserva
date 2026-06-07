@@ -142,6 +142,9 @@ class MarkNotificationAsReadView(generics.UpdateAPIView):
         notification.save()
         return Response({"message": "Notification marked as read."}, status=status.HTTP_200_OK)
 
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
 
 class MarkAllNotificationsAsReadView(APIView):
     """Mark all notifications as read."""
@@ -151,6 +154,9 @@ class MarkAllNotificationsAsReadView(APIView):
         Notification.objects.filter(
             user=request.user, is_read=False).update(is_read=True)
         return Response({"message": "All notifications marked as read."}, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        return self.post(request)
 
 
 class BusinessListView(generics.ListAPIView):

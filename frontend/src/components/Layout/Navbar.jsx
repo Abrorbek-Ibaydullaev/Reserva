@@ -6,7 +6,6 @@ import {
   XMarkIcon, 
   CalendarIcon,
   UserCircleIcon,
-  BellIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   HomeIcon,
@@ -15,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ThemeToggle';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -110,11 +110,7 @@ const Navbar = () => {
 
                 {/* Notifications */}
                 {isAuthenticated && (
-                  <button className="relative p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none">
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" />
-                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
-                  </button>
+                  <NotificationBell />
                 )}
 
                 {/* User Menu */}

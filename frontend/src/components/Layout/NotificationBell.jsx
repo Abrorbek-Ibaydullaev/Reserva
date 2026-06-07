@@ -21,6 +21,12 @@ const NotificationBell = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  useEffect(() => {
+    if (open && unread > 0) {
+      markAll();
+    }
+  }, [open]);
+
   const load = async () => {
     try {
       const r = await userService.getNotifications();
@@ -44,6 +50,18 @@ const NotificationBell = () => {
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
       );
     } catch {}
+  };
+
+  const formatTime = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const typeIcon = (type) => {
@@ -109,7 +127,10 @@ const NotificationBell = () => {
                     <p className={`text-sm leading-snug ${n.is_read ? 'text-slate-600' : 'font-semibold text-slate-900'}`}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 truncate text-xs text-slate-400">{n.message}</p>
+                    <p className="mt-0.5 text-xs leading-5 text-slate-500">{n.message}</p>
+                    {formatTime(n.created_at) && (
+                      <p className="mt-1 text-[11px] font-medium text-slate-400">{formatTime(n.created_at)}</p>
+                    )}
                   </div>
                   {!n.is_read && <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}
                 </button>

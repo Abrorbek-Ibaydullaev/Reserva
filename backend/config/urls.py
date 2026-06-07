@@ -19,7 +19,15 @@ from django.contrib import admin
 from django.conf import settings
 from django.views.static import serve  # 👈 Crucial import for production serving
 from rest_framework_simplejwt.views import TokenRefreshView
-from apps.users.views import CustomTokenObtainPairView, UserRegistrationView, UserProfileView, ChangePasswordView
+from apps.users.views import (
+    CustomTokenObtainPairView,
+    UserRegistrationView,
+    UserProfileView,
+    ChangePasswordView,
+    NotificationListView,
+    MarkNotificationAsReadView,
+    MarkAllNotificationsAsReadView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +41,12 @@ urlpatterns = [
     path('api/auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
 
     # App endpoints
+    path('api/notifications/', NotificationListView.as_view(),
+         name='notification-list-root'),
+    path('api/notifications/<int:pk>/read/',
+         MarkNotificationAsReadView.as_view(), name='mark-notification-read-root'),
+    path('api/notifications/read-all/', MarkAllNotificationsAsReadView.as_view(),
+         name='mark-all-notifications-read-root'),
     path('api/users/', include('apps.users.urls')),
     path('api/services/', include('apps.services.urls')),
     path('api/schedules/', include('apps.schedules.urls')),
