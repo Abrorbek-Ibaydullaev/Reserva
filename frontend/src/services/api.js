@@ -38,19 +38,15 @@ export const fixMediaUrl = (url) => {
 
 /**
  * Axios instance
+ * NOTE: Do NOT set a default Content-Type here. Axios automatically sets
+ * 'application/json' for plain objects and 'multipart/form-data' (with the
+ * correct boundary) for FormData. An explicit default overrides that logic
+ * and breaks file uploads.
  */
 export const api = axios.create({
     baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
     timeout: 10000,
 });
-
-const withPayloadConfig = (data) =>
-    data instanceof FormData
-        ? undefined
-        : undefined;
 
 /**
  * Request interceptor – attach access token
@@ -170,7 +166,7 @@ export const authService = {
     },
 
     updateProfile: async (userData) => {
-        const response = await api.put('/users/me/', userData, withPayloadConfig(userData));
+        const response = await api.put('/users/me/', userData);
         const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
         localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
@@ -279,12 +275,12 @@ export const scheduleService = {
  */
 export const userService = {
     getMe: () => api.get('/users/me/'),
-    updateMe: (data) => api.patch('/users/me/', data, withPayloadConfig(data)),
+    updateMe: (data) => api.patch('/users/me/', data),
     changeMyPassword: (data) => api.patch('/users/me/password/', data),
     getProfile: () => api.get('/users/profile/'),
-    updateProfile: (data) => api.patch('/users/profile/', data, withPayloadConfig(data)),
+    updateProfile: (data) => api.patch('/users/profile/', data),
     getGalleryImages: () => api.get('/users/gallery/'),
-    uploadGalleryImage: (data) => api.post('/users/gallery/', data, withPayloadConfig(data)),
+    uploadGalleryImage: (data) => api.post('/users/gallery/', data),
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
     getTelegramLink: () => api.get('/users/telegram/'),
     disconnectTelegram: () => api.delete('/users/telegram/'),
