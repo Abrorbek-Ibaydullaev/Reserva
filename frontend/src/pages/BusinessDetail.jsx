@@ -312,13 +312,6 @@ const BusinessDetail = () => {
 
   const currentGalleryImages = activeGallerySection === 'portfolio' ? portfolioGallery : spaceGallery;
 
-  const orderedGalleryImages =
-    activeGalleryIndex === null
-      ? currentGalleryImages
-      : [
-          ...currentGalleryImages.slice(activeGalleryIndex),
-          ...currentGalleryImages.slice(0, activeGalleryIndex),
-        ];
   const openGalleryAt = (index, section = 'space') => {
     setActiveGallerySection(section);
     setActiveGalleryIndex(index);
@@ -671,6 +664,32 @@ const BusinessDetail = () => {
           </div>
         )}
       </div>
+
+      {portfolioGallery.length > 0 && (
+        <div className="border-t border-gray-100 px-6 pb-6">
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-[#3d3d3d]">Portfolio</h2>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {portfolioGallery.slice(0, 6).map((image, index) => (
+              <button
+                key={`${image}-${index}-portfolio-thumb`}
+                type="button"
+                onClick={() => openGalleryAt(index, 'portfolio')}
+                className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
+              >
+                <img
+                  src={image}
+                  alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition group-hover:bg-black/25 group-hover:opacity-100">
+                  <MagnifyingGlassPlusIcon className="h-7 w-7" />
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   ) : null;
 
@@ -1104,90 +1123,50 @@ const BusinessDetail = () => {
       <div className="xl:hidden px-4">{businessInfoSections}</div>
 
       {activeGalleryIndex !== null ? (
-        <div className="fixed inset-0 z-50 bg-white">
-          <div className="flex h-full flex-col">
-            <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
-              <div className="mx-auto grid w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4">
-                <button
-                  type="button"
-                  onClick={closeGallery}
-                  className="inline-flex items-center gap-2 text-gray-900"
-                >
-                  <ArrowLeftIcon className="h-6 w-6" />
-                </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4">
+          <button
+            type="button"
+            onClick={closeGallery}
+            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
+            aria-label="Close gallery"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
 
-                <div className="flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveGallerySection('space');
-                      setActiveGalleryIndex(0);
-                    }}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium ${
-                      activeGallerySection === 'space'
-                        ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]'
-                        : 'bg-[#f1f1f1] text-[#1f1f1f]'
-                    }`}
-                  >
-                    The space ({spaceGallery.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveGallerySection('portfolio');
-                      setActiveGalleryIndex(0);
-                    }}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium ${
-                      activeGallerySection === 'portfolio'
-                        ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]'
-                        : 'bg-[#f1f1f1] text-[#1f1f1f]'
-                    }`}
-                  >
-                    Portfolio ({portfolioGallery.length})
-                  </button>
-                </div>
-
-                <div />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto bg-[#fafafa] px-4 py-6 sm:px-6">
-              {activeGallerySection === 'portfolio' ? (
-                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-2">
-                  {orderedGalleryImages.map((image, index) => (
-                    <div
-                      key={`${image}-${index}-portfolio`}
-                      className="overflow-hidden rounded-[24px] bg-white shadow-sm"
-                    >
-                      <img
-                        src={image}
-                        alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`}
-                        className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="mx-auto max-w-7xl space-y-4">
-                  {orderedGalleryImages.map((image, index) => (
-                    <div key={`${image}-${index}-space`} className="overflow-hidden rounded-[24px] bg-white shadow-sm">
-                      <img
-                        src={image}
-                        alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`}
-                        className="max-h-[82vh] w-full object-contain bg-white"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1 text-sm font-semibold text-white">
+            {activeGalleryIndex + 1} / {currentGalleryImages.length}
           </div>
+
+          {currentGalleryImages.length > 1 && (
+            <button
+              type="button"
+              onClick={showPreviousImage}
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20 sm:left-4"
+              aria-label="Previous image"
+            >
+              <ChevronLeftIcon className="h-7 w-7" />
+            </button>
+          )}
+
+          <img
+            src={currentGalleryImages[activeGalleryIndex]}
+            alt={`${publicBusinessName || 'Business'} gallery ${activeGalleryIndex + 1}`}
+            className="max-h-[84vh] max-w-full rounded-lg object-contain shadow-2xl"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+
+          {currentGalleryImages.length > 1 && (
+            <button
+              type="button"
+              onClick={showNextImage}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition hover:bg-white/20 sm:right-4"
+              aria-label="Next image"
+            >
+              <ChevronRightIcon className="h-7 w-7" />
+            </button>
+          )}
         </div>
       ) : null}
 
