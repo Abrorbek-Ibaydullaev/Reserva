@@ -56,6 +56,13 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
+        email = User.objects.normalize_email(request.data.get('email', '')).strip()
+        if email and User.objects.filter(email__iexact=email).exists():
+            return Response(
+                {'detail': 'Email already registered'},
+                status=status.HTTP_409_CONFLICT,
+            )
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

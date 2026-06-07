@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import {
   UserIcon,
@@ -163,6 +164,7 @@ const Register = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [userType, setUserType] = useState('customer');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -189,6 +191,7 @@ const Register = () => {
     try {
       setIsLoading(true);
       setError('');
+      setEmailError('');
 
       const payload = {
         email: data.email,
@@ -207,12 +210,18 @@ const Register = () => {
         navigate('/', { replace: true });
       } else {
         const msg = result.message;
-        if (typeof msg === 'string') {
+        const emailMessage = Array.isArray(msg?.email) ? msg.email[0] : msg?.email;
+        const isDuplicateEmail =
+          result.status === 400 ||
+          result.status === 409 ||
+          /already|exists|unique/i.test(String(emailMessage || msg?.detail || msg || ''));
+
+        if (isDuplicateEmail) {
+          setEmailError('An account with this email already exists.');
+        } else if (typeof msg === 'string') {
           setError(msg);
         } else if (msg?.recaptcha) {
           setError(Array.isArray(msg.recaptcha) ? msg.recaptcha[0] : msg.recaptcha);
-        } else if (msg?.email) {
-          setError(Array.isArray(msg.email) ? msg.email[0] : msg.email);
         } else if (msg?.detail) {
           setError(msg.detail);
         } else {
@@ -222,6 +231,7 @@ const Register = () => {
         setRecaptchaToken(null);
       }
     } catch {
+      toast.error('Unexpected registration error. Please try again.');
       setError('An unexpected error occurred. Please try again.');
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
@@ -347,7 +357,7 @@ const Register = () => {
               </Field>
             </div>
 
-            <Field label="Email address" error={errors.email?.message}>
+            <Field label="Email address" error={errors.email?.message || emailError}>
               <Input
                 icon={EnvelopeIcon}
                 type="email"
@@ -356,6 +366,7 @@ const Register = () => {
                 {...register('email', {
                   required: 'Email is required',
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                  onChange: () => setEmailError(''),
                 })}
               />
             </Field>
