@@ -174,6 +174,16 @@ const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password', '');
   const hasRecaptcha = Boolean(RECAPTCHA_SITE_KEY);
+  const clearRegistrationErrors = () => {
+    setError('');
+    setEmailError('');
+  };
+
+  const getDetailMessage = (message, fallback) => {
+    if (typeof message === 'string') return message;
+    if (Array.isArray(message?.detail)) return message.detail[0] || fallback;
+    return message?.detail || fallback;
+  };
 
   const onSubmit = async (data) => {
     if (hasRecaptcha && !recaptchaToken) {
@@ -191,8 +201,7 @@ const Register = () => {
 
     try {
       setIsLoading(true);
-      setError('');
-      setEmailError('');
+      clearRegistrationErrors();
 
       const payload = {
         email: data.email,
@@ -211,14 +220,17 @@ const Register = () => {
         navigate('/', { replace: true });
       } else {
         const msg = result.message;
-        const emailMessage = Array.isArray(msg?.email) ? msg.email[0] : msg?.email;
-        const isDuplicateEmail =
-          result.status === 400 ||
-          result.status === 409 ||
-          /already|exists|unique/i.test(String(emailMessage || msg?.detail || msg || ''));
-
-        if (isDuplicateEmail) {
-          setEmailError('An account with this email already exists.');
+        if (result.status === 409) {
+          setEmailError(
+            <>
+              An account with this email already exists. Try signing in instead.{' '}
+              <Link to="/login" className="font-semibold text-red-700 underline">
+                Sign in
+              </Link>
+            </>
+          );
+        } else if (result.status === 400) {
+          setError(getDetailMessage(msg, 'Registration failed. Please check your details and try again.'));
         } else if (typeof msg === 'string') {
           setError(msg);
         } else if (msg?.recaptcha) {
@@ -339,22 +351,24 @@ const Register = () => {
                 <Input
                   icon={UserIcon}
                   placeholder="First name"
-                  {...register('first_name', {
-                    required: 'Required',
-                    minLength: { value: 2, message: 'Min 2 characters' },
-                  })}
-                />
+                {...register('first_name', {
+                  required: 'Required',
+                  minLength: { value: 2, message: 'Min 2 characters' },
+                  onChange: clearRegistrationErrors,
+                })}
+              />
               </Field>
 
               <Field label="Last name" error={errors.last_name?.message}>
                 <Input
                   icon={UserIcon}
                   placeholder="Last name"
-                  {...register('last_name', {
-                    required: 'Required',
-                    minLength: { value: 2, message: 'Min 2 characters' },
-                  })}
-                />
+                {...register('last_name', {
+                  required: 'Required',
+                  minLength: { value: 2, message: 'Min 2 characters' },
+                  onChange: clearRegistrationErrors,
+                })}
+              />
               </Field>
             </div>
 
@@ -367,7 +381,7 @@ const Register = () => {
                 {...register('email', {
                   required: 'Email is required',
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
-                  onChange: () => setEmailError(''),
+                  onChange: clearRegistrationErrors,
                 })}
               />
             </Field>
@@ -384,6 +398,7 @@ const Register = () => {
                   {...register('business_name', {
                     required: 'Business name is required',
                     minLength: { value: 2, message: 'Min 2 characters' },
+                    onChange: clearRegistrationErrors,
                   })}
                 />
               </Field>
@@ -404,6 +419,7 @@ const Register = () => {
                         value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
                         message: 'Need uppercase, lowercase & number',
                       },
+                      onChange: clearRegistrationErrors,
                     })}
                   />
                   <button
@@ -426,6 +442,7 @@ const Register = () => {
                     {...register('password2', {
                       required: 'Please confirm your password',
                       validate: (v) => v === password || 'Passwords do not match',
+                      onChange: clearRegistrationErrors,
                     })}
                   />
                   <button
