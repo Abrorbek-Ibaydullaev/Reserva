@@ -22,6 +22,11 @@ const BusinessCard = ({ business }) => {
     business.profile?.address ||
     null;
   const preview = services.filter((s) => s.is_active).slice(0, 3);
+  const coverImage =
+    fixMediaUrl(business.cover_images?.[0]) ||
+    fixMediaUrl(business.gallery_images?.[0]?.image) ||
+    fixMediaUrl(business.profile_picture) ||
+    null;
 
   return (
     <Link
@@ -30,9 +35,9 @@ const BusinessCard = ({ business }) => {
     >
       {/* Cover image */}
       <div className="relative h-44 w-full overflow-hidden bg-slate-100">
-        {(fixMediaUrl(business.gallery_images?.[0]?.image) || fixMediaUrl(business.profile_picture)) && (
+        {coverImage && (
           <img
-            src={fixMediaUrl(business.gallery_images?.[0]?.image) || fixMediaUrl(business.profile_picture)}
+            src={coverImage}
             alt={business.full_name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => { e.target.style.display = 'none'; }}

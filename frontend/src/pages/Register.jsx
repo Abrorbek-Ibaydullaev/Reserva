@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import {
   UserIcon,
@@ -163,6 +164,7 @@ const Register = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [userType, setUserType] = useState('customer');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -171,9 +173,20 @@ const Register = () => {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password', '');
+  const hasRecaptcha = Boolean(RECAPTCHA_SITE_KEY);
+  const clearRegistrationErrors = () => {
+    setError('');
+    setEmailError('');
+  };
+
+  const getDetailMessage = (message, fallback) => {
+    if (typeof message === 'string') return message;
+    if (Array.isArray(message?.detail)) return message.detail[0] || fallback;
+    return message?.detail || fallback;
+  };
 
   const onSubmit = async (data) => {
-    if (!recaptchaToken) {
+    if (hasRecaptcha && !recaptchaToken) {
       setError('Please complete the reCAPTCHA check before creating your account.');
       return;
     }
@@ -188,7 +201,7 @@ const Register = () => {
 
     try {
       setIsLoading(true);
-      setError('');
+      clearRegistrationErrors();
 
       const payload = {
         email: data.email,
@@ -207,12 +220,21 @@ const Register = () => {
         navigate('/', { replace: true });
       } else {
         const msg = result.message;
-        if (typeof msg === 'string') {
+        if (result.status === 409) {
+          setEmailError(
+            <>
+              An account with this email already exists. Try signing in instead.{' '}
+              <Link to="/login" className="font-semibold text-red-700 underline">
+                Sign in
+              </Link>
+            </>
+          );
+        } else if (result.status === 400) {
+          setError(getDetailMessage(msg, 'Registration failed. Please check your details and try again.'));
+        } else if (typeof msg === 'string') {
           setError(msg);
         } else if (msg?.recaptcha) {
           setError(Array.isArray(msg.recaptcha) ? msg.recaptcha[0] : msg.recaptcha);
-        } else if (msg?.email) {
-          setError(Array.isArray(msg.email) ? msg.email[0] : msg.email);
         } else if (msg?.detail) {
           setError(msg.detail);
         } else {
@@ -222,6 +244,7 @@ const Register = () => {
         setRecaptchaToken(null);
       }
     } catch {
+      toast.error('Unexpected registration error. Please try again.');
       setError('An unexpected error occurred. Please try again.');
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
@@ -234,12 +257,12 @@ const Register = () => {
     <div className="flex min-h-screen bg-slate-50">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
-        </div>
+        </Link>
 
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">
@@ -270,12 +293,16 @@ const Register = () => {
       <div className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-8 lg:items-center lg:px-12">
         <div className="w-full max-w-lg">
           {/* Mobile logo */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
+          <Link to="/" className="mb-6 flex items-center gap-3 lg:hidden">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">Reserva</span>
-          </div>
+          </Link>
+
+          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline">
+            &larr; Back to home
+          </Link>
 
           <h2 className="text-2xl font-bold text-slate-900">Create your account</h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -324,26 +351,28 @@ const Register = () => {
                 <Input
                   icon={UserIcon}
                   placeholder="First name"
-                  {...register('first_name', {
-                    required: 'Required',
-                    minLength: { value: 2, message: 'Min 2 characters' },
-                  })}
-                />
+                {...register('first_name', {
+                  required: 'Required',
+                  minLength: { value: 2, message: 'Min 2 characters' },
+                  onChange: clearRegistrationErrors,
+                })}
+              />
               </Field>
 
               <Field label="Last name" error={errors.last_name?.message}>
                 <Input
                   icon={UserIcon}
                   placeholder="Last name"
-                  {...register('last_name', {
-                    required: 'Required',
-                    minLength: { value: 2, message: 'Min 2 characters' },
-                  })}
-                />
+                {...register('last_name', {
+                  required: 'Required',
+                  minLength: { value: 2, message: 'Min 2 characters' },
+                  onChange: clearRegistrationErrors,
+                })}
+              />
               </Field>
             </div>
 
-            <Field label="Email address" error={errors.email?.message}>
+            <Field label="Email address" error={errors.email?.message || emailError}>
               <Input
                 icon={EnvelopeIcon}
                 type="email"
@@ -352,6 +381,7 @@ const Register = () => {
                 {...register('email', {
                   required: 'Email is required',
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                  onChange: clearRegistrationErrors,
                 })}
               />
             </Field>
@@ -368,6 +398,7 @@ const Register = () => {
                   {...register('business_name', {
                     required: 'Business name is required',
                     minLength: { value: 2, message: 'Min 2 characters' },
+                    onChange: clearRegistrationErrors,
                   })}
                 />
               </Field>
@@ -388,6 +419,7 @@ const Register = () => {
                         value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
                         message: 'Need uppercase, lowercase & number',
                       },
+                      onChange: clearRegistrationErrors,
                     })}
                   />
                   <button
@@ -410,6 +442,7 @@ const Register = () => {
                     {...register('password2', {
                       required: 'Please confirm your password',
                       validate: (v) => v === password || 'Passwords do not match',
+                      onChange: clearRegistrationErrors,
                     })}
                   />
                   <button
@@ -443,18 +476,20 @@ const Register = () => {
             </div>
 
             {/* reCAPTCHA */}
-            <div>
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={(token) => setRecaptchaToken(token)}
-                onExpired={() => setRecaptchaToken(null)}
-              />
-            </div>
+            {hasRecaptcha && (
+              <div>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setRecaptchaToken(token)}
+                  onExpired={() => setRecaptchaToken(null)}
+                />
+              </div>
+            )}
 
             <button
               type="submit"
-              disabled={isLoading || !recaptchaToken}
+              disabled={isLoading || (hasRecaptcha && !recaptchaToken)}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (

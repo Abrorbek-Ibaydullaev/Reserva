@@ -20,23 +20,29 @@ const Login = () => {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const recaptchaRef = useRef(null);
 
   const from = location.state?.from?.pathname || '/';
 
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const hasRecaptcha = Boolean(RECAPTCHA_SITE_KEY);
+  const clearSubmitErrors = () => {
+    setFormError('');
+    setSubmitError('');
+  };
 
   const onSubmit = async (data) => {
-    if (!recaptchaToken) {
-      setError('Please complete the reCAPTCHA check before signing in.');
+    if (hasRecaptcha && !recaptchaToken) {
+      setFormError('Please complete the reCAPTCHA check before signing in.');
       return;
     }
 
     try {
       setIsLoading(true);
-      setError('');
+      clearSubmitErrors();
       const result = await login(data.email, data.password, recaptchaToken);
       if (result.success) {
         const fallback =
@@ -47,13 +53,21 @@ const Login = () => {
             : '/';
         navigate(from === '/' ? fallback : from, { replace: true });
       } else {
-        setError('Invalid email or password. Please try again.');
+        setSubmitError(
+          result.status === 401
+            ? 'Incorrect email or password. Please try again.'
+            : 'Something went wrong. Please try again.'
+        );
         // Reset reCAPTCHA so the user can try again
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);
       }
-    } catch {
-      setError('An error occurred. Please try again.');
+    } catch (error) {
+      setSubmitError(
+        error.response?.status === 401
+          ? 'Incorrect email or password. Please try again.'
+          : 'Something went wrong. Please try again.'
+      );
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
     } finally {
@@ -65,12 +79,12 @@ const Login = () => {
     <div className="flex min-h-screen bg-slate-50">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
             <CalendarDaysIcon className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold">Reserva</span>
-        </div>
+        </Link>
 
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">
@@ -101,12 +115,16 @@ const Login = () => {
       <div className="flex flex-1 items-center justify-center px-4 py-12 lg:px-12">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
+          <Link to="/" className="mb-6 flex items-center gap-3 lg:hidden">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">Reserva</span>
-          </div>
+          </Link>
+
+          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline">
+            &larr; Back to home
+          </Link>
 
           <h2 className="text-2xl font-bold text-slate-900">Sign in to your account</h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -117,9 +135,9 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-            {error && (
+            {formError && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {error}
+                {formError}
               </div>
             )}
 
@@ -138,6 +156,7 @@ const Login = () => {
                   {...register('email', {
                     required: 'Email is required',
                     pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                    onChange: clearSubmitErrors,
                   })}
                 />
               </div>
@@ -159,6 +178,7 @@ const Login = () => {
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Min 6 characters' },
+                    onChange: clearSubmitErrors,
                   })}
                 />
                 <button
@@ -169,22 +189,30 @@ const Login = () => {
                   {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
+              <div className="mt-2 text-right">
+                <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              {submitError && <p className="mt-1 text-xs text-red-600">{submitError}</p>}
             </div>
 
             {/* reCAPTCHA */}
-            <div>
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={(token) => setRecaptchaToken(token)}
-                onExpired={() => setRecaptchaToken(null)}
-              />
-            </div>
+            {hasRecaptcha && (
+              <div>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setRecaptchaToken(token)}
+                  onExpired={() => setRecaptchaToken(null)}
+                />
+              </div>
+            )}
 
             <button
               type="submit"
-              disabled={isLoading || !recaptchaToken}
+              disabled={isLoading || (hasRecaptcha && !recaptchaToken)}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
             >
               {isLoading ? (

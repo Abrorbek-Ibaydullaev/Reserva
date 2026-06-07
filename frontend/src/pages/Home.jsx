@@ -159,8 +159,28 @@ const UZ_CITIES = [
   "Urganch","Navoiy","Guliston","Muborak","Chirchiq",
 ];
 
+const getCityFromCoordinates = async (latitude, longitude) => {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&format=json`
+  );
+
+  if (!response.ok) {
+    throw new Error('Reverse geocoding failed');
+  }
+
+  const data = await response.json();
+  return (
+    data.address?.city ||
+    data.address?.town ||
+    data.address?.village ||
+    data.address?.municipality ||
+    data.address?.county ||
+    ''
+  );
+};
+
 // ── City Picker Modal ─────────────────────────────────────────────────────────
-const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
+const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation }) => {
   const [q, setQ] = useState('');
   const inputRef = useRef(null);
 
@@ -174,17 +194,6 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
   const filtered = q.trim()
     ? allCities.filter((c) => c.toLowerCase().includes(q.toLowerCase()))
     : allCities;
-
-  const useLocation = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // Would reverse-geocode in production; for now pick from list
-        inputRef.current?.focus();
-      },
-      () => {}
-    );
-  };
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4" onClick={onClose}>
@@ -207,7 +216,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
         <div className="p-4">
           {/* Use my location */}
           <button
-            onClick={useLocation}
+            onClick={onDetectLocation}
             className="mb-4 flex w-full items-center gap-3 rounded-xl border border-[#2eadd0]/30 bg-[#f0fafb] px-4 py-3 text-sm font-semibold text-[#2eadd0] hover:bg-[#e4f6f9] transition"
           >
             <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -402,7 +411,11 @@ const Carousel = ({ children }) => {
 const BizCard = ({ biz }) => {
   const name = biz.profile?.business_name || `${biz.first_name || ''} ${biz.last_name || ''}`.trim() || 'Business';
   const city = biz.profile?.city || '';
-  const img = fixMediaUrl(biz.profile_picture) || fixMediaUrl(biz.gallery_images?.[0]?.image) || null;
+  const img =
+    fixMediaUrl(biz.cover_images?.[0]) ||
+    fixMediaUrl(biz.gallery_images?.[0]?.image) ||
+    fixMediaUrl(biz.profile_picture) ||
+    null;
   const services = biz.services_active || biz.services || [];
   const rating = biz.avg_rating != null ? Number(biz.avg_rating).toFixed(1) : null;
   const reviewCount = biz.review_count || 0;
@@ -471,6 +484,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [cityModal, setCityModal] = useState(null); // pending category name
   const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
+  const [locationStatus, setLocationStatus] = useState('idle');
   const [showWhereDrop, setShowWhereDrop] = useState(false);
   const [showSearchDrop, setShowSearchDrop] = useState(false);
   const [recentCities] = useState(() => {
@@ -534,9 +548,12 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    userService.getBusinesses()
+    userService.getBusinesses(savedCity ? { city: savedCity } : undefined)
       .then((r) => setBusinesses(r.data.results || r.data || []))
       .catch(() => {});
+  }, [savedCity]);
+
+  useEffect(() => {
     serviceService.getCategories()
       .then((r) => {
         const fromApi = r.data.results || r.data || [];
@@ -552,6 +569,37 @@ const Home = () => {
         setCategories(HARDCODED_EXTRAS.map((name, i) => ({ id: `extra-${i}`, name })));
       });
   }, []);
+
+  useEffect(() => {
+    if (savedCity || !navigator.geolocation) {
+      if (!savedCity) setLocationStatus('manual');
+      return;
+    }
+
+    setLocationStatus('detecting');
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const city = await getCityFromCoordinates(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          if (city) {
+            setSavedCity(city);
+            setWhere(city);
+            sessionStorage.setItem('reserva_user_city', city);
+            setLocationStatus('detected');
+          } else {
+            setLocationStatus('manual');
+          }
+        } catch {
+          setLocationStatus('manual');
+        }
+      },
+      () => setLocationStatus('manual'),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    );
+  }, [savedCity]);
 
   // Group businesses by category
   const grouped = useMemo(() => {
@@ -642,19 +690,42 @@ const Home = () => {
 
   const selectCity = (city) => {
     setWhere(city);
+    setSavedCity(city);
+    sessionStorage.setItem('reserva_user_city', city);
     setShowWhereDrop(false);
     const updated = [city, ...recentCities.filter((c) => c !== city)].slice(0, 5);
     localStorage.setItem('reserva_recent_cities', JSON.stringify(updated));
   };
 
   const enableLocation = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      setLocationStatus('manual');
+      return;
+    }
+    setLocationStatus('detecting');
     navigator.geolocation.getCurrentPosition(
-      () => {
-        // In production: reverse-geocode coords to city name
+      async (position) => {
+        try {
+          const city = await getCityFromCoordinates(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          if (city) {
+            selectCity(city);
+            setLocationStatus('detected');
+          } else {
+            setLocationStatus('manual');
+          }
+        } catch {
+          setLocationStatus('manual');
+        }
         setShowWhereDrop(false);
       },
-      () => setShowWhereDrop(false)
+      () => {
+        setLocationStatus('manual');
+        setShowWhereDrop(false);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
   };
 
@@ -670,9 +741,13 @@ const Home = () => {
   // City selected in modal
   const handleCitySelect = (city) => {
     setSavedCity(city);
+    setWhere(city);
     sessionStorage.setItem('reserva_user_city', city);
+    const pendingCategory = cityModal;
     setCityModal(null);
-    navigate(`/services?category=${encodeURIComponent(cityModal)}&city=${encodeURIComponent(city)}`);
+    if (pendingCategory && pendingCategory !== 'search') {
+      navigate(`/services?category=${encodeURIComponent(pendingCategory)}&city=${encodeURIComponent(city)}`);
+    }
   };
 
   const doSearch = (e) => {
@@ -779,11 +854,43 @@ const Home = () => {
         <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white shadow-xl border border-slate-100 py-1 text-sm z-[200]">
           <Link to="/profile" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Profile</Link>
           <Link to="/appointments" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Appointments</Link>
+          <Link to="/settings" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Settings</Link>
           <button onClick={() => { logout(); setUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-slate-50">Logout</button>
         </div>
       )}
     </div>
   );
+
+  const AuthActionSlot = ({ dark }) => {
+    if (authLoading) {
+      return (
+        <div
+          aria-hidden="true"
+          className={`h-9 w-[168px] rounded-full ${dark ? 'bg-white/5' : 'bg-white/10'}`}
+        />
+      );
+    }
+
+    return isAuthenticated ? (
+      <UserMenu dark={dark} />
+    ) : (
+      <>
+        <Link to="/login" className={dark ? 'text-sm text-slate-400 hover:text-white transition' : 'text-sm font-medium text-white/80 hover:text-white transition'}>
+          Login
+        </Link>
+        <Link
+          to="/register"
+          className={
+            dark
+              ? 'rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
+              : 'rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
+          }
+        >
+          List your business
+        </Link>
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa]">
@@ -976,20 +1083,14 @@ const Home = () => {
             </form>
 
             <div className="flex-shrink-0 flex items-center gap-3 ml-1">
-              {isAuthenticated
-                ? <UserMenu dark />
-                : <>
-                    <Link to="/login" className="text-sm text-slate-400 hover:text-white transition">Login</Link>
-                    <Link to="/register" className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition">List your business</Link>
-                  </>
-              }
+              <AuthActionSlot dark />
             </div>
           </div>
         </div>
       )}
 
       {/* ── HERO — ~65vh, NOT full screen ──────────────────────────────── */}
-      <section className="relative h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
+      <section className="relative isolate h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
 
         {/* Video */}
         {!videoErr && (
@@ -1001,23 +1102,15 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70" />
 
         {/* Navbar */}
-        <div className="relative z-10 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
+        <div className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <Link to="/" className="text-2xl font-extrabold text-white tracking-tight">Reserva</Link>
           <div className="flex items-center gap-3">
-            {isAuthenticated
-              ? <UserMenu />
-              : <>
-                  <Link to="/login" className="text-sm font-medium text-white/80 hover:text-white transition">Login</Link>
-                  <Link to="/register" className="rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm">
-                    List your business
-                  </Link>
-                </>
-            }
+            <AuthActionSlot />
           </div>
         </div>
 
         {/* Centre content */}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 text-center">
+        <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-4 text-center">
           <h1 className="mb-4 min-h-[5rem] text-2xl font-extrabold leading-tight text-white sm:min-h-[6rem] sm:text-4xl md:text-5xl">
             {/* line 1 */}
             <span>
@@ -1051,6 +1144,25 @@ const Home = () => {
               <button type="submit" className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
                 Search
               </button>
+            </div>
+            <div className="mt-3 flex flex-col items-center justify-center gap-2 text-sm sm:flex-row">
+              {savedCity ? (
+                <div className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">
+                  Searching in {savedCity}
+                  <button type="button" onClick={() => setCityModal('search')} className="ml-2 underline">
+                    Change
+                  </button>
+                </div>
+              ) : locationStatus === 'detecting' ? (
+                <p className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">Detecting your city...</p>
+              ) : (
+                <input
+                  value={where}
+                  onChange={(event) => setWhere(event.target.value)}
+                  placeholder="Enter your city to find services near you"
+                  className="w-full rounded-full border border-white/30 bg-white/95 px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 sm:w-80"
+                />
+              )}
             </div>
           </form>
         </div>
@@ -1135,27 +1247,40 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          grouped.map(([cat, list]) => (
-            <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
-              <div className="mb-5 flex items-end justify-between">
-                <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
-                <button
-                  onClick={() => handleCatClick(cat)}
-                  className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
-                >
-                  See all <ArrowRightIcon className="h-4 w-4" />
-                </button>
+          <>
+            {grouped.length === 1 && businesses.length > 0 && (
+              <div key="all-businesses" className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
+                <div className="mb-5 flex items-end justify-between">
+                  <h2 className="text-xl font-bold text-slate-900">Businesses near you</h2>
+                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline">See all <ArrowRightIcon className="h-4 w-4" /></Link>
+                </div>
+                <Carousel>
+                  {businesses.map((b) => <BizCard key={b.id} biz={b} />)}
+                </Carousel>
               </div>
-              <Carousel>
-                {list.map((b) => <BizCard key={b.id} biz={b} />)}
-              </Carousel>
-            </div>
-          ))
+            )}
+            {grouped.map(([cat, list]) => (
+              <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
+                <div className="mb-5 flex items-end justify-between">
+                  <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
+                  <button
+                    onClick={() => handleCatClick(cat)}
+                    className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+                  >
+                    See all <ArrowRightIcon className="h-4 w-4" />
+                  </button>
+                </div>
+                <Carousel>
+                  {list.map((b) => <BizCard key={b.id} biz={b} />)}
+                </Carousel>
+              </div>
+            ))}
+          </>
         )}
       </div>
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      {!isAuthenticated && (
+      {!authLoading && !isAuthenticated && (
         <section className="bg-[#1a1a2e] px-6 py-14 text-center">
           <h2 className="mb-3 text-2xl font-extrabold text-white">Add your business to Reserva</h2>
           <p className="mb-8 text-slate-400">Connect online booking and grow your client base. Free to start.</p>
@@ -1183,6 +1308,7 @@ const Home = () => {
         <CityPickerModal
           knownCities={allCities}
           onSelect={handleCitySelect}
+          onDetectLocation={enableLocation}
           onClose={() => setCityModal(null)}
         />
       )}

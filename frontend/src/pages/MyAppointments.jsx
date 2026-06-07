@@ -13,6 +13,7 @@ import {
 import { StarIcon } from '@heroicons/react/24/solid';
 import { appointmentService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import CancelAppointmentModal from '../components/CancelAppointmentModal';
 
 const fmtDate = (d) =>
   new Date(`${d}T00:00:00`).toLocaleDateString('en-US', {
@@ -370,6 +371,7 @@ const MyAppointments = () => {
   const [reviewTarget, setReviewTarget] = useState(null);
   const [reviewedIds, setReviewedIds] = useState(new Set());
   const [cancellingId, setCancellingId] = useState(null);
+  const [cancelTargetId, setCancelTargetId] = useState(null);
   const [statusBusyId, setStatusBusyId] = useState(null);
 
   const load = async () => {
@@ -386,13 +388,18 @@ const MyAppointments = () => {
 
   useEffect(() => { load(); }, []);
 
-  const handleCancel = async (id) => {
-    const reason = window.prompt('Cancellation reason (optional):', '');
-    if (reason === null) return;
+  const handleCancel = (id) => {
+    setCancelTargetId(id);
+  };
+
+  const handleConfirmCancel = async (reason) => {
+    if (!cancelTargetId) return;
+
     try {
-      setCancellingId(id);
-      await appointmentService.cancelAppointment(id, reason);
-      toast.success('Appointment cancelled.');
+      setCancellingId(cancelTargetId);
+      await appointmentService.cancelAppointment(cancelTargetId, reason);
+      toast.success('Appointment cancelled successfully');
+      setCancelTargetId(null);
       setSelected(null);
       await load();
     } catch (err) {
@@ -529,6 +536,13 @@ const MyAppointments = () => {
           }
         />
       )}
+
+      <CancelAppointmentModal
+        isOpen={Boolean(cancelTargetId)}
+        onClose={() => setCancelTargetId(null)}
+        onConfirm={handleConfirmCancel}
+        isLoading={Boolean(cancellingId)}
+      />
     </div>
   );
 };

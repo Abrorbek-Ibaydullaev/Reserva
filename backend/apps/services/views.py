@@ -47,6 +47,10 @@ class ServiceListView(generics.ListAPIView):
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
 
+        city = self.request.query_params.get('city')
+        if city:
+            queryset = queryset.filter(business_owner__profile__city__icontains=city)
+
         # Filter by duration
         duration = self.request.query_params.get('duration')
         if duration:

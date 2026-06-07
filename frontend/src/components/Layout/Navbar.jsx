@@ -6,7 +6,6 @@ import {
   XMarkIcon, 
   CalendarIcon,
   UserCircleIcon,
-  BellIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   HomeIcon,
@@ -15,9 +14,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ThemeToggle';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -30,6 +30,7 @@ const Navbar = () => {
 
   const staffFacingNavigation = [
     { name: 'Home', href: '/', current: true },
+    { name: 'Services', href: '/services', current: false },
     { name: 'About', href: '/about', current: false },
     { name: 'Contact', href: '/contact', current: false },
   ];
@@ -43,6 +44,7 @@ const Navbar = () => {
   const businessNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
     { name: 'My Appointments', href: '/appointments', icon: ClipboardDocumentListIcon },
     { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
     { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
@@ -52,6 +54,7 @@ const Navbar = () => {
     { name: 'Dashboard', href: '/employee/dashboard', icon: HomeIcon },
     { name: 'My Appointments', href: '/employee/appointments', icon: CalendarIcon },
     { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
   ];
 
   const handleLogout = () => {
@@ -74,8 +77,12 @@ const Navbar = () => {
     return publicNavigation;
   };
 
+  const authPlaceholder = (
+    <div aria-hidden="true" className="h-9 w-[148px] rounded-full bg-gray-100 dark:bg-gray-800" />
+  );
+
   return (
-    <Disclosure as="nav" className="bg-white dark:bg-gray-900 shadow-lg">
+    <Disclosure as="nav" className="relative z-[1000] bg-white dark:bg-gray-900 shadow-lg">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -108,17 +115,17 @@ const Navbar = () => {
                 {/* Theme Toggle */}
                 <ThemeToggle />
 
-                {/* Notifications */}
-                {isAuthenticated && (
-                  <button className="relative p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none">
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" />
-                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
-                  </button>
-                )}
+                {authLoading ? (
+                  authPlaceholder
+                ) : (
+                  <>
+                    {/* Notifications */}
+                    {isAuthenticated && (
+                      <NotificationBell />
+                    )}
 
-                {/* User Menu */}
-                {isAuthenticated ? (
+                    {/* User Menu */}
+                    {isAuthenticated ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="flex items-center space-x-2 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
@@ -145,7 +152,7 @@ const Navbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-[1000] mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         {getNavigationItems().map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
@@ -176,22 +183,24 @@ const Navbar = () => {
                         </Menu.Item>
                       </Menu.Items>
                     </Transition>
-                  </Menu>
-                ) : (
-                  <div className="flex items-center space-x-4">
-                    <Link
-                      to="/login"
-                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
+                    </Menu>
+                    ) : (
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        to="/login"
                         className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Sign Up
-                    </Link>
-                  </div>
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        to="/register"
+                          className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -224,7 +233,11 @@ const Navbar = () => {
               ))}
             </div>
             
-            {isAuthenticated ? (
+            {authLoading ? (
+              <div className="border-t border-gray-200 pb-3 pt-4">
+                <div aria-hidden="true" className="mx-4 h-10 w-40 rounded-full bg-gray-100 dark:bg-gray-800" />
+              </div>
+            ) : isAuthenticated ? (
               <div className="border-t border-gray-200 pb-3 pt-4">
                 <div className="flex min-w-0 items-center px-4">
                   {user?.profile_picture ? (

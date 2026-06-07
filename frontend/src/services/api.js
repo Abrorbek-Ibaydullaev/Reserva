@@ -5,15 +5,29 @@ import axios from 'axios';
  * Base API URL — must NOT end with a slash
  */
 const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+    import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.PROD
+        ? 'https://reserva-production.up.railway.app/api'
+        : 'http://localhost:8000/api');
 
-// Strip /api suffix and force https in production to avoid Mixed Content blocks
-const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '').replace(/^http:\/\//, 'https://');
+// Strip /api suffix. Production builds force https to avoid Mixed Content blocks.
+const RAW_BACKEND_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
+const BACKEND_ORIGIN = import.meta.env.PROD
+    ? RAW_BACKEND_ORIGIN.replace(/^http:\/\//, 'https://')
+    : RAW_BACKEND_ORIGIN;
 
 export const fixMediaUrl = (url) => {
     if (!url) return url;
-    // Already absolute — force https so Vercel doesn't block mixed content
-    if (url.startsWith('http://')) return url.replace('http://', 'https://');
+    // Preserve localhost for Django dev; production uses https for remote media.
+    if (url.startsWith('http://')) {
+        try {
+            const parsed = new URL(url);
+            if (['localhost', '127.0.0.1'].includes(parsed.hostname)) return url;
+        } catch {
+            return url;
+        }
+        return import.meta.env.PROD ? url.replace('http://', 'https://') : url;
+    }
     if (url.startsWith('https://')) return url;
     // Relative path — prepend backend origin
     if (url.startsWith('/')) return `${BACKEND_ORIGIN}${url}`;
@@ -61,8 +75,10 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+        const requestUrl = originalRequest?.url || '';
+        const isAuthRequest = requestUrl.includes('/auth/login/') || requestUrl.includes('/auth/register/');
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest?._retry && !isAuthRequest) {
             originalRequest._retry = true;
 
             try {
@@ -80,6 +96,7 @@ api.interceptors.response.use(
 
                 const { access } = response.data;
                 localStorage.setItem('access_token', access);
+                try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
 
                 originalRequest.headers.Authorization = `Bearer ${access}`;
                 return api(originalRequest);
@@ -110,6 +127,7 @@ export const authService = {
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
+            try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
             const raw = response.data.user || (await api.get('/users/me/')).data;
             const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
             localStorage.setItem('user_data', JSON.stringify(userData));
@@ -165,6 +183,14 @@ export const authService = {
             old_password: current_password,
             new_password: new_password,
         });
+    },
+
+    forgotPassword: async (email) => {
+        return api.post('/auth/forgot-password/', { email });
+    },
+
+    resetPassword: async ({ token, new_password }) => {
+        return api.post('/auth/reset-password/', { token, new_password });
     },
 };
 
@@ -256,6 +282,7 @@ export const scheduleService = {
 export const userService = {
     getMe: () => api.get('/users/me/'),
     updateMe: (data) => api.patch('/users/me/', data, withPayloadConfig(data)),
+    changeMyPassword: (data) => api.patch('/users/me/password/', data),
     getProfile: () => api.get('/users/profile/'),
     updateProfile: (data) => api.patch('/users/profile/', data, withPayloadConfig(data)),
     getGalleryImages: () => api.get('/users/gallery/'),
@@ -263,12 +290,14 @@ export const userService = {
     deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
     getTelegramLink: () => api.get('/users/telegram/'),
     disconnectTelegram: () => api.delete('/users/telegram/'),
-    getNotifications: () => api.get('/users/notifications/'),
+    getNotifications: () => api.get('/notifications/'),
     markNotificationAsRead: (id) =>
-        api.put(`/users/notifications/${id}/read/`),
+        api.patch(`/notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
-        api.post('/users/notifications/read-all/'),
-    getBusinesses: () => api.get('/users/businesses/'),
+        api.patch('/notifications/read-all/'),
+    clearAllNotifications: () =>
+        api.delete('/notifications/clear-all/'),
+    getBusinesses: (params) => api.get('/users/businesses/', { params }),
 };
 
 export default api;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { appointmentService } from '../../services/api';
+import CancelAppointmentModal from '../../components/CancelAppointmentModal';
 
 const normalizeList = (response) => response.data?.results || response.data || [];
 const activeStatuses = ['pending', 'confirmed', 'rescheduled'];
@@ -18,6 +19,7 @@ const BusinessAppointments = () => {
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
+  const [cancelTargetId, setCancelTargetId] = useState(null);
 
   useEffect(() => {
     loadAppointments();
@@ -51,15 +53,17 @@ const BusinessAppointments = () => {
   };
 
   const handleCancel = async (appointmentId) => {
-    const reason = window.prompt('Cancellation reason:', '');
-    if (reason === null) {
-      return;
-    }
+    setCancelTargetId(appointmentId);
+  };
+
+  const handleConfirmCancel = async (reason) => {
+    if (!cancelTargetId) return;
 
     try {
-      setBusyId(appointmentId);
-      await appointmentService.cancelAppointment(appointmentId, reason);
-      toast.success('Appointment cancelled.');
+      setBusyId(cancelTargetId);
+      await appointmentService.cancelAppointment(cancelTargetId, reason);
+      toast.success('Appointment cancelled successfully');
+      setCancelTargetId(null);
       await loadAppointments();
     } catch (error) {
       console.error('Failed to cancel appointment:', error);
@@ -174,6 +178,12 @@ const BusinessAppointments = () => {
           </div>
         )}
       </div>
+      <CancelAppointmentModal
+        isOpen={Boolean(cancelTargetId)}
+        onClose={() => setCancelTargetId(null)}
+        onConfirm={handleConfirmCancel}
+        isLoading={Boolean(busyId)}
+      />
     </div>
   );
 };

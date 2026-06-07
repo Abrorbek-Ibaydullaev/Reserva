@@ -4,10 +4,17 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.db import models
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+from datetime import timedelta
+import secrets
 from django.db.models import Avg, Count
-from .models import UserProfile, Notification, BusinessGalleryImage
+from .models import UserProfile, Notification, BusinessGalleryImage, PasswordResetToken
 from .recaptcha import verify_recaptcha
 from apps.services.models import Service
 from .serializers import (
@@ -21,6 +28,13 @@ from .serializers import (
 )
 
 User = get_user_model()
+
+
+CITY_ALIASES = {
+    'toshkent': ['toshkent', 'tashkent', 'ташкент'],
+    'tashkent': ['toshkent', 'tashkent', 'ташкент'],
+    'ташкент': ['toshkent', 'tashkent', 'ташкент'],
+}
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -56,6 +70,13 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
+        email = User.objects.normalize_email(request.data.get('email', '')).strip()
+        if email and User.objects.filter(email__iexact=email).exists():
+            return Response(
+                {'detail': 'Email already registered'},
+                status=status.HTTP_409_CONFLICT,
+            )
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -112,6 +133,73 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
 
 
+class ForgotPasswordView(APIView):
+    """Generate a password reset token and email/log the reset link."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = User.objects.normalize_email(request.data.get('email', '')).strip()
+        if email:
+            user = User.objects.filter(email__iexact=email).first()
+            if user:
+                token = secrets.token_urlsafe(48)
+                PasswordResetToken.objects.create(
+                    user=user,
+                    token=token,
+                    expires_at=timezone.now() + timedelta(hours=1),
+                )
+                frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
+                reset_link = f'{frontend_url}/reset-password?token={token}'
+                print(f'Password reset link for {user.email}: {reset_link}')
+                try:
+                    send_mail(
+                        'Reset your Reserva password',
+                        f'Use this link to reset your Reserva password. It expires in 1 hour:\n\n{reset_link}',
+                        getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@reserva.uz'),
+                        [user.email],
+                        fail_silently=True,
+                    )
+                except Exception as exc:
+                    print(f'Password reset email failed for {user.email}: {exc}')
+
+        return Response(
+            {'detail': 'If this email exists, a reset link has been sent.'},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ResetPasswordView(APIView):
+    """Validate a reset token, update the password, and invalidate the token."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token', '')
+        new_password = request.data.get('new_password', '')
+        reset_token = PasswordResetToken.objects.select_related('user').filter(token=token).first()
+
+        if not reset_token or not reset_token.is_valid:
+            return Response(
+                {'detail': 'Invalid or expired reset token.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            validate_password(new_password, reset_token.user)
+        except ValidationError as exc:
+            return Response({'new_password': exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        reset_token.user.set_password(new_password)
+        reset_token.user.save(update_fields=['password'])
+        reset_token.used_at = timezone.now()
+        reset_token.save(update_fields=['used_at'])
+        PasswordResetToken.objects.filter(
+            user=reset_token.user,
+            used_at__isnull=True,
+        ).exclude(pk=reset_token.pk).update(used_at=timezone.now())
+
+        return Response({'detail': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+
+
 class NotificationListView(generics.ListAPIView):
     """List all notifications for the authenticated user."""
     serializer_class = NotificationSerializer
@@ -135,6 +223,9 @@ class MarkNotificationAsReadView(generics.UpdateAPIView):
         notification.save()
         return Response({"message": "Notification marked as read."}, status=status.HTTP_200_OK)
 
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
 
 class MarkAllNotificationsAsReadView(APIView):
     """Mark all notifications as read."""
@@ -145,6 +236,21 @@ class MarkAllNotificationsAsReadView(APIView):
             user=request.user, is_read=False).update(is_read=True)
         return Response({"message": "All notifications marked as read."}, status=status.HTTP_200_OK)
 
+    def patch(self, request):
+        return self.post(request)
+
+
+class ClearAllNotificationsView(APIView):
+    """Delete all notifications for the authenticated user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        deleted_count, _ = Notification.objects.filter(user=request.user).delete()
+        return Response(
+            {"message": "All notifications cleared.", "deleted": deleted_count},
+            status=status.HTTP_200_OK,
+        )
+
 
 class BusinessListView(generics.ListAPIView):
     """List all business owners with their service counts."""
@@ -154,14 +260,27 @@ class BusinessListView(generics.ListAPIView):
     search_fields = ['first_name', 'last_name', 'email']
 
     def get_queryset(self):
-        return User.objects.filter(user_type='business_owner').annotate(
+        queryset = User.objects.filter(user_type='business_owner').annotate(
             services_count=models.Count('services', filter=models.Q(services__is_active=True)),
             avg_rating=Avg('services__reviews__rating'),
             review_count=Count('services__reviews', distinct=True),
         ).filter(services_count__gt=0).order_by('-services_count').prefetch_related(
-            models.Prefetch('services', queryset=Service.objects.filter(is_active=True), to_attr='services_active'),
+            models.Prefetch(
+                'services',
+                queryset=Service.objects.filter(is_active=True).prefetch_related('service_images'),
+                to_attr='services_active',
+            ),
             'gallery_images',
         )
+        city = self.request.query_params.get('city')
+        if city:
+            city_value = city.strip().lower()
+            city_aliases = CITY_ALIASES.get(city_value, [city.strip()])
+            city_filter = models.Q()
+            for alias in city_aliases:
+                city_filter |= models.Q(profile__city__icontains=alias)
+            queryset = queryset.filter(city_filter)
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

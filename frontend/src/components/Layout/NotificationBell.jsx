@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { BellIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { userService } from '../../services/api';
 
 const NotificationBell = () => {
@@ -20,6 +20,12 @@ const NotificationBell = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  useEffect(() => {
+    if (open && unread > 0) {
+      markAll();
+    }
+  }, [open]);
 
   const load = async () => {
     try {
@@ -44,6 +50,26 @@ const NotificationBell = () => {
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
       );
     } catch {}
+  };
+
+  const clearAll = async () => {
+    try {
+      await userService.clearAllNotifications();
+      setNotifications([]);
+      setOpen(false);
+    } catch {}
+  };
+
+  const formatTime = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const typeIcon = (type) => {
@@ -74,21 +100,32 @@ const NotificationBell = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-white shadow-2xl border border-slate-100 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full z-[1000] mt-2 w-80 rounded-2xl border border-slate-100 bg-white shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <p className="text-sm font-semibold text-slate-900">
               Notifications {unread > 0 && <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-600">{unread}</span>}
             </p>
-            {unread > 0 && (
-              <button
-                onClick={markAll}
-                className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
-              >
-                <CheckIcon className="h-3.5 w-3.5" />
-                Mark all read
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {unread > 0 && (
+                <button
+                  onClick={markAll}
+                  className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                >
+                  <CheckIcon className="h-3.5 w-3.5" />
+                  Mark read
+                </button>
+              )}
+              {notifications.length > 0 && (
+                <button
+                  onClick={clearAll}
+                  className="flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                >
+                  <TrashIcon className="h-3.5 w-3.5" />
+                  Clear all
+                </button>
+              )}
+            </div>
           </div>
 
           {/* List */}
@@ -109,7 +146,10 @@ const NotificationBell = () => {
                     <p className={`text-sm leading-snug ${n.is_read ? 'text-slate-600' : 'font-semibold text-slate-900'}`}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 truncate text-xs text-slate-400">{n.message}</p>
+                    <p className="mt-0.5 text-xs leading-5 text-slate-500">{n.message}</p>
+                    {formatTime(n.created_at) && (
+                      <p className="mt-1 text-[11px] font-medium text-slate-400">{formatTime(n.created_at)}</p>
+                    )}
                   </div>
                   {!n.is_read && <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}
                 </button>
