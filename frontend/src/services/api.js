@@ -49,11 +49,7 @@ export const api = axios.create({
 
 const withPayloadConfig = (data) =>
     data instanceof FormData
-        ? {
-              headers: {
-                  'Content-Type': 'multipart/form-data',
-              },
-          }
+        ? undefined
         : undefined;
 
 /**
