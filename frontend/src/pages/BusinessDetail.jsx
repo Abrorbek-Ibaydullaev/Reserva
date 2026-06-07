@@ -4,13 +4,13 @@ import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { appointmentService, scheduleService, userService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
+import BusinessMap from '../components/Map';
 import {
   ArrowLeftIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
-  ChevronRightIcon as ChevronRightMiniIcon,
   DevicePhoneMobileIcon,
   StarIcon,
   MapPinIcon,
@@ -512,23 +512,12 @@ const BusinessDetail = () => {
     return `${hours}:${minutes}`;
   };
 
-  const mapQuery = [
-    profileData.business_name || publicBusinessName,
-    businessAddressLine,
-  ]
-    .filter(Boolean)
-    .join(', ');
   const latitude = profileData.latitude ? Number(profileData.latitude) : null;
   const longitude = profileData.longitude ? Number(profileData.longitude) : null;
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude);
-  const routeTarget = hasCoordinates
-    ? `${latitude},${longitude}`
-    : mapQuery;
-  const yandexMapsUrl = hasCoordinates
-    ? `https://yandex.com/maps/?rtext=~${encodeURIComponent(routeTarget)}&rtt=auto`
-    : routeTarget
-      ? `https://yandex.com/maps/?rtext=~${encodeURIComponent(routeTarget)}&rtt=auto`
-      : null;
+  const openStreetMapUrl = hasCoordinates
+    ? `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=15/${latitude}/${longitude}`
+    : null;
 
   const handleAddServiceToDraft = (service) => {
     if (!isAuthenticated) {
@@ -699,62 +688,29 @@ const BusinessDetail = () => {
 
   const businessInfoSections = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm">
-      {yandexMapsUrl ? (
-        <a
-          href={yandexMapsUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="group block"
-          aria-label={`Open ${publicBusinessName || 'business'} in Yandex Maps`}
-        >
-          <div className="relative h-80 overflow-hidden bg-[linear-gradient(135deg,#eaf1e3_0%,#f5efe5_52%,#dbeaf5_100%)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(148,213,117,0.35),transparent_22%),radial-gradient(circle_at_82%_24%,rgba(255,220,130,0.28),transparent_18%),radial-gradient(circle_at_72%_78%,rgba(105,185,255,0.22),transparent_20%)]" />
-            <div className="absolute inset-0 opacity-60">
-              <div className="absolute left-[8%] top-[12%] h-[2px] w-[38%] rotate-[16deg] bg-white/80" />
-              <div className="absolute left-[12%] top-[28%] h-[2px] w-[58%] -rotate-[8deg] bg-white/75" />
-              <div className="absolute left-[22%] top-[46%] h-[2px] w-[52%] rotate-[10deg] bg-white/80" />
-              <div className="absolute left-[10%] top-[68%] h-[2px] w-[62%] -rotate-[6deg] bg-white/70" />
-              <div className="absolute left-[18%] top-[8%] h-[56%] w-[2px] rotate-[4deg] bg-white/65" />
-              <div className="absolute left-[58%] top-[14%] h-[64%] w-[2px] -rotate-[8deg] bg-white/65" />
-              <div className="absolute left-[78%] top-[6%] h-[72%] w-[2px] rotate-[6deg] bg-white/60" />
-            </div>
-            <div className="absolute left-1/2 top-9 -translate-x-1/2 rounded-full bg-white p-2 shadow-lg">
-              <MapPinIcon className="h-9 w-9 text-[#1f1f1f]" />
-            </div>
-            <div className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#2f95bb] shadow-sm">
-              Open in Yandex Maps
-            </div>
-            <div className="absolute inset-x-4 bottom-4 rounded-[22px] bg-white/95 p-4 shadow-lg backdrop-blur transition group-hover:bg-white">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-base font-semibold text-[#3a3a3a]">{publicBusinessName || ' '}</p>
-                  <p className="mt-1 text-[11px] leading-5 text-[#7a7a7a]">{businessAddressLine || ' '}</p>
-                </div>
-                <div className="rounded-full border border-gray-200 p-2 text-gray-400 transition group-hover:text-[#2f95bb]">
-                  <ChevronRightMiniIcon className="h-5 w-5" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-      ) : (
-        <div className="relative h-80 bg-[linear-gradient(135deg,#eaf1e3_0%,#f5efe5_52%,#dbeaf5_100%)]">
-          <div className="absolute left-1/2 top-9 -translate-x-1/2 rounded-full bg-white p-2 shadow-lg">
-            <MapPinIcon className="h-9 w-9 text-[#1f1f1f]" />
-          </div>
-          <div className="absolute inset-x-4 bottom-4 rounded-[22px] bg-white/95 p-4 shadow-lg backdrop-blur">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-base font-semibold text-[#3a3a3a]">{publicBusinessName || ' '}</p>
-                <p className="mt-1 text-[11px] leading-5 text-[#7a7a7a]">{businessAddressLine || ' '}</p>
-              </div>
-              <div className="rounded-full border border-gray-200 p-2 text-gray-400">
-                <ChevronRightMiniIcon className="h-5 w-5" />
-              </div>
-            </div>
-          </div>
+      <div className="relative overflow-hidden">
+        <BusinessMap
+          latitude={latitude}
+          longitude={longitude}
+          name={publicBusinessName}
+          address={businessAddressLine}
+        />
+        {openStreetMapUrl ? (
+          <a
+            href={openStreetMapUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#2f95bb] shadow-sm"
+            aria-label={`Open ${publicBusinessName || 'business'} in OpenStreetMap`}
+          >
+            Open map
+          </a>
+        ) : null}
+        <div className="border-t border-gray-100 bg-white p-4">
+          <p className="text-base font-semibold text-[#3a3a3a]">{publicBusinessName || ' '}</p>
+          <p className="mt-1 text-[11px] leading-5 text-[#7a7a7a]">{businessAddressLine || ' '}</p>
         </div>
-      )}
+      </div>
 
       <section className="border-t border-gray-100 px-6 py-7">
         <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d]">About Us</h3>
