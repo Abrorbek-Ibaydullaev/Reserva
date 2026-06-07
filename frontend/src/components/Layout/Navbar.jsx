@@ -17,7 +17,7 @@ import ThemeToggle from '../ThemeToggle';
 import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -76,6 +76,10 @@ const Navbar = () => {
     return publicNavigation;
   };
 
+  const authPlaceholder = (
+    <div aria-hidden="true" className="h-9 w-[148px] rounded-full bg-gray-100 dark:bg-gray-800" />
+  );
+
   return (
     <Disclosure as="nav" className="relative z-50 bg-white dark:bg-gray-900 shadow-lg">
       {({ open }) => (
@@ -110,13 +114,17 @@ const Navbar = () => {
                 {/* Theme Toggle */}
                 <ThemeToggle />
 
-                {/* Notifications */}
-                {isAuthenticated && (
-                  <NotificationBell />
-                )}
+                {authLoading ? (
+                  authPlaceholder
+                ) : (
+                  <>
+                    {/* Notifications */}
+                    {isAuthenticated && (
+                      <NotificationBell />
+                    )}
 
-                {/* User Menu */}
-                {isAuthenticated ? (
+                    {/* User Menu */}
+                    {isAuthenticated ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="flex items-center space-x-2 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
@@ -174,22 +182,24 @@ const Navbar = () => {
                         </Menu.Item>
                       </Menu.Items>
                     </Transition>
-                  </Menu>
-                ) : (
-                  <div className="flex items-center space-x-4">
-                    <Link
-                      to="/login"
-                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
+                    </Menu>
+                    ) : (
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        to="/login"
                         className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Sign Up
-                    </Link>
-                  </div>
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        to="/register"
+                          className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -222,7 +232,11 @@ const Navbar = () => {
               ))}
             </div>
             
-            {isAuthenticated ? (
+            {authLoading ? (
+              <div className="border-t border-gray-200 pb-3 pt-4">
+                <div aria-hidden="true" className="mx-4 h-10 w-40 rounded-full bg-gray-100 dark:bg-gray-800" />
+              </div>
+            ) : isAuthenticated ? (
               <div className="border-t border-gray-200 pb-3 pt-4">
                 <div className="flex min-w-0 items-center px-4">
                   {user?.profile_picture ? (

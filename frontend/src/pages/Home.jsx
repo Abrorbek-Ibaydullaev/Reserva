@@ -857,6 +857,37 @@ const Home = () => {
     </div>
   );
 
+  const AuthActionSlot = ({ dark }) => {
+    if (authLoading) {
+      return (
+        <div
+          aria-hidden="true"
+          className={`h-9 w-[168px] rounded-full ${dark ? 'bg-white/5' : 'bg-white/10'}`}
+        />
+      );
+    }
+
+    return isAuthenticated ? (
+      <UserMenu dark={dark} />
+    ) : (
+      <>
+        <Link to="/login" className={dark ? 'text-sm text-slate-400 hover:text-white transition' : 'text-sm font-medium text-white/80 hover:text-white transition'}>
+          Login
+        </Link>
+        <Link
+          to="/register"
+          className={
+            dark
+              ? 'rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
+              : 'rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
+          }
+        >
+          List your business
+        </Link>
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa]">
 
@@ -1048,20 +1079,14 @@ const Home = () => {
             </form>
 
             <div className="flex-shrink-0 flex items-center gap-3 ml-1">
-              {isAuthenticated
-                ? <UserMenu dark />
-                : <>
-                    <Link to="/login" className="text-sm text-slate-400 hover:text-white transition">Login</Link>
-                    <Link to="/register" className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition">List your business</Link>
-                  </>
-              }
+              <AuthActionSlot dark />
             </div>
           </div>
         </div>
       )}
 
       {/* ── HERO — ~65vh, NOT full screen ──────────────────────────────── */}
-      <section className="relative h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
+      <section className="relative isolate h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
 
         {/* Video */}
         {!videoErr && (
@@ -1076,15 +1101,7 @@ const Home = () => {
         <div className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <Link to="/" className="text-2xl font-extrabold text-white tracking-tight">Reserva</Link>
           <div className="flex items-center gap-3">
-            {isAuthenticated
-              ? <UserMenu />
-              : <>
-                  <Link to="/login" className="text-sm font-medium text-white/80 hover:text-white transition">Login</Link>
-                  <Link to="/register" className="rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm">
-                    List your business
-                  </Link>
-                </>
-            }
+            <AuthActionSlot />
           </div>
         </div>
 
@@ -1246,7 +1263,7 @@ const Home = () => {
       </div>
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      {!isAuthenticated && (
+      {!authLoading && !isAuthenticated && (
         <section className="bg-[#1a1a2e] px-6 py-14 text-center">
           <h2 className="mb-3 text-2xl font-extrabold text-white">Add your business to Reserva</h2>
           <p className="mb-8 text-slate-400">Connect online booking and grow your client base. Free to start.</p>
