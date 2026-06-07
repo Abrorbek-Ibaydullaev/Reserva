@@ -13,14 +13,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const BusinessMap = ({ latitude, longitude, name, address }) => {
+const BusinessMap = ({ latitude, longitude, name, address, height = 300 }) => {
   const lat = Number(latitude);
   const lng = Number(longitude);
   const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
 
   if (!hasLocation) {
     return (
-      <div className="flex h-[300px] items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
+      <div className={`flex h-[${height}px] items-center justify-center bg-slate-100 text-sm font-medium text-slate-500`}>
         Location not available
       </div>
     );
@@ -31,8 +31,9 @@ const BusinessMap = ({ latitude, longitude, name, address }) => {
       center={[lat, lng]}
       zoom={15}
       scrollWheelZoom={false}
-      className="h-[300px] w-full"
-      style={{ height: 300, width: '100%' }}
+      zoomControl={false}
+      className="w-full"
+      style={{ height, width: '100%' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
