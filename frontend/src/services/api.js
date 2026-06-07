@@ -264,6 +264,7 @@ export const scheduleService = {
 export const userService = {
     getMe: () => api.get('/users/me/'),
     updateMe: (data) => api.patch('/users/me/', data, withPayloadConfig(data)),
+    changeMyPassword: (data) => api.patch('/users/me/password/', data),
     getProfile: () => api.get('/users/profile/'),
     updateProfile: (data) => api.patch('/users/profile/', data, withPayloadConfig(data)),
     getGalleryImages: () => api.get('/users/gallery/'),

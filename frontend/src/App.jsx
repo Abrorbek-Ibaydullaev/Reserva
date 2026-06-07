@@ -20,6 +20,7 @@ import Services from './pages/Services';
 import BusinessDetail from './pages/BusinessDetail';
 import BookAppointment from './pages/BookAppointment';
 import CustomerProfile from './pages/CustomerProfile';
+import Settings from './pages/Settings';
 import BusinessProfile from './pages/BusinessProfile';
 import EmployeeProfile from './pages/EmployeeProfile';
 import MyAppointments from './pages/MyAppointments';
@@ -168,6 +169,14 @@ function App() {
                       element={
                         <ProtectedRoute allowedUserTypes={['customer']}>
                           <CustomerProfile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/settings"
+                      element={
+                        <ProtectedRoute allowedUserTypes={['customer', 'business_owner', 'employee']}>
+                          <Settings />
                         </ProtectedRoute>
                       }
                     />

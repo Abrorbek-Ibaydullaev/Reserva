@@ -43,6 +43,7 @@ const Navbar = () => {
   const businessNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
     { name: 'My Appointments', href: '/appointments', icon: ClipboardDocumentListIcon },
     { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
     { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
@@ -52,6 +53,7 @@ const Navbar = () => {
     { name: 'Dashboard', href: '/employee/dashboard', icon: HomeIcon },
     { name: 'My Appointments', href: '/employee/appointments', icon: CalendarIcon },
     { name: 'Profile', href: '/profile', icon: UserCircleIcon },
+    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
   ];
 
   const handleLogout = () => {
