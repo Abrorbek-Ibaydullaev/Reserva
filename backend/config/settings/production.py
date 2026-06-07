@@ -300,4 +300,4 @@ FRONTEND_URL = _env('FRONTEND_URL', required=True)
 # ---------------------------------------------------------------------------
 # Google reCAPTCHA v2
 # ---------------------------------------------------------------------------
-RECAPTCHA_SECRET_KEY = _env('RECAPTCHA_SECRET_KEY', required=True)
+RECAPTCHA_SECRET_KEY = _env('RECAPTCHA_SECRET_KEY', required=False)
