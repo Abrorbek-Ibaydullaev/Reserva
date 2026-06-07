@@ -241,7 +241,7 @@ class BusinessListView(generics.ListAPIView):
     search_fields = ['first_name', 'last_name', 'email']
 
     def get_queryset(self):
-        return User.objects.filter(user_type='business_owner').annotate(
+        queryset = User.objects.filter(user_type='business_owner').annotate(
             services_count=models.Count('services', filter=models.Q(services__is_active=True)),
             avg_rating=Avg('services__reviews__rating'),
             review_count=Count('services__reviews', distinct=True),
@@ -249,6 +249,10 @@ class BusinessListView(generics.ListAPIView):
             models.Prefetch('services', queryset=Service.objects.filter(is_active=True), to_attr='services_active'),
             'gallery_images',
         )
+        city = self.request.query_params.get('city')
+        if city:
+            queryset = queryset.filter(profile__city__icontains=city)
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

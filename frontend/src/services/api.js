@@ -277,7 +277,7 @@ export const userService = {
         api.patch(`/notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
         api.patch('/notifications/read-all/'),
-    getBusinesses: () => api.get('/users/businesses/'),
+    getBusinesses: (params) => api.get('/users/businesses/', { params }),
 };
 
 export default api;

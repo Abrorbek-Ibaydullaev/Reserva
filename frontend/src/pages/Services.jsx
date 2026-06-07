@@ -38,11 +38,11 @@ const Services = () => {
 
   useEffect(() => {
     userService
-      .getBusinesses()
+      .getBusinesses(cityFilter ? { city: cityFilter } : undefined)
       .then((r) => setBusinesses(r.data.results || r.data || []))
       .catch(() => setError('Failed to load businesses. Please try again.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [cityFilter]);
 
   const categories = useMemo(() => {
     const set = new Set();

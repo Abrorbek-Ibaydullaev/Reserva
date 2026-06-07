@@ -159,8 +159,28 @@ const UZ_CITIES = [
   "Urganch","Navoiy","Guliston","Muborak","Chirchiq",
 ];
 
+const getCityFromCoordinates = async (latitude, longitude) => {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&format=json`
+  );
+
+  if (!response.ok) {
+    throw new Error('Reverse geocoding failed');
+  }
+
+  const data = await response.json();
+  return (
+    data.address?.city ||
+    data.address?.town ||
+    data.address?.village ||
+    data.address?.municipality ||
+    data.address?.county ||
+    ''
+  );
+};
+
 // ── City Picker Modal ─────────────────────────────────────────────────────────
-const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
+const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation }) => {
   const [q, setQ] = useState('');
   const inputRef = useRef(null);
 
@@ -174,17 +194,6 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
   const filtered = q.trim()
     ? allCities.filter((c) => c.toLowerCase().includes(q.toLowerCase()))
     : allCities;
-
-  const useLocation = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // Would reverse-geocode in production; for now pick from list
-        inputRef.current?.focus();
-      },
-      () => {}
-    );
-  };
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4" onClick={onClose}>
@@ -207,7 +216,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [] }) => {
         <div className="p-4">
           {/* Use my location */}
           <button
-            onClick={useLocation}
+            onClick={onDetectLocation}
             className="mb-4 flex w-full items-center gap-3 rounded-xl border border-[#2eadd0]/30 bg-[#f0fafb] px-4 py-3 text-sm font-semibold text-[#2eadd0] hover:bg-[#e4f6f9] transition"
           >
             <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -471,6 +480,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [cityModal, setCityModal] = useState(null); // pending category name
   const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
+  const [locationStatus, setLocationStatus] = useState('idle');
   const [showWhereDrop, setShowWhereDrop] = useState(false);
   const [showSearchDrop, setShowSearchDrop] = useState(false);
   const [recentCities] = useState(() => {
@@ -534,9 +544,12 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    userService.getBusinesses()
+    userService.getBusinesses(savedCity ? { city: savedCity } : undefined)
       .then((r) => setBusinesses(r.data.results || r.data || []))
       .catch(() => {});
+  }, [savedCity]);
+
+  useEffect(() => {
     serviceService.getCategories()
       .then((r) => {
         const fromApi = r.data.results || r.data || [];
@@ -552,6 +565,37 @@ const Home = () => {
         setCategories(HARDCODED_EXTRAS.map((name, i) => ({ id: `extra-${i}`, name })));
       });
   }, []);
+
+  useEffect(() => {
+    if (savedCity || !navigator.geolocation) {
+      if (!savedCity) setLocationStatus('manual');
+      return;
+    }
+
+    setLocationStatus('detecting');
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const city = await getCityFromCoordinates(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          if (city) {
+            setSavedCity(city);
+            setWhere(city);
+            sessionStorage.setItem('reserva_user_city', city);
+            setLocationStatus('detected');
+          } else {
+            setLocationStatus('manual');
+          }
+        } catch {
+          setLocationStatus('manual');
+        }
+      },
+      () => setLocationStatus('manual'),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    );
+  }, [savedCity]);
 
   // Group businesses by category
   const grouped = useMemo(() => {
@@ -642,19 +686,42 @@ const Home = () => {
 
   const selectCity = (city) => {
     setWhere(city);
+    setSavedCity(city);
+    sessionStorage.setItem('reserva_user_city', city);
     setShowWhereDrop(false);
     const updated = [city, ...recentCities.filter((c) => c !== city)].slice(0, 5);
     localStorage.setItem('reserva_recent_cities', JSON.stringify(updated));
   };
 
   const enableLocation = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      setLocationStatus('manual');
+      return;
+    }
+    setLocationStatus('detecting');
     navigator.geolocation.getCurrentPosition(
-      () => {
-        // In production: reverse-geocode coords to city name
+      async (position) => {
+        try {
+          const city = await getCityFromCoordinates(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          if (city) {
+            selectCity(city);
+            setLocationStatus('detected');
+          } else {
+            setLocationStatus('manual');
+          }
+        } catch {
+          setLocationStatus('manual');
+        }
         setShowWhereDrop(false);
       },
-      () => setShowWhereDrop(false)
+      () => {
+        setLocationStatus('manual');
+        setShowWhereDrop(false);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
   };
 
@@ -670,9 +737,13 @@ const Home = () => {
   // City selected in modal
   const handleCitySelect = (city) => {
     setSavedCity(city);
+    setWhere(city);
     sessionStorage.setItem('reserva_user_city', city);
+    const pendingCategory = cityModal;
     setCityModal(null);
-    navigate(`/services?category=${encodeURIComponent(cityModal)}&city=${encodeURIComponent(city)}`);
+    if (pendingCategory && pendingCategory !== 'search') {
+      navigate(`/services?category=${encodeURIComponent(pendingCategory)}&city=${encodeURIComponent(city)}`);
+    }
   };
 
   const doSearch = (e) => {
@@ -1052,6 +1123,25 @@ const Home = () => {
                 Search
               </button>
             </div>
+            <div className="mt-3 flex flex-col items-center justify-center gap-2 text-sm sm:flex-row">
+              {savedCity ? (
+                <div className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">
+                  Searching in {savedCity}
+                  <button type="button" onClick={() => setCityModal('search')} className="ml-2 underline">
+                    Change
+                  </button>
+                </div>
+              ) : locationStatus === 'detecting' ? (
+                <p className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">Detecting your city...</p>
+              ) : (
+                <input
+                  value={where}
+                  onChange={(event) => setWhere(event.target.value)}
+                  placeholder="Enter your city to find services near you"
+                  className="w-full rounded-full border border-white/30 bg-white/95 px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 sm:w-80"
+                />
+              )}
+            </div>
           </form>
         </div>
 
@@ -1183,6 +1273,7 @@ const Home = () => {
         <CityPickerModal
           knownCities={allCities}
           onSelect={handleCitySelect}
+          onDetectLocation={enableLocation}
           onClose={() => setCityModal(null)}
         />
       )}
