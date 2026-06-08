@@ -31,6 +31,9 @@ SECRET_KEY = _env('SECRET_KEY', required=True)
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    'api.reserva.services',
+    'reserva-production.up.railway.app',
+] + [
     host.strip()
     for host in _env('ALLOWED_HOSTS', '').split(',')
     if host.strip()
@@ -248,6 +251,10 @@ def _normalize_origin(origin):
     return origin.strip().rstrip('/')
 
 CORS_ALLOWED_ORIGINS = [
+    'https://reserva.services',
+    'https://www.reserva.services',
+    'https://reserva-plum.vercel.app',
+] + [
     _normalize_origin(origin)
     for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
@@ -257,6 +264,9 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.netlify\.app$",
 ]
 CSRF_TRUSTED_ORIGINS = [
+    _normalize_origin('https://reserva.services'),
+    _normalize_origin('https://www.reserva.services'),
+    _normalize_origin('https://api.reserva.services'),
     _normalize_origin('https://reserva-production.up.railway.app'),
     _normalize_origin('https://reserva-plum.vercel.app'),
 ]
