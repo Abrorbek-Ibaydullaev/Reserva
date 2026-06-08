@@ -8,7 +8,7 @@ const rawApiBaseUrl =
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
-        ? 'https://reserva-production.up.railway.app/api'
+        ? 'https://api.reserva.services/api'
         : 'http://localhost:8000/api');
 const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
 const GALLERY_UPLOAD_TIMEOUT_MS = 60000;

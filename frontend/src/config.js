@@ -3,7 +3,7 @@ const rawApiBaseUrl =
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
-        ? 'https://reserva-production.up.railway.app/api'
+        ? 'https://api.reserva.services/api'
         : 'http://localhost:8000/api');
 export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
 export const API_TIMEOUT = 30000;

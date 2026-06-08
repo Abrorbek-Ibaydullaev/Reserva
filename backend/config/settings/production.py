@@ -32,7 +32,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'api.reserva.services',
-    'reserva-production.up.railway.app',
+    'reserva-production.up.railway.app',  # fallback during DNS transition
 ] + [
     host.strip()
     for host in _env('ALLOWED_HOSTS', '').split(',')
@@ -253,7 +253,7 @@ def _normalize_origin(origin):
 CORS_ALLOWED_ORIGINS = [
     'https://reserva.services',
     'https://www.reserva.services',
-    'https://reserva-plum.vercel.app',
+    'https://reserva-plum.vercel.app',  # fallback during DNS transition
 ] + [
     _normalize_origin(origin)
     for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
@@ -267,8 +267,8 @@ CSRF_TRUSTED_ORIGINS = [
     _normalize_origin('https://reserva.services'),
     _normalize_origin('https://www.reserva.services'),
     _normalize_origin('https://api.reserva.services'),
-    _normalize_origin('https://reserva-production.up.railway.app'),
-    _normalize_origin('https://reserva-plum.vercel.app'),
+    _normalize_origin('https://reserva-production.up.railway.app'),  # fallback during DNS transition
+    _normalize_origin('https://reserva-plum.vercel.app'),  # fallback during DNS transition
 ]
 
 # ---------------------------------------------------------------------------
@@ -311,7 +311,7 @@ TELEGRAM_BOT_USERNAME = _env('TELEGRAM_BOT_USERNAME', '')
 # ---------------------------------------------------------------------------
 # Frontend URL (used in Telegram deep-links)
 # ---------------------------------------------------------------------------
-FRONTEND_URL = _env('FRONTEND_URL', 'https://reserva-plum.vercel.app')
+FRONTEND_URL = _env('FRONTEND_URL', 'https://reserva.services')
 
 # ---------------------------------------------------------------------------
 # Google reCAPTCHA v2
