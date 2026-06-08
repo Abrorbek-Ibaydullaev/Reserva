@@ -184,8 +184,12 @@ export const authService = {
         return api.post('/auth/forgot-password/', { email });
     },
 
-    resetPassword: async ({ token, new_password }) => {
-        return api.post('/auth/reset-password/', { token, new_password });
+    verifyOTP: async (email, otp_code) => {
+        return api.post('/auth/verify-otp/', { email, otp_code });
+    },
+
+    resetPassword: async ({ reset_token, password }) => {
+        return api.post('/auth/reset-password/', { reset_token, password });
     },
 };
 

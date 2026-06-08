@@ -186,3 +186,42 @@ class PasswordResetToken(models.Model):
 
     def __str__(self):
         return f"Password reset for {self.user.email}"
+
+
+class PasswordResetOTP(models.Model):
+    """Stores a SHA-256-hashed 6-digit OTP for the email-based password reset flow.
+
+    Plain-text OTPs are never persisted; only the hex digest is stored.
+    A record is deleted as soon as it is successfully verified or superseded.
+    """
+
+    email = models.CharField(max_length=255, db_index=True)
+    otp_hash = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    attempt_count = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"OTP record for {self.email}"
+
+
+class PasswordResetOTPToken(models.Model):
+    """Short-lived bearer token issued after a successful OTP verification.
+
+    The token value is never stored in plain text — only the SHA-256 hex digest.
+    The client holds the raw token and presents it to the /reset-password/ endpoint.
+    """
+
+    email = models.CharField(max_length=255)
+    token_hash = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"OTP reset token for {self.email}"
