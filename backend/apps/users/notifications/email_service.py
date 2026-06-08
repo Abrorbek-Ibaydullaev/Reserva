@@ -2,9 +2,13 @@
 
 Uses Django's ``send_mail`` so the backend (SMTP vs. console) is controlled
 entirely by settings — no credentials are hard-coded here.
+
+Email dispatch runs in a daemon thread so the HTTP response is returned
+immediately and the Gunicorn worker is never blocked by the SMTP handshake.
 """
 
 import logging
+import threading
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -124,14 +128,18 @@ def send_password_reset_otp(to_email: str, otp_code: str) -> None:
 </body>
 </html>"""
 
-    try:
-        send_mail(
-            subject=subject,
-            message=plain_message,
-            from_email=from_email,
-            recipient_list=[to_email],
-            html_message=html_message,
-            fail_silently=True,
-        )
-    except Exception as exc:
-        logger.error("Failed to send password reset email to %s: %s", to_email, exc)
+    def _send() -> None:
+        try:
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+        except Exception:
+            logger.exception("Failed to send password reset OTP email to %s", to_email)
+
+    thread = threading.Thread(target=_send, daemon=True)
+    thread.start()
