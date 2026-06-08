@@ -456,51 +456,11 @@ const BizCard = ({ biz }) => {
   );
 };
 
-// ── Home ──────────────────────────────────────────────────────────────────────
-const Home = () => {
-  const { isAuthenticated, user, logout, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect staff/owners to their own portal — home page is customer-facing only
-  useEffect(() => {
-    if (authLoading) return;
-    if (user?.user_type === 'business_owner') navigate('/dashboard', { replace: true });
-    if (user?.user_type === 'employee') navigate('/employee/dashboard', { replace: true });
-  }, [user, authLoading, navigate]);
-
-  const [search, setSearch] = useState('');
-  const [where, setWhere] = useState('');
-  const [when, setWhen] = useState('');
-  const [showCal, setShowCal] = useState(false);
-  // Typewriter state
+// ── Typewriter — isolated so its state never re-renders the parent ────────────
+const TypewriterText = () => {
   const [tw, setTw] = useState({ l1: '', l2: '', phase: 'typing1', idx: 0 });
   const [cursorOn, setCursorOn] = useState(true);
-  const [sticky, setSticky] = useState(false);
-  const [stickyIn, setStickyIn] = useState(false);
-  const [businesses, setBusinesses] = useState([]);
-  const [videoErr, setVideoErr] = useState(false);
-  const [userMenu, setUserMenu] = useState(false);
-  const catScrollRef = useRef(null);
-  const [categories, setCategories] = useState([]);
-  const [cityModal, setCityModal] = useState(null); // pending category name
-  const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
-  const [locationStatus, setLocationStatus] = useState('idle');
-  const [showWhereDrop, setShowWhereDrop] = useState(false);
-  const [showSearchDrop, setShowSearchDrop] = useState(false);
-  const [recentCities] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('reserva_recent_cities') || '[]'); }
-    catch { return []; }
-  });
-  const [recentSearches] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('reserva_recent_searches') || '[]'); }
-    catch { return []; }
-  });
 
-  const sentinelRef = useRef(null);
-  const whereRef = useRef(null);
-  const searchRef = useRef(null);
-
-  // Typewriter engine
   useEffect(() => {
     const { l1, l2, phase, idx } = tw;
     const target = HEADLINES[idx];
@@ -529,11 +489,70 @@ const Home = () => {
     return () => clearTimeout(t);
   }, [tw]);
 
-  // Cursor blink
   useEffect(() => {
     const id = setInterval(() => setCursorOn((v) => !v), 530);
     return () => clearInterval(id);
   }, []);
+
+  return (
+    <h1 className="mb-4 min-h-[5rem] text-2xl font-extrabold leading-tight text-white sm:min-h-[6rem] sm:text-4xl md:text-5xl">
+      <span>
+        {tw.l1}
+        {(tw.phase === 'typing1' || (tw.phase === 'erasing' && tw.l2 === '')) && (
+          <span className="ml-0.5 font-thin text-white/80" style={{ opacity: cursorOn ? 1 : 0 }}>|</span>
+        )}
+      </span>
+      <br />
+      <span className="text-blue-300">
+        {tw.l2}
+        {(tw.phase === 'typing2' || (tw.phase === 'erasing' && tw.l2.length > 0)) && (
+          <span className="ml-0.5 font-thin text-blue-200/80" style={{ opacity: cursorOn ? 1 : 0 }}>|</span>
+        )}
+      </span>
+    </h1>
+  );
+};
+
+// ── Home ──────────────────────────────────────────────────────────────────────
+const Home = () => {
+  const { isAuthenticated, user, logout, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect staff/owners to their own portal — home page is customer-facing only
+  useEffect(() => {
+    if (authLoading) return;
+    if (user?.user_type === 'business_owner') navigate('/dashboard', { replace: true });
+    if (user?.user_type === 'employee') navigate('/employee/dashboard', { replace: true });
+  }, [user, authLoading, navigate]);
+
+  const [search, setSearch] = useState('');
+  const [where, setWhere] = useState('');
+  const [when, setWhen] = useState('');
+  const [showCal, setShowCal] = useState(false);
+  const [sticky, setSticky] = useState(false);
+  const [stickyIn, setStickyIn] = useState(false);
+  const [businesses, setBusinesses] = useState([]);
+  const [videoErr, setVideoErr] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
+  const catScrollRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [cityModal, setCityModal] = useState(null); // pending category name
+  const [savedCity, setSavedCity] = useState(() => sessionStorage.getItem('reserva_user_city') || '');
+  const [locationStatus, setLocationStatus] = useState('idle');
+  const [showWhereDrop, setShowWhereDrop] = useState(false);
+  const [showSearchDrop, setShowSearchDrop] = useState(false);
+  const [recentCities] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('reserva_recent_cities') || '[]'); }
+    catch { return []; }
+  });
+  const [recentSearches] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('reserva_recent_searches') || '[]'); }
+    catch { return []; }
+  });
+
+  const sentinelRef = useRef(null);
+  const whereRef = useRef(null);
+  const searchRef = useRef(null);
 
   // Sticky bar via IntersectionObserver
   useEffect(() => {
@@ -1090,7 +1109,7 @@ const Home = () => {
       )}
 
       {/* ── HERO — ~65vh, NOT full screen ──────────────────────────────── */}
-      <section className="relative isolate h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
+      <section className="relative isolate z-0 h-[65vh] min-h-[300px] max-h-[350px] flex flex-col overflow-hidden">
 
         {/* Video */}
         {!videoErr && (
@@ -1099,7 +1118,7 @@ const Home = () => {
           </video>
         )}
         {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70 pointer-events-none" />
 
         {/* Navbar */}
         <div className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
@@ -1111,23 +1130,7 @@ const Home = () => {
 
         {/* Centre content */}
         <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-4 text-center">
-          <h1 className="mb-4 min-h-[5rem] text-2xl font-extrabold leading-tight text-white sm:min-h-[6rem] sm:text-4xl md:text-5xl">
-            {/* line 1 */}
-            <span>
-              {tw.l1}
-              {(tw.phase === 'typing1' || (tw.phase === 'erasing' && tw.l2 === '')) && (
-                <span className="ml-0.5 font-thin text-white/80" style={{ opacity: cursorOn ? 1 : 0 }}>|</span>
-              )}
-            </span>
-            <br />
-            {/* line 2 — blue accent */}
-            <span className="text-blue-300">
-              {tw.l2}
-              {(tw.phase === 'typing2' || (tw.phase === 'erasing' && tw.l2.length > 0)) && (
-                <span className="ml-0.5 font-thin text-blue-200/80" style={{ opacity: cursorOn ? 1 : 0 }}>|</span>
-              )}
-            </span>
-          </h1>
+          <TypewriterText />
           <p className="mb-7 px-2 text-sm text-white/70 sm:text-base">Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering</p>
 
           {/* Search bar — single field like Booksy */}

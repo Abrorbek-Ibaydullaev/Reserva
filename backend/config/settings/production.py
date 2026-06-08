@@ -295,15 +295,15 @@ DEFAULT_FROM_EMAIL = _env('DEFAULT_FROM_EMAIL', 'noreply@reserva.uz')
 # ---------------------------------------------------------------------------
 # Telegram Bot
 # ---------------------------------------------------------------------------
-TELEGRAM_BOT_TOKEN = _env('TELEGRAM_BOT_TOKEN', required=True)
+TELEGRAM_BOT_TOKEN = _env('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_BOT_USERNAME = _env('TELEGRAM_BOT_USERNAME', '')
 
 # ---------------------------------------------------------------------------
 # Frontend URL (used in Telegram deep-links)
 # ---------------------------------------------------------------------------
-FRONTEND_URL = _env('FRONTEND_URL', required=True)
+FRONTEND_URL = _env('FRONTEND_URL', 'https://reserva-plum.vercel.app')
 
 # ---------------------------------------------------------------------------
 # Google reCAPTCHA v2
 # ---------------------------------------------------------------------------
-RECAPTCHA_SECRET_KEY = _env('RECAPTCHA_SECRET_KEY', required=True)
+RECAPTCHA_SECRET_KEY = _env('RECAPTCHA_SECRET_KEY', '')
