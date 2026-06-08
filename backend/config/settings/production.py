@@ -247,18 +247,26 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
-def _normalize_origin(origin):
+def _normalize_origin(origin: str) -> str:
     return origin.strip().rstrip('/')
 
-CORS_ALLOWED_ORIGINS = [
+# Hardcoded safe defaults + any extra origins from the Railway env var
+# (comma-separated, whitespace-tolerant).
+_CORS_DEFAULTS = [
     'https://reserva.services',
     'https://www.reserva.services',
     'https://reserva-plum.vercel.app',  # fallback during DNS transition
-] + [
-    _normalize_origin(origin)
-    for origin in _env('CORS_ALLOWED_ORIGINS', '').split(',')
-    if origin.strip()
 ]
+_CORS_FROM_ENV = [
+    _normalize_origin(o)
+    for o in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+    if o.strip()
+]
+# dict.fromkeys preserves order and removes duplicates
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(
+    [_normalize_origin(o) for o in _CORS_DEFAULTS] + _CORS_FROM_ENV
+))
+
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",
     r"^https://.*\.netlify\.app$",
