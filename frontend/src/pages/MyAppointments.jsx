@@ -324,16 +324,16 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50">
-            <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
+            <CalendarDaysIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-semibold text-slate-900">{a.service_details?.name}</p>
-            <p className="truncate text-xs text-slate-500">{displayName}</p>
+            <p className="truncate font-semibold text-slate-900 dark:text-white">{a.service_details?.name}</p>
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{displayName}</p>
           </div>
         </div>
         <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
@@ -341,7 +341,7 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
         </span>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
         <span className="flex items-center gap-1">
           <CalendarDaysIcon className="h-3.5 w-3.5 flex-shrink-0" />
           {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -350,7 +350,7 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
           <ClockIcon className="h-3.5 w-3.5 flex-shrink-0" />
           {fmtTime(a.start_time)} · {a.duration} min
         </span>
-        <span className="ml-auto font-semibold text-slate-700">
+        <span className="ml-auto font-semibold text-slate-700 dark:text-slate-300">
           ${Number(a.total_amount || 0).toFixed(2)}
         </span>
       </div>
@@ -439,12 +439,12 @@ const MyAppointments = () => {
   const pageTitle = isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments';
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white px-4 py-6">
+      <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-6">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{pageTitle}</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {isBusinessOwner
               ? 'Customer bookings for your services'
               : isEmployee
@@ -453,13 +453,13 @@ const MyAppointments = () => {
           </p>
 
           {/* Tabs */}
-          <div className="mt-5 flex gap-1 rounded-xl bg-slate-100 p-1">
+          <div className="mt-5 flex gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
             {TABS.map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${
-                  tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  tab === t ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
               >
                 {t}
@@ -479,11 +479,11 @@ const MyAppointments = () => {
             <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
           </div>
         ) : buckets[tab].length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-10 text-center">
             <p className="text-3xl mb-3">
               {tab === 'Upcoming' ? '📅' : tab === 'Past' ? '🗂️' : '❌'}
             </p>
-            <h2 className="text-base font-semibold text-slate-900">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white">
               No {tab.toLowerCase()} appointments
             </h2>
             {tab === 'Upcoming' && !isBusinessOwner && !isEmployee && (

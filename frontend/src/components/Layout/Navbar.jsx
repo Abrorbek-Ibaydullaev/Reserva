@@ -250,10 +250,10 @@ const Navbar = () => {
                     <UserCircleIcon className="h-10 w-10 text-gray-400" />
                   )}
                   <div className="ml-3 min-w-0">
-                    <div className="truncate text-base font-medium text-gray-800">
+                    <div className="truncate text-base font-medium text-gray-800 dark:text-gray-100">
                       {user?.first_name} {user?.last_name}
                     </div>
-                    <div className="truncate text-sm font-medium text-gray-500">
+                    <div className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
                       {user?.email}
                     </div>
                   </div>
@@ -264,7 +264,7 @@ const Navbar = () => {
                       key={item.name}
                       as={Link}
                       to={item.href}
-                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100"
                     >
                       {item.name}
                     </Disclosure.Button>
@@ -272,26 +272,26 @@ const Navbar = () => {
                   <Disclosure.Button
                     as="button"
                     onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100"
                   >
                     Logout
                   </Disclosure.Button>
                 </div>
               </div>
             ) : (
-              <div className="border-t border-gray-200 pb-3 pt-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
                 <div className="space-y-1">
                   <Disclosure.Button
                     as={Link}
                     to="/login"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100"
                   >
                     Login
                   </Disclosure.Button>
                   <Disclosure.Button
                     as={Link}
                     to="/register"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100"
                   >
                     Sign Up
                   </Disclosure.Button>

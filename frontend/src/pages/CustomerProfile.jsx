@@ -16,14 +16,14 @@ import {
 
 const Field = ({ label, children }) => (
   <div>
-    <label className="mb-1.5 block text-sm font-medium text-slate-700">{label}</label>
+    <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{label}</label>
     {children}
   </div>
 );
 
 const TextInput = (props) => (
   <input
-    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
     {...props}
   />
 );
@@ -146,7 +146,7 @@ const CustomerProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-[#0f1118]">
         <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
       </div>
     );
@@ -156,12 +156,12 @@ const CustomerProfile = () => {
   const initials = [formData.first_name[0], formData.last_name[0]].filter(Boolean).join('').toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Top bar */}
-      <div className="border-b border-slate-200 bg-white px-4 py-5">
+      <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-5">
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage your personal information and contact details</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Profile</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Manage your personal information and contact details</p>
         </div>
       </div>
 
@@ -170,15 +170,15 @@ const CustomerProfile = () => {
 
           {/* Left — avatar card */}
           <div className="space-y-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               {/* Avatar */}
               <div className="flex flex-col items-center">
                 <div className="relative mb-4">
-                  <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-md">
+                  <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white dark:border-slate-700 shadow-md">
                     {avatarPreview ? (
                       <img src={avatarPreview} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-blue-100 text-2xl font-bold text-blue-600">
+                      <div className="flex h-full w-full items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-2xl font-bold text-blue-600 dark:text-blue-300">
                         {initials}
                       </div>
                     )}
@@ -198,27 +198,27 @@ const CustomerProfile = () => {
                     onChange={handleAvatarChange}
                   />
                 </div>
-                <p className="text-base font-bold text-slate-900">{displayName}</p>
-                <p className="text-xs text-slate-500">Customer</p>
+                <p className="text-base font-bold text-slate-900 dark:text-white">{displayName}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Customer</p>
                 {avatarFile && (
-                  <p className="mt-2 rounded-full bg-blue-50 px-3 py-0.5 text-xs text-blue-600">
+                  <p className="mt-2 rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-0.5 text-xs text-blue-600 dark:text-blue-300">
                     New photo selected
                   </p>
                 )}
               </div>
 
               {/* Info summary */}
-              <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <EnvelopeIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+              <div className="mt-5 space-y-3 border-t border-slate-100 dark:border-slate-700 pt-5">
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                  <EnvelopeIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
                   <span className="truncate">{formData.email || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <PhoneIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                  <PhoneIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
                   <span>{formData.phone_number || 'Not set'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <MapPinIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                  <MapPinIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
                   <span className="truncate">
                     {[formData.city, formData.country].filter(Boolean).join(', ') || 'Not set'}
                   </span>
@@ -229,32 +229,32 @@ const CustomerProfile = () => {
             {/* Appointments quick link */}
             <Link
               to="/appointments"
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
+              className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-4 shadow-sm hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
-                  <CalendarDaysIcon className="h-5 w-5 text-blue-600" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
+                  <CalendarDaysIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">My Appointments</p>
-                  <p className="text-xs text-slate-500">View upcoming & past</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">My Appointments</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">View upcoming & past</p>
                 </div>
               </div>
-              <ArrowRightIcon className="h-4 w-4 text-slate-400" />
+              <ArrowRightIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             </Link>
 
             {/* Telegram connect card */}
-            <div className={`rounded-2xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+            <div className={`rounded-2xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}>
               <div className="flex items-center gap-3 mb-3">
                 {/* Telegram logo */}
-                <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
+                <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-[#e8f4fb] dark:bg-[#1a2e40]'}`}>
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.24 13.4l-2.948-.924c-.642-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.836.959z"/>
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {telegram.connected ? 'Connected — you\'ll receive booking alerts' : 'Get booking alerts on Telegram'}
                   </p>
                 </div>
@@ -268,7 +268,7 @@ const CustomerProfile = () => {
                   type="button"
                   onClick={handleDisconnectTelegram}
                   disabled={disconnecting}
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60 transition-colors"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 py-2 text-xs font-semibold text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-60 transition-colors"
                 >
                   {disconnecting ? 'Disconnecting…' : 'Disconnect'}
                 </button>
@@ -283,14 +283,14 @@ const CustomerProfile = () => {
                   Connect Telegram
                 </a>
               ) : (
-                <p className="text-center text-xs text-slate-400">Bot not configured yet</p>
+                <p className="text-center text-xs text-slate-400 dark:text-slate-500">Bot not configured yet</p>
               )}
             </div>
           </div>
 
           {/* Right — edit form */}
-          <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-5 text-base font-bold text-slate-900">Personal Information</h2>
+          <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+            <h2 className="mb-5 text-base font-bold text-slate-900 dark:text-white">Personal Information</h2>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -310,8 +310,8 @@ const CustomerProfile = () => {
                 <TextInput type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="+998 90 000 00 00" />
               </Field>
 
-              <div className="border-t border-slate-100 pt-4">
-                <h3 className="mb-4 text-sm font-semibold text-slate-700">Address</h3>
+              <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
+                <h3 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Address</h3>
                 <div className="space-y-4">
                   <Field label="Street address">
                     <TextInput name="address" value={formData.address} onChange={handleChange} placeholder="Street address" />

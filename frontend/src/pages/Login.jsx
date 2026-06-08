@@ -76,7 +76,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
         <Link to="/" className="flex items-center gap-3">
@@ -119,15 +119,15 @@ const Login = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">Reserva</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">Reserva</span>
           </Link>
 
-          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline">
+          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline">
             &larr; Back to home
           </Link>
 
-          <h2 className="text-2xl font-bold text-slate-900">Sign in to your account</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Sign in to your account</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Don't have an account?{' '}
             <Link to="/register" className="font-semibold text-blue-600 hover:underline">
               Create one free
@@ -143,7 +143,7 @@ const Login = () => {
 
             {/* Email */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
                 Email address
               </label>
               <div className="relative">
@@ -152,7 +152,7 @@ const Login = () => {
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
@@ -166,7 +166,7 @@ const Login = () => {
             {/* Password */}
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-700">Password</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
               </div>
               <div className="relative">
                 <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -174,7 +174,7 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   placeholder="Your password"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Min 6 characters' },
@@ -184,7 +184,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 >
                   {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>

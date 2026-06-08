@@ -199,17 +199,17 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
+        className="relative w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Where are you located?</h3>
-            <p className="mt-0.5 text-sm text-slate-400">We'll show services available in your city</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Where are you located?</h3>
+            <p className="mt-0.5 text-sm text-slate-400 dark:text-slate-400">We'll show services available in your city</p>
           </div>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 transition">
-            <XMarkIcon className="h-5 w-5 text-slate-500" />
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
 
@@ -217,7 +217,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
           {/* Use my location */}
           <button
             onClick={onDetectLocation}
-            className="mb-4 flex w-full items-center gap-3 rounded-xl border border-[#2eadd0]/30 bg-[#f0fafb] px-4 py-3 text-sm font-semibold text-[#2eadd0] hover:bg-[#e4f6f9] transition"
+            className="mb-4 flex w-full items-center gap-3 rounded-xl border border-[#2eadd0]/30 bg-[#f0fafb] dark:bg-[#1a2e2b] px-4 py-3 text-sm font-semibold text-[#2eadd0] hover:bg-[#e4f6f9] dark:hover:bg-[#1f3530] transition"
           >
             <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
@@ -226,17 +226,17 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
           </button>
 
           {/* Search input */}
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 mb-3">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 mb-3">
             <MagnifyingGlassIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
             <input
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search city…"
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              className="w-full bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
             />
             {q && (
-              <button onClick={() => setQ('')} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setQ('')} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                 <XMarkIcon className="h-4 w-4" />
               </button>
             )}
@@ -251,12 +251,12 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
                 <button
                   key={city}
                   onClick={() => onSelect(city)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 transition"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                 >
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                    <MapPinIcon className="h-4 w-4 text-slate-500" />
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700">
+                    <MapPinIcon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   </div>
-                  <span className="font-medium text-slate-900">{city}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">{city}</span>
                 </button>
               ))
             )}
@@ -316,23 +316,23 @@ const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50" />
-      <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h3 className="text-lg font-semibold text-slate-900">Preferred time</h3>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
-            <XMarkIcon className="h-5 w-5 text-slate-500" />
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Preferred time</h3>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
 
         {/* Month nav */}
         <div className="flex items-center justify-between px-6 pt-5 pb-2">
-          <button onClick={prevMonth} disabled={!canPrev} className="rounded-full p-1.5 hover:bg-slate-100 disabled:opacity-30">
-            <ChevronLeftIcon className="h-5 w-5 text-slate-600" />
+          <button onClick={prevMonth} disabled={!canPrev} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30">
+            <ChevronLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
-          <p className="font-semibold text-slate-900">{MONTHS[view.month]} {view.year}</p>
-          <button onClick={nextMonth} className="rounded-full p-1.5 hover:bg-slate-100">
-            <ChevronRightIcon className="h-5 w-5 text-slate-600" />
+          <p className="font-semibold text-slate-900 dark:text-white">{MONTHS[view.month]} {view.year}</p>
+          <button onClick={nextMonth} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <ChevronRightIcon className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
         </div>
 
@@ -352,8 +352,8 @@ const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
               disabled={!d || isPast(d)}
               className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium transition
                 ${!d ? 'invisible' : ''}
-                ${isPast(d) ? 'cursor-default text-slate-300' : 'hover:bg-slate-100'}
-                ${isToday(d) && !isSel(d) ? 'border-2 border-slate-800 text-slate-900 font-bold' : ''}
+                ${isPast(d) ? 'cursor-default text-slate-300 dark:text-slate-600' : 'hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-white'}
+                ${isToday(d) && !isSel(d) ? 'border-2 border-slate-800 dark:border-slate-300 text-slate-900 dark:text-white font-bold' : ''}
                 ${isSel(d) ? 'bg-[#2eadd0] text-white hover:bg-[#29a0c0]' : ''}
               `}
             >
@@ -390,18 +390,18 @@ const Carousel = ({ children }) => {
     <div className="relative group/car">
       <button
         onClick={() => scroll(-1)}
-        className="absolute -left-5 top-[40%] z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg border border-slate-100 hover:bg-slate-50 transition opacity-0 group-hover/car:opacity-100"
+        className="absolute -left-5 top-[40%] z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-lg border border-slate-100 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 transition opacity-0 group-hover/car:opacity-100"
       >
-        <ChevronLeftIcon className="h-5 w-5 text-slate-700" />
+        <ChevronLeftIcon className="h-5 w-5 text-slate-700 dark:text-white" />
       </button>
       <div ref={ref} className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {children}
       </div>
       <button
         onClick={() => scroll(1)}
-        className="absolute -right-5 top-[40%] z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg border border-slate-100 hover:bg-slate-50 transition opacity-0 group-hover/car:opacity-100"
+        className="absolute -right-5 top-[40%] z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-lg border border-slate-100 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 transition opacity-0 group-hover/car:opacity-100"
       >
-        <ChevronRightIcon className="h-5 w-5 text-slate-700" />
+        <ChevronRightIcon className="h-5 w-5 text-slate-700 dark:text-white" />
       </button>
     </div>
   );
@@ -424,13 +424,13 @@ const BizCard = ({ biz }) => {
     <Link
       to={`/business/${biz.id}`}
       data-card
-      className="group/card flex-shrink-0 w-44 sm:w-56 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+      className="group/card flex-shrink-0 w-44 sm:w-56 rounded-2xl overflow-hidden bg-white dark:bg-slate-800 shadow-sm hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
     >
-      <div className="relative h-44 overflow-hidden bg-slate-100">
+      <div className="relative h-44 overflow-hidden bg-slate-100 dark:bg-slate-700">
         {img ? (
           <img src={img} alt={name} className="h-full w-full object-cover group-hover/card:scale-105 transition-transform duration-300" />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-5xl bg-gradient-to-br from-slate-200 to-slate-100">🏪</div>
+          <div className="h-full w-full flex items-center justify-center text-5xl bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600">🏪</div>
         )}
         {/* Rating badge — only shown when there are reviews */}
         {rating && (
@@ -441,14 +441,14 @@ const BizCard = ({ biz }) => {
         )}
       </div>
       <div className="p-3">
-        <p className="font-semibold text-sm text-slate-900 truncate">{name}</p>
-        {city && <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400"><MapPinIcon className="h-3 w-3" />{city}</p>}
+        <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{name}</p>
+        {city && <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400 dark:text-slate-400"><MapPinIcon className="h-3 w-3" />{city}</p>}
         {services.length > 0 && (
           <div className="mt-2 flex gap-1 flex-wrap">
             {services.slice(0, 2).map((s) => (
-              <span key={s.id} className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 truncate max-w-[90px]">{s.name}</span>
+              <span key={s.id} className="rounded-full bg-blue-50 dark:bg-blue-900/40 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300 truncate max-w-[90px]">{s.name}</span>
             ))}
-            {services.length > 2 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">+{services.length - 2}</span>}
+            {services.length > 2 && <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-500 dark:text-slate-400">+{services.length - 2}</span>}
           </div>
         )}
       </div>
@@ -893,7 +893,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa] dark:bg-[#0f1118]">
 
       {/* ── STICKY BAR ─────────────────────────────────────────────────── */}
       {sticky && (
@@ -1132,16 +1132,16 @@ const Home = () => {
 
           {/* Search bar — single field like Booksy */}
           <form onSubmit={doSearch} className="w-full max-w-xl px-2 sm:px-0">
-            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 shadow-2xl sm:px-5 sm:py-3">
+            <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-2xl sm:px-5 sm:py-3">
               <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search services or businesses"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none text-sm"
+                className="min-w-0 flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none text-sm"
               />
-              <button type="submit" className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+              <button type="submit" className="flex-shrink-0 rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 transition sm:px-6 sm:py-2">
                 Search
               </button>
             </div>
@@ -1234,14 +1234,14 @@ const Home = () => {
       </section>
 
       {/* ── BUSINESS CAROUSELS ───────────────────────────────────────────── */}
-      <div className="bg-white py-10">
+      <div className="bg-white dark:bg-[#111827] py-10">
         {businesses.length === 0 ? (
           <div className="mx-auto max-w-6xl space-y-12 px-8">
             {[1, 2].map((n) => (
               <div key={n}>
-                <div className="mb-4 h-5 w-44 rounded-lg bg-slate-200 animate-pulse" />
+                <div className="mb-4 h-5 w-44 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse" />
                 <div className="flex gap-4">
-                  {[...Array(4)].map((_, i) => <div key={i} className="h-52 w-56 flex-shrink-0 rounded-2xl bg-slate-100 animate-pulse" />)}
+                  {[...Array(4)].map((_, i) => <div key={i} className="h-52 w-56 flex-shrink-0 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />)}
                 </div>
               </div>
             ))}
@@ -1251,8 +1251,8 @@ const Home = () => {
             {grouped.length === 1 && businesses.length > 0 && (
               <div key="all-businesses" className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
                 <div className="mb-5 flex items-end justify-between">
-                  <h2 className="text-xl font-bold text-slate-900">Businesses near you</h2>
-                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline">See all <ArrowRightIcon className="h-4 w-4" /></Link>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Businesses near you</h2>
+                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">See all <ArrowRightIcon className="h-4 w-4" /></Link>
                 </div>
                 <Carousel>
                   {businesses.map((b) => <BizCard key={b.id} biz={b} />)}
@@ -1262,10 +1262,10 @@ const Home = () => {
             {grouped.map(([cat, list]) => (
               <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
                 <div className="mb-5 flex items-end justify-between">
-                  <h2 className="text-xl font-bold text-slate-900">{cat} near you</h2>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{cat} near you</h2>
                   <button
                     onClick={() => handleCatClick(cat)}
-                    className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+                    className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     See all <ArrowRightIcon className="h-4 w-4" />
                   </button>

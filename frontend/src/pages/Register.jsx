@@ -79,15 +79,15 @@ const PhoneInput = ({ onDigitsChange }) => {
 
   return (
     <div>
-      <div className={`relative flex rounded-xl border bg-white transition-shadow ${showError ? 'border-red-400 ring-2 ring-red-400/20' : 'border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20'}`}>
+      <div className={`relative flex rounded-xl border bg-white dark:bg-slate-800 transition-shadow ${showError ? 'border-red-400 ring-2 ring-red-400/20' : 'border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20'}`}>
         {/* Country selector */}
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+          className="flex shrink-0 items-center gap-1.5 rounded-l-xl border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
         >
           <span className="text-lg leading-none">{country.flag}</span>
-          <span className="tabular-nums text-slate-600">{country.dial}</span>
+          <span className="tabular-nums text-slate-600 dark:text-slate-300">{country.dial}</span>
           <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
         </button>
 
@@ -100,22 +100,22 @@ const PhoneInput = ({ onDigitsChange }) => {
           value={display}
           onChange={handleNumberChange}
           onBlur={() => setTouched(true)}
-          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 tabular-nums text-slate-900 placeholder:text-slate-400 focus:outline-none"
+          className="min-w-0 flex-1 rounded-r-xl bg-transparent px-3 py-2.5 tabular-nums text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
         />
 
         {/* Country dropdown */}
         {open && (
-          <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+          <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-64 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg">
             {COUNTRIES.map((c) => (
               <button
                 key={c.code}
                 type="button"
                 onClick={() => handleCountrySelect(c)}
-                className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 ${c.code === country.code ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700'}`}
+                className={`flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 ${c.code === country.code ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-slate-700 dark:text-slate-300'}`}
               >
                 <span className="text-base">{c.flag}</span>
                 <span className="flex-1 text-left">{c.name}</span>
-                <span className="text-slate-400">{c.dial}</span>
+                <span className="text-slate-400 dark:text-slate-500">{c.dial}</span>
               </button>
             ))}
           </div>
@@ -135,9 +135,9 @@ const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const Field = ({ label, error, children, optional }) => (
   <div>
-    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
+    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200">
       {label}
-      {optional && <span className="text-xs text-slate-400">(optional)</span>}
+      {optional && <span className="text-xs text-slate-400 dark:text-slate-500">(optional)</span>}
     </label>
     {children}
     {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
@@ -151,7 +151,7 @@ const Input = React.forwardRef(({ icon: Icon, ...props }, ref) => (
     )}
     <input
       ref={ref}
-      className={`w-full rounded-xl border border-slate-200 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${Icon ? 'pl-10 pr-3' : 'px-3'}`}
+      className={`w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${Icon ? 'pl-10 pr-3' : 'px-3'}`}
       {...props}
     />
   </div>
@@ -254,7 +254,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
         <Link to="/" className="flex items-center gap-3">
@@ -297,15 +297,15 @@ const Register = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
               <CalendarDaysIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">Reserva</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">Reserva</span>
           </Link>
 
-          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline">
+          <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline">
             &larr; Back to home
           </Link>
 
-          <h2 className="text-2xl font-bold text-slate-900">Create your account</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-blue-600 hover:underline">
               Sign in
@@ -313,14 +313,14 @@ const Register = () => {
           </p>
 
           {/* Account type toggle */}
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-1 flex gap-1">
+          <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1 flex gap-1">
             <button
               type="button"
               onClick={() => setUserType('customer')}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'customer'
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <UserGroupIcon className="h-4 w-4" /> Customer
@@ -331,7 +331,7 @@ const Register = () => {
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                 userType === 'business_owner'
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <BuildingOfficeIcon className="h-4 w-4" /> Business Owner
@@ -411,7 +411,7 @@ const Register = () => {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Min. 8 characters"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: { value: 8, message: 'Min 8 characters' },
@@ -425,7 +425,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:hover:text-slate-300"
                   >
                     {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -438,7 +438,7 @@ const Register = () => {
                   <input
                     type={showConfirm ? 'text' : 'password'}
                     placeholder="Repeat password"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password2', {
                       required: 'Please confirm your password',
                       validate: (v) => v === password || 'Passwords do not match',
@@ -448,7 +448,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:hover:text-slate-300"
                   >
                     {showConfirm ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                   </button>
@@ -465,7 +465,7 @@ const Register = () => {
                 {...register('terms', { required: 'You must accept the terms' })}
               />
               <div>
-                <label htmlFor="terms" className="text-sm text-slate-600">
+                <label htmlFor="terms" className="text-sm text-slate-600 dark:text-slate-300">
                   I agree to the{' '}
                   <Link to="/terms" className="font-medium text-blue-600 hover:underline">Terms of Service</Link>
                   {' '}and{' '}

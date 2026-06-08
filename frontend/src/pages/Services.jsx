@@ -90,7 +90,7 @@ const Services = () => {
   }, [businesses, search, selectedCategory, cityFilter]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#0f1118]">
       {/* Hero / Search bar */}
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-8 sm:py-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -128,7 +128,7 @@ const Services = () => {
       </div>
 
       {/* Category chips */}
-      <div className="sticky top-16 z-10 border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="sticky top-16 z-10 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111827] px-4 py-3 shadow-sm">
         <div className="mx-auto max-w-7xl">
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {categories.map((cat) => (
@@ -138,7 +138,7 @@ const Services = () => {
                 className={`flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                   selectedCategory === cat
                     ? 'bg-blue-600 text-white shadow-sm'
-                    : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600'
+                    : 'border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-blue-300 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400'
                 }`}
               >
                 {cat !== 'All' && (
@@ -155,7 +155,7 @@ const Services = () => {
       <div className="mx-auto max-w-7xl px-4 py-8">
         {!loading && !error && (
           <div className="mb-5 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {filtered.length === 0
                 ? 'No businesses found'
                 : `${filtered.length} business${filtered.length !== 1 ? 'es' : ''} found`}
@@ -193,10 +193,10 @@ const Services = () => {
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
             <p className="mb-3 text-4xl">🔍</p>
-            <h2 className="text-lg font-semibold text-slate-900">No results found</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">No results found</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Try a different search term or category.
             </p>
             <button

@@ -481,7 +481,7 @@ const BookAppointment = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0f1118]">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#4a90b0]" />
       </div>
     );
@@ -489,8 +489,8 @@ const BookAppointment = () => {
 
   if (error || !service) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white px-4">
-        <div className="rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0f1118] px-4">
+        <div className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
           <p className="text-red-600">{error || 'Booking page not found.'}</p>
           <Link to="/services" className="mt-6 inline-flex rounded-2xl bg-[#4a90b0] px-5 py-3 font-semibold text-white">
             Back to services
@@ -501,7 +501,7 @@ const BookAppointment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbfa] overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
+    <div className="min-h-screen bg-[#fbfbfa] dark:bg-[#0f1118] overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
       {showConfirmation && confirmedBooking ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-4">
           <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 bg-white p-6 text-center shadow-xl sm:p-8">

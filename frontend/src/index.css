@@ -19,17 +19,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Force text visibility */
-  input,
-  textarea,
-  select,
-  button {
-    color: #000000;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: #6b7280;
+  /* Prevent horizontal scroll on all viewports */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
   }
 }
 
