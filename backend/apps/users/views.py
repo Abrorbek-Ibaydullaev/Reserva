@@ -5,9 +5,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from .utils.email import send_password_reset_email
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -142,6 +142,11 @@ class ForgotPasswordView(APIView):
         if email:
             user = User.objects.filter(email__iexact=email).first()
             if user:
+                # Invalidate any existing unused tokens for this user
+                PasswordResetToken.objects.filter(
+                    user=user, used_at__isnull=True
+                ).update(used_at=timezone.now())
+
                 token = secrets.token_urlsafe(48)
                 PasswordResetToken.objects.create(
                     user=user,
@@ -150,17 +155,11 @@ class ForgotPasswordView(APIView):
                 )
                 frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
                 reset_link = f'{frontend_url}/reset-password?token={token}'
-                print(f'Password reset link for {user.email}: {reset_link}')
+                print(f'[Reserva] Password reset link for {user.email}: {reset_link}')
                 try:
-                    send_mail(
-                        'Reset your Reserva password',
-                        f'Use this link to reset your Reserva password. It expires in 1 hour:\n\n{reset_link}',
-                        getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@reserva.uz'),
-                        [user.email],
-                        fail_silently=True,
-                    )
+                    send_password_reset_email(user.email, token)
                 except Exception as exc:
-                    print(f'Password reset email failed for {user.email}: {exc}')
+                    print(f'[Reserva] Password reset email failed for {user.email}: {exc}')
 
         return Response(
             {'detail': 'If this email exists, a reset link has been sent.'},
