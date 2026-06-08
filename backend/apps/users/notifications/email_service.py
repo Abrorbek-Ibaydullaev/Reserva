@@ -4,10 +4,14 @@ Uses Django's ``send_mail`` so the backend (SMTP vs. console) is controlled
 entirely by settings — no credentials are hard-coded here.
 """
 
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 
 from config.password_reset_config import PASSWORD_RESET_CONFIG
+
+logger = logging.getLogger(__name__)
 
 
 def send_password_reset_otp(to_email: str, otp_code: str) -> None:
@@ -120,11 +124,14 @@ def send_password_reset_otp(to_email: str, otp_code: str) -> None:
 </body>
 </html>"""
 
-    send_mail(
-        subject=subject,
-        message=plain_message,
-        from_email=from_email,
-        recipient_list=[to_email],
-        html_message=html_message,
-        fail_silently=True,
-    )
+    try:
+        send_mail(
+            subject=subject,
+            message=plain_message,
+            from_email=from_email,
+            recipient_list=[to_email],
+            html_message=html_message,
+            fail_silently=True,
+        )
+    except Exception as exc:
+        logger.error("Failed to send password reset email to %s: %s", to_email, exc)
