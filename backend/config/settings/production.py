@@ -12,6 +12,7 @@ import os
 from urllib.parse import urlparse
 from pathlib import Path
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -246,6 +247,17 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'accept-encoding',
+    'accept',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 def _normalize_origin(origin: str) -> str:
     return origin.strip().rstrip('/')
