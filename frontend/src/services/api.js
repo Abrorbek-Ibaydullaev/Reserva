@@ -71,7 +71,7 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
         const requestUrl = originalRequest?.url || '';
-        const isAuthRequest = requestUrl.includes('/auth/login/') || requestUrl.includes('/auth/register/');
+        const isAuthRequest = requestUrl.includes('auth/login/') || requestUrl.includes('auth/register/');
 
         if (error.response?.status === 401 && !originalRequest?._retry && !isAuthRequest) {
             originalRequest._retry = true;
@@ -117,13 +117,13 @@ export const authService = {
         if (recaptchaToken) {
             payload.recaptcha_token = recaptchaToken;
         }
-        const response = await api.post('/auth/login/', payload);
+        const response = await api.post('auth/login/', payload);
 
         if (response.data.access && response.data.refresh) {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
-            const raw = response.data.user || (await api.get('/users/me/')).data;
+            const raw = response.data.user || (await api.get('users/me/')).data;
             const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
             localStorage.setItem('user_data', JSON.stringify(userData));
         }
@@ -144,7 +144,7 @@ export const authService = {
         if (userData.recaptcha_token) {
             payload.recaptcha_token = userData.recaptcha_token;
         }
-        return api.post('/auth/register/', payload);
+        return api.post('auth/register/', payload);
     },
 
     logout: () => {
@@ -160,36 +160,36 @@ export const authService = {
     },
 
     getUserProfile: async () => {
-        const response = await api.get('/users/me/');
+        const response = await api.get('users/me/');
         const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
         localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },
 
     updateProfile: async (userData) => {
-        const response = await api.put('/users/me/', userData);
+        const response = await api.put('users/me/', userData);
         const fixed = { ...response.data, profile_picture: fixMediaUrl(response.data.profile_picture) };
         localStorage.setItem('user_data', JSON.stringify(fixed));
         return response;
     },
 
     changePassword: async ({ current_password, new_password }) => {
-        return api.post('/auth/change-password/', {
+        return api.post('auth/change-password/', {
             old_password: current_password,
             new_password: new_password,
         });
     },
 
     forgotPassword: async (email) => {
-        return api.post('/auth/forgot-password/', { email });
+        return api.post('auth/forgot-password/', { email });
     },
 
     verifyOTP: async (email, otp_code) => {
-        return api.post('/auth/verify-otp/', { email, otp_code });
+        return api.post('auth/verify-otp/', { email, otp_code });
     },
 
     resetPassword: async ({ reset_token, password }) => {
-        return api.post('/auth/reset-password/', { reset_token, password });
+        return api.post('auth/reset-password/', { reset_token, password });
     },
 };
 
@@ -199,16 +199,16 @@ export const authService = {
  * =========================
  */
 export const serviceService = {
-    getAllServices: (params) => api.get('/services/', { params }),
-    getServiceById: (id) => api.get(`/services/id/${id}/`),
-    getServiceBySlug: (slug) => api.get(`/services/slug/${slug}/`),
-    getCategories: () => api.get('/services/categories/'),
-    createService: (data) => api.post('/services/my-services/', data),
-    updateService: (id, data) => api.put(`/services/my-services/${id}/`, data),
-    deleteService: (id) => api.delete(`/services/my-services/${id}/`),
-    getMyServices: () => api.get('/services/my-services/'),
-    addReview: (id, data) => api.post(`/services/id/${id}/reviews/`, data),
-    getServiceReviews: (id) => api.get(`/services/id/${id}/reviews/`),
+    getAllServices: (params) => api.get('services/', { params }),
+    getServiceById: (id) => api.get(`services/id/${id}/`),
+    getServiceBySlug: (slug) => api.get(`services/slug/${slug}/`),
+    getCategories: () => api.get('services/categories/'),
+    createService: (data) => api.post('services/my-services/', data),
+    updateService: (id, data) => api.put(`services/my-services/${id}/`, data),
+    deleteService: (id) => api.delete(`services/my-services/${id}/`),
+    getMyServices: () => api.get('services/my-services/'),
+    addReview: (id, data) => api.post(`services/id/${id}/reviews/`, data),
+    getServiceReviews: (id) => api.get(`services/id/${id}/reviews/`),
 };
 
 /**
@@ -217,19 +217,19 @@ export const serviceService = {
  * =========================
  */
 export const appointmentService = {
-    getAllAppointments: (params) => api.get('/appointments/', { params }),
-    getBusinessDashboardStats: () => api.get('/appointments/dashboard-stats/'),
-    getAppointment: (id) => api.get(`/appointments/${id}/`),
-    createAppointment: (data) => api.post('/appointments/', data),
-    updateAppointmentStatus: (id, data) => api.put(`/appointments/${id}/status/`, data),
+    getAllAppointments: (params) => api.get('appointments/', { params }),
+    getBusinessDashboardStats: () => api.get('appointments/dashboard-stats/'),
+    getAppointment: (id) => api.get(`appointments/${id}/`),
+    createAppointment: (data) => api.post('appointments/', data),
+    updateAppointmentStatus: (id, data) => api.put(`appointments/${id}/status/`, data),
     cancelAppointment: (id, reason) =>
-        api.post(`/appointments/${id}/cancel/`, {
+        api.post(`appointments/${id}/cancel/`, {
             reason: reason || 'Client requested cancellation',
         }),
-    rescheduleAppointment: (id, data) => api.put(`/appointments/${id}/reschedule/`, data),
-    getTodayAppointments: () => api.get('/appointments/today/'),
-    getUpcomingAppointments: () => api.get('/appointments/upcoming/'),
-    getAvailableSlots: (params) => api.get('/schedules/available-slots/', { params }),
+    rescheduleAppointment: (id, data) => api.put(`appointments/${id}/reschedule/`, data),
+    getTodayAppointments: () => api.get('appointments/today/'),
+    getUpcomingAppointments: () => api.get('appointments/upcoming/'),
+    getAvailableSlots: (params) => api.get('schedules/available-slots/', { params }),
 };
 
 /**
@@ -238,39 +238,39 @@ export const appointmentService = {
  * =========================
  */
 export const scheduleService = {
-    getBusinessHours: (params) => api.get('/schedules/business-hours/', { params }),
-    createBusinessHours: (data) => api.post('/schedules/business-hours/', data),
-    updateBusinessHours: (id, data) => api.put(`/schedules/business-hours/${id}/`, data),
-    getEmployees: (params) => api.get('/schedules/employees/', { params }),
-    createEmployee: (data) => api.post('/schedules/employees/', data),
-    updateEmployee: (id, data) => api.put(`/schedules/employees/${id}/`, data),
-    deleteEmployee: (id) => api.delete(`/schedules/employees/${id}/`),
-    getEmployeeSchedules: (employeeId) => api.get(`/schedules/employees/${employeeId}/schedules/`),
-    createEmployeeSchedule: (employeeId, data) => api.post(`/schedules/employees/${employeeId}/schedules/`, data),
+    getBusinessHours: (params) => api.get('schedules/business-hours/', { params }),
+    createBusinessHours: (data) => api.post('schedules/business-hours/', data),
+    updateBusinessHours: (id, data) => api.put(`schedules/business-hours/${id}/`, data),
+    getEmployees: (params) => api.get('schedules/employees/', { params }),
+    createEmployee: (data) => api.post('schedules/employees/', data),
+    updateEmployee: (id, data) => api.put(`schedules/employees/${id}/`, data),
+    deleteEmployee: (id) => api.delete(`schedules/employees/${id}/`),
+    getEmployeeSchedules: (employeeId) => api.get(`schedules/employees/${employeeId}/schedules/`),
+    createEmployeeSchedule: (employeeId, data) => api.post(`schedules/employees/${employeeId}/schedules/`, data),
     updateEmployeeSchedule: (employeeId, scheduleId, data) =>
-        api.put(`/schedules/employees/${employeeId}/schedules/${scheduleId}/`, data),
+        api.put(`schedules/employees/${employeeId}/schedules/${scheduleId}/`, data),
     deleteEmployeeSchedule: (employeeId, scheduleId) =>
-        api.delete(`/schedules/employees/${employeeId}/schedules/${scheduleId}/`),
-    getMyEmployeeProfile: () => api.get('/schedules/me/employee-profile/'),
-    updateMyEmployeeProfile: (data) => api.put('/schedules/me/employee-profile/', data),
-    getMyWeeklyHours: () => api.get('/schedules/me/weekly-hours/'),
-    updateMyWeeklyHour: (id, data) => api.put(`/schedules/me/weekly-hours/${id}/`, data),
-    getMySchedules: () => api.get('/schedules/me/schedules/'),
-    createMySchedule: (data) => api.post('/schedules/me/schedules/', data),
-    updateMySchedule: (id, data) => api.put(`/schedules/me/schedules/${id}/`, data),
-    deleteMySchedule: (id) => api.delete(`/schedules/me/schedules/${id}/`),
-    getMyTimeOff: () => api.get('/schedules/me/time-off/'),
-    createMyTimeOff: (data) => api.post('/schedules/me/time-off/', data),
-    updateMyTimeOff: (id, data) => api.put(`/schedules/me/time-off/${id}/`, data),
-    deleteMyTimeOff: (id) => api.delete(`/schedules/me/time-off/${id}/`),
-    getTimeOffRequests: () => api.get('/schedules/time-off/'),
-    createTimeOffRequest: (data) => api.post('/schedules/time-off/', data),
-    updateTimeOffRequest: (id, data) => api.put(`/schedules/time-off/${id}/`, data),
-    deleteTimeOffRequest: (id) => api.delete(`/schedules/time-off/${id}/`),
-    getResources: () => api.get('/schedules/resources/'),
-    createResource: (data) => api.post('/schedules/resources/', data),
-    updateResource: (id, data) => api.put(`/schedules/resources/${id}/`, data),
-    deleteResource: (id) => api.delete(`/schedules/resources/${id}/`),
+        api.delete(`schedules/employees/${employeeId}/schedules/${scheduleId}/`),
+    getMyEmployeeProfile: () => api.get('schedules/me/employee-profile/'),
+    updateMyEmployeeProfile: (data) => api.put('schedules/me/employee-profile/', data),
+    getMyWeeklyHours: () => api.get('schedules/me/weekly-hours/'),
+    updateMyWeeklyHour: (id, data) => api.put(`schedules/me/weekly-hours/${id}/`, data),
+    getMySchedules: () => api.get('schedules/me/schedules/'),
+    createMySchedule: (data) => api.post('schedules/me/schedules/', data),
+    updateMySchedule: (id, data) => api.put(`schedules/me/schedules/${id}/`, data),
+    deleteMySchedule: (id) => api.delete(`schedules/me/schedules/${id}/`),
+    getMyTimeOff: () => api.get('schedules/me/time-off/'),
+    createMyTimeOff: (data) => api.post('schedules/me/time-off/', data),
+    updateMyTimeOff: (id, data) => api.put(`schedules/me/time-off/${id}/`, data),
+    deleteMyTimeOff: (id) => api.delete(`schedules/me/time-off/${id}/`),
+    getTimeOffRequests: () => api.get('schedules/time-off/'),
+    createTimeOffRequest: (data) => api.post('schedules/time-off/', data),
+    updateTimeOffRequest: (id, data) => api.put(`schedules/time-off/${id}/`, data),
+    deleteTimeOffRequest: (id) => api.delete(`schedules/time-off/${id}/`),
+    getResources: () => api.get('schedules/resources/'),
+    createResource: (data) => api.post('schedules/resources/', data),
+    updateResource: (id, data) => api.put(`schedules/resources/${id}/`, data),
+    deleteResource: (id) => api.delete(`schedules/resources/${id}/`),
 };
 
 /**
@@ -279,24 +279,24 @@ export const scheduleService = {
  * =========================
  */
 export const userService = {
-    getMe: () => api.get('/users/me/'),
-    updateMe: (data) => api.patch('/users/me/', data),
-    changeMyPassword: (data) => api.patch('/users/me/password/', data),
-    getProfile: () => api.get('/users/profile/'),
-    updateProfile: (data) => api.patch('/users/profile/', data),
-    getGalleryImages: () => api.get('/users/gallery/'),
-    uploadGalleryImage: (data) => api.post('/users/gallery/', data, { timeout: GALLERY_UPLOAD_TIMEOUT_MS }),
-    deleteGalleryImage: (id) => api.delete(`/users/gallery/${id}/`),
-    getTelegramLink: () => api.get('/users/telegram/'),
-    disconnectTelegram: () => api.delete('/users/telegram/'),
-    getNotifications: () => api.get('/notifications/'),
+    getMe: () => api.get('users/me/'),
+    updateMe: (data) => api.patch('users/me/', data),
+    changeMyPassword: (data) => api.patch('users/me/password/', data),
+    getProfile: () => api.get('users/profile/'),
+    updateProfile: (data) => api.patch('users/profile/', data),
+    getGalleryImages: () => api.get('users/gallery/'),
+    uploadGalleryImage: (data) => api.post('users/gallery/', data, { timeout: GALLERY_UPLOAD_TIMEOUT_MS }),
+    deleteGalleryImage: (id) => api.delete(`users/gallery/${id}/`),
+    getTelegramLink: () => api.get('users/telegram/'),
+    disconnectTelegram: () => api.delete('users/telegram/'),
+    getNotifications: () => api.get('notifications/'),
     markNotificationAsRead: (id) =>
-        api.patch(`/notifications/${id}/read/`),
+        api.patch(`notifications/${id}/read/`),
     markAllNotificationsAsRead: () =>
-        api.patch('/notifications/read-all/'),
+        api.patch('notifications/read-all/'),
     clearAllNotifications: () =>
-        api.delete('/notifications/clear-all/'),
-    getBusinesses: (params) => api.get('/users/businesses/', { params }),
+        api.delete('notifications/clear-all/'),
+    getBusinesses: (params) => api.get('users/businesses/', { params }),
 };
 
 export default api;
