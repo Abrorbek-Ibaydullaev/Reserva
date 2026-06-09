@@ -1,11 +1,15 @@
-// API Configuration
-const rawApiBaseUrl =
+// API Configuration — always ends with /api, never a trailing slash.
+// Self-heals if VITE_API_BASE_URL is set without the /api suffix.
+const _rawApiBaseUrl = (
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
         ? 'https://api.reserva.services/api'
-        : 'http://localhost:8000/api');
-export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
+        : 'http://localhost:8000/api')
+).replace(/\/+$/, '');
+export const API_BASE_URL = _rawApiBaseUrl.endsWith('/api')
+    ? _rawApiBaseUrl
+    : _rawApiBaseUrl + '/api';
 export const API_TIMEOUT = 30000;
 
 // Application Configuration

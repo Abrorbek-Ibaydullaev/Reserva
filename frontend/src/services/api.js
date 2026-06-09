@@ -2,15 +2,19 @@
 import axios from 'axios';
 
 /**
- * Base API URL — must NOT end with a slash
+ * Base API URL — must NOT end with a slash, MUST end with /api.
+ * Self-heals if VITE_API_BASE_URL is set without the /api suffix.
  */
-const rawApiBaseUrl =
+const _rawApiBaseUrl = (
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD
         ? 'https://api.reserva.services/api'
-        : 'http://localhost:8000/api');
-const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
+        : 'http://localhost:8000/api')
+).replace(/\/+$/, '');
+const API_BASE_URL = _rawApiBaseUrl.endsWith('/api')
+    ? _rawApiBaseUrl
+    : _rawApiBaseUrl + '/api';
 const GALLERY_UPLOAD_TIMEOUT_MS = 60000;
 
 // Strip /api suffix. Production builds force https to avoid Mixed Content blocks.
