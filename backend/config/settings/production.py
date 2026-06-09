@@ -311,13 +311,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # ---------------------------------------------------------------------------
 # Email
 # ---------------------------------------------------------------------------
-EMAIL_BACKEND = _env(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.smtp.EmailBackend',
-)
+EMAIL_BACKEND = _env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = _env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(_env('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = _env('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = _env('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = _env('DEFAULT_FROM_EMAIL', 'noreply@reserva.uz')
