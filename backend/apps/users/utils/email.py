@@ -2,8 +2,13 @@
 Email utilities for the users app.
 """
 
+import logging
+import threading
+
 from django.conf import settings
 from django.core.mail import send_mail
+
+logger = logging.getLogger(__name__)
 
 
 def send_password_reset_email(to_email: str, reset_token: str) -> None:
@@ -19,7 +24,7 @@ def send_password_reset_email(to_email: str, reset_token: str) -> None:
     """
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
     reset_url = f'{frontend_url}/reset-password?token={reset_token}'
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@reserva.uz')
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     subject = 'Reset your password - Reserva'
 
@@ -97,11 +102,17 @@ def send_password_reset_email(to_email: str, reset_token: str) -> None:
 </body>
 </html>"""
 
-    send_mail(
-        subject=subject,
-        message=plain_message,
-        from_email=from_email,
-        recipient_list=[to_email],
-        html_message=html_message,
-        fail_silently=True,
-    )
+    def _send() -> None:
+        try:
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+        except Exception:
+            logger.exception("Failed to send password reset email to %s", to_email)
+
+    threading.Thread(target=_send, daemon=True).start()

@@ -28,7 +28,7 @@ def send_password_reset_otp(to_email: str, otp_code: str) -> None:
         to_email:  Recipient email address.
         otp_code:  The 6-digit plain-text OTP (displayed in the email body).
     """
-    from_email: str = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@reserva.uz")
+    from_email: str = settings.DEFAULT_FROM_EMAIL
     expiry_minutes: int = PASSWORD_RESET_CONFIG["OTP_EXPIRY_MINUTES"]
 
     subject = "Your Reserva password reset code"
