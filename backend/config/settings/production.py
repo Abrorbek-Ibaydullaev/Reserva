@@ -311,13 +311,16 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # ---------------------------------------------------------------------------
 # Email
 # ---------------------------------------------------------------------------
-EMAIL_BACKEND = _env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = _env('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(_env('EMAIL_PORT', '587'))
-EMAIL_HOST_USER = _env('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = _env('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = _env('DEFAULT_FROM_EMAIL', 'noreply@reserva.uz')
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.resend.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'resend')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = True  # 👈 Make sure this is explicitly set to True
+EMAIL_USE_SSL = False
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Reserva <noreply@send.reserva.services>')
 # ---------------------------------------------------------------------------
 # Telegram Bot
 # ---------------------------------------------------------------------------
