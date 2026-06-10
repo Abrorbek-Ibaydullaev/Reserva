@@ -852,10 +852,10 @@ const BusinessDetail = () => {
                   ))}
                 </div>
               ) : (
-                <div className="mx-auto max-w-7xl space-y-4">
+                <div className="mx-auto max-w-7xl [column-count:2] md:[column-count:3] [column-gap:8px]">
                   {orderedGalleryImages.map((image, index) => (
-                    <div key={`${image}-${index}-space`} className="overflow-hidden rounded-[24px] bg-white shadow-sm">
-                      <img src={image} alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`} className="max-h-[82vh] w-full object-contain bg-white" onError={(e) => { e.target.style.display = 'none'; }} />
+                    <div key={`${image}-${index}-space`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white shadow-sm">
+                      <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-auto w-full object-cover" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
                     </div>
                   ))}
                 </div>
