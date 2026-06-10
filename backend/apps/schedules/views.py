@@ -101,23 +101,25 @@ class BusinessHoursView(generics.ListCreateAPIView):
 class EmployeeListView(generics.ListCreateAPIView):
     """List and create employees."""
     serializer_class = EmployeeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         queryset = Employee.objects.select_related('user').prefetch_related('services')
-        user = self.request.user
         business_owner_id = self.request.query_params.get('business_owner')
 
         if self.request.method == 'GET':
-            if user.user_type == 'business_owner':
+            user = self.request.user
+            if user.is_authenticated and user.user_type == 'business_owner':
                 queryset = queryset.filter(business_owner=user)
-            elif user.user_type == 'employee':
+            elif user.is_authenticated and user.user_type == 'employee':
                 queryset = queryset.filter(business_owner__employees__user=user).distinct()
             else:
+                # Unauthenticated users (and customers) can browse staff for a business
                 if not business_owner_id:
                     return Employee.objects.none()
                 queryset = queryset.filter(business_owner_id=business_owner_id, is_active=True)
         else:
+            user = self.request.user
             queryset = queryset.filter(business_owner=user)
 
         is_active = self.request.query_params.get('is_active')
@@ -405,7 +407,7 @@ class CheckAvailabilityView(APIView):
 
 class AvailableTimeSlotsView(APIView):
     """Get available time slots for a service."""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         service_id = request.query_params.get('service_id')

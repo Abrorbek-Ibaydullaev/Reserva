@@ -211,26 +211,26 @@ const EmployeeProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f1118]">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#4a90b0]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
+    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Employee Profile</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Employee Profile</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-400">
             Upload your profile photo, update your details, and block personal duty in advance.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <section className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#e8f2f6] text-[#4a90b0]">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#e8f2f6] dark:bg-slate-700 text-[#4a90b0]">
                 {imagePreview ? (
                   <img src={imagePreview} alt={profileData.first_name || 'Employee'} className="h-full w-full object-cover" />
                 ) : (
@@ -239,14 +239,14 @@ const EmployeeProfile = () => {
               </div>
               <div>
                 <p className="text-sm uppercase tracking-[0.18em] text-[#4a90b0]">Staff Profile</p>
-                <h2 className="mt-2 text-2xl font-bold text-gray-900">
+                <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
                   {profileData.first_name} {profileData.last_name}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">{profileData.position || 'Employee'}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">{profileData.position || 'Employee'}</p>
               </div>
             </div>
 
-            <label className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-900">
+            <label className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 dark:border-slate-600 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-slate-200">
               <CameraIcon className="h-5 w-5" />
               Upload profile photo
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
@@ -255,88 +255,88 @@ const EmployeeProfile = () => {
             <form onSubmit={saveProfile} className="mt-8 grid gap-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">First name</label>
-                  <input name="first_name" value={profileData.first_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">First name</label>
+                  <input name="first_name" value={profileData.first_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Last name</label>
-                  <input name="last_name" value={profileData.last_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Last name</label>
+                  <input name="last_name" value={profileData.last_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Email</label>
-                  <input name="email" value={profileData.email} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Email</label>
+                  <input name="email" value={profileData.email} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Phone number</label>
-                  <input name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Phone number</label>
+                  <input name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Position</label>
-                  <input name="position" value={profileData.position} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Position</label>
+                  <input name="position" value={profileData.position} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Break between appointments</label>
-                  <input type="number" min="0" name="appointment_buffer" value={profileData.appointment_buffer} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Break between appointments</label>
+                  <input type="number" min="0" name="appointment_buffer" value={profileData.appointment_buffer} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Max daily appointments</label>
-                  <input type="number" min="1" name="max_daily_appointments" value={profileData.max_daily_appointments} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Max daily appointments</label>
+                  <input type="number" min="1" name="max_daily_appointments" value={profileData.max_daily_appointments} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Bio</label>
-                <textarea name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Bio</label>
+                <textarea name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
               </div>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-slate-400">
                 Break between appointments means how many minutes the system should keep free after one booking before the next booking can start.
               </p>
 
-              <button type="submit" disabled={savingProfile} className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white">
+              <button type="submit" disabled={savingProfile} className="rounded-2xl bg-[#111827] dark:bg-[#4a90b0] px-6 py-3 text-sm font-semibold text-white">
                 {savingProfile ? 'Saving...' : 'Save profile'}
               </button>
             </form>
           </section>
 
           <section>
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
                 <ClockIcon className="h-5 w-5 text-[#4a90b0]" />
-                <h3 className="text-lg font-semibold text-gray-900">Personal Duty / Unavailable Time</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Personal Duty / Unavailable Time</h3>
               </div>
-              <p className="mb-4 text-sm text-gray-500">
+              <p className="mb-4 text-sm text-gray-500 dark:text-slate-400">
                 Use this when you are busy, off-site, or unavailable. Those times will be blocked only for you.
               </p>
 
               <form onSubmit={addDuty} className="grid gap-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">Start date</label>
-                    <input type="date" name="start_date" value={dutyForm.start_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" required />
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Start date</label>
+                    <input type="date" name="start_date" value={dutyForm.start_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" required />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">End date</label>
-                    <input type="date" name="end_date" value={dutyForm.end_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">End date</label>
+                    <input type="date" name="end_date" value={dutyForm.end_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">Start time</label>
-                    <input type="time" name="start_time" value={dutyForm.start_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" disabled={dutyForm.is_all_day} />
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Start time</label>
+                    <input type="time" name="start_time" value={dutyForm.start_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0] disabled:opacity-50" disabled={dutyForm.is_all_day} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900">End time</label>
-                    <input type="time" name="end_time" value={dutyForm.end_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" disabled={dutyForm.is_all_day} />
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">End time</label>
+                    <input type="time" name="end_time" value={dutyForm.end_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0] disabled:opacity-50" disabled={dutyForm.is_all_day} />
                   </div>
                 </div>
 
-                <label className="inline-flex items-center gap-3 text-sm text-gray-700">
-                  <input type="checkbox" name="is_all_day" checked={dutyForm.is_all_day} onChange={handleDutyChange} />
+                <label className="inline-flex items-center gap-3 text-sm text-gray-700 dark:text-slate-300">
+                  <input type="checkbox" name="is_all_day" checked={dutyForm.is_all_day} onChange={handleDutyChange} className="h-4 w-4 rounded border-gray-300 dark:border-slate-600" />
                   All day
                 </label>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900">Reason</label>
-                  <textarea name="reason" rows={3} value={dutyForm.reason} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" required />
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Reason</label>
+                  <textarea name="reason" rows={3} value={dutyForm.reason} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" required />
                 </div>
 
                 <button type="submit" disabled={savingDuty} className="rounded-2xl bg-[#ef6b57] px-5 py-3 text-sm font-semibold text-white">
@@ -346,18 +346,18 @@ const EmployeeProfile = () => {
 
               <div className="mt-6 space-y-3">
                 {sortedDuties.length === 0 ? (
-                  <div className="rounded-2xl bg-gray-50 p-4 text-sm text-gray-500">No personal duty periods added yet.</div>
+                  <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-4 text-sm text-gray-500 dark:text-slate-400">No personal duty periods added yet.</div>
                 ) : (
                   sortedDuties.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between gap-4 rounded-2xl border border-gray-200 p-4">
+                    <div key={item.id} className="flex items-center justify-between gap-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4">
                       <div>
-                        <p className="font-semibold text-gray-900">{formatHumanDate(item.start_date)}</p>
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="font-semibold text-gray-900 dark:text-white">{formatHumanDate(item.start_date)}</p>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-slate-300">
                           {item.is_all_day ? 'All day' : `${String(item.start_time || '').slice(0, 5)} - ${String(item.end_time || '').slice(0, 5)}`}
                         </p>
-                        <p className="mt-1 text-sm text-gray-500">{item.reason}</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">{item.reason}</p>
                       </div>
-                      <button type="button" onClick={() => deleteDuty(item.id)} className="rounded-full border border-gray-200 p-2 text-gray-500 hover:text-red-600">
+                      <button type="button" onClick={() => deleteDuty(item.id)} className="rounded-full border border-gray-200 dark:border-slate-600 p-2 text-gray-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400">
                         <TrashIcon className="h-5 w-5" />
                       </button>
                     </div>
@@ -367,17 +367,17 @@ const EmployeeProfile = () => {
             </div>
 
             {/* Telegram connect card */}
-            <div className={`rounded-3xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+            <div className={`rounded-3xl border px-5 py-4 shadow-sm mt-6 ${telegram.connected ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}>
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
+                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100 dark:bg-emerald-900/40' : 'bg-[#e8f4fb] dark:bg-slate-700'}`}>
                     <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
                       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {telegram.connected
                         ? 'Connected — you\'ll receive booking alerts and a weekly summary every Sunday'
                         : 'Connect to get booking alerts and your weekly appointment summary'}
@@ -388,7 +388,7 @@ const EmployeeProfile = () => {
                   <button
                     type="button"
                     onClick={handleDisconnectTelegram}
-                    className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                    className="rounded-xl border border-red-200 dark:border-red-800 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
                     Disconnect
                   </button>

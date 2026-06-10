@@ -321,7 +321,7 @@ const BusinessProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f1118]">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#4a90b0]" />
       </div>
     );
@@ -336,7 +336,7 @@ const BusinessProfile = () => {
         {files.map((file) => (
           <div
             key={`${imageType}-${file.name}-${file.size}`}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs text-gray-700 shadow-sm"
+            className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-700 px-3 py-2 text-xs text-gray-700 dark:text-slate-200 shadow-sm"
           >
             <span className="max-w-[160px] truncate">{file.name}</span>
             <button
@@ -355,7 +355,7 @@ const BusinessProfile = () => {
     images.length > 0 ? (
       <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
         {images.map((image) => (
-          <div key={image.id} className="group relative overflow-hidden rounded-2xl bg-gray-100">
+          <div key={image.id} className="group relative overflow-hidden rounded-2xl bg-gray-100 dark:bg-slate-600">
             <img src={image.image} alt={image.caption || 'Gallery'} className="h-24 w-full object-cover" />
             <button
               type="button"
@@ -368,22 +368,22 @@ const BusinessProfile = () => {
         ))}
       </div>
     ) : (
-      <p className="mt-4 text-sm text-gray-500">No photos uploaded yet.</p>
+      <p className="mt-4 text-sm text-gray-500 dark:text-slate-400">No photos uploaded yet.</p>
     );
 
   return (
-    <div className="min-h-screen bg-[#f5f7f8] p-4 md:p-6">
+    <div className="min-h-screen bg-[#f5f7f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Business Profile</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Business Profile</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-400">
             Update the photo, contact details, and business info shown on your public booking page.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="overflow-hidden rounded-[28px] bg-gray-100">
+          <section className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+            <div className="overflow-hidden rounded-[28px] bg-gray-100 dark:bg-slate-700">
               {imagePreview ? (
                 <img
                   src={imagePreview}
@@ -397,17 +397,17 @@ const BusinessProfile = () => {
               )}
             </div>
 
-            <label className="mt-4 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-900">
+            <label className="mt-4 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 dark:border-slate-600 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">
               <CameraIcon className="h-5 w-5" />
               Upload main photo
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
             </label>
 
-            <div className="mt-6 rounded-3xl border border-dashed border-gray-300 bg-gray-50 p-4">
+            <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Upload space photos</p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Upload space photos</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                     Add interior, exterior, waiting room, salon, studio, or location photos.
                   </p>
                 </div>
@@ -433,11 +433,11 @@ const BusinessProfile = () => {
               {galleryEnabled ? renderSavedGallery(spaceGalleryImages) : null}
             </div>
 
-            <div className="mt-6 rounded-3xl border border-dashed border-gray-300 bg-gray-50 p-4">
+            <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Upload portfolio photos</p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Upload portfolio photos</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                     Add finished customer results, nails, brows, lashes, haircuts, tattoos, and other work samples.
                   </p>
                 </div>
@@ -467,15 +467,15 @@ const BusinessProfile = () => {
               <div className="flex items-start gap-3">
                 <BuildingStorefrontIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500">Business name</p>
-                  <p className="text-lg font-semibold text-gray-900">{formData.business_name || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Business name</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{formData.business_name || 'Not added'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPinIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500">Address</p>
-                  <p className="text-base text-gray-900">
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Address</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">
                     {[formData.business_address, formData.postal_code, formData.city, formData.state]
                       .filter(Boolean)
                       .join(', ') || 'Not added'}
@@ -485,28 +485,28 @@ const BusinessProfile = () => {
               <div className="flex items-start gap-3">
                 <PhoneIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500">Business phone</p>
-                  <p className="text-base text-gray-900">{formData.business_phone || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Business phone</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_phone || 'Not added'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <EnvelopeIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500">Business email</p>
-                  <p className="text-base text-gray-900">{formData.business_email || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Business email</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_email || 'Not added'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <GlobeAltIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500">Website</p>
-                  <p className="text-base text-gray-900">{formData.business_website || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Website</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_website || 'Not added'}</p>
                 </div>
               </div>
             </div>
           </section>
 
-          <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+          <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 shadow-sm">
             {/* City prominently at top — required for location filtering */}
             {!formData.city && (
               <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
@@ -519,76 +519,76 @@ const BusinessProfile = () => {
             )}
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Business name</label>
-                <input name="business_name" value={formData.business_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business name</label>
+                <input name="business_name" value={formData.business_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Owner first name</label>
-                <input name="first_name" value={formData.first_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Owner first name</label>
+                <input name="first_name" value={formData.first_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Owner last name</label>
-                <input name="last_name" value={formData.last_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Owner last name</label>
+                <input name="last_name" value={formData.last_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Business address</label>
-                <input name="business_address" value={formData.business_address} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business address</label>
+                <input name="business_address" value={formData.business_address} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Postal code</label>
-                <input name="postal_code" value={formData.postal_code} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Postal code</label>
+                <input name="postal_code" value={formData.postal_code} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">City / Province</label>
-                <input name="city" value={formData.city} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">City / Province</label>
+                <input name="city" value={formData.city} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Latitude</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Latitude</label>
                 <input
                   name="latitude"
                   value={formData.latitude}
                   onChange={handleChange}
                   placeholder="41.299500"
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3"
+                  className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3"
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Longitude</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Longitude</label>
                 <input
                   name="longitude"
                   value={formData.longitude}
                   onChange={handleChange}
                   placeholder="69.240100"
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3"
+                  className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3"
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Business phone</label>
-                <input name="business_phone" value={formData.business_phone} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business phone</label>
+                <input name="business_phone" value={formData.business_phone} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Business email</label>
-                <input name="business_email" value={formData.business_email} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business email</label>
+                <input name="business_email" value={formData.business_email} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Instagram URL</label>
-                <input name="instagram" value={formData.instagram} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Instagram URL</label>
+                <input name="instagram" value={formData.instagram} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Facebook URL</label>
-                <input name="facebook" value={formData.facebook} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Facebook URL</label>
+                <input name="facebook" value={formData.facebook} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Business website</label>
-                <input name="business_website" value={formData.business_website} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business website</label>
+                <input name="business_website" value={formData.business_website} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">About us</label>
-                <textarea name="business_description" rows={4} value={formData.business_description} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">About us</label>
+                <textarea name="business_description" rows={4} value={formData.business_description} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900">Short bio</label>
-                <textarea name="bio" rows={3} value={formData.bio} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3" />
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Short bio</label>
+                <textarea name="bio" rows={3} value={formData.bio} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
             </div>
 
@@ -601,7 +601,7 @@ const BusinessProfile = () => {
         </div>
 
         {/* Telegram connect card */}
-        <div className={`mt-6 rounded-3xl border px-6 py-5 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+        <div className={`mt-6 rounded-3xl border px-6 py-5 shadow-sm ${telegram.connected ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}>
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
               <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100' : 'bg-[#e8f4fb]'}`}>
@@ -610,8 +610,8 @@ const BusinessProfile = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Telegram Notifications</p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {telegram.connected
                     ? 'Connected — you\'ll receive booking alerts and weekly reports'
                     : 'Connect to get booking alerts and weekly performance reports every Sunday'}

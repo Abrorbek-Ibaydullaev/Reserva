@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from apps.users.notifications.email_service import send_password_reset_otp
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -28,6 +27,36 @@ from .serializers import (
 )
 
 User = get_user_model()
+
+
+def _flatten_serializer_errors(errors):
+    """Convert a DRF serializer errors dict into a single human-readable string.
+
+    Examples:
+        {"email": ["Enter a valid email."]}  → "email: Enter a valid email."
+        {"password": ["Password fields didn't match."]}  → "Password fields didn't match."
+        {"recaptcha": "reCAPTCHA failed."}  → "reCAPTCHA failed."
+        {"non_field_errors": ["..."]}  → "..."
+    """
+    messages = []
+    for field, value in errors.items():
+        if isinstance(value, list):
+            for item in value:
+                msg = str(item)
+                if field == 'non_field_errors':
+                    messages.append(msg)
+                else:
+                    messages.append(f"{field}: {msg}")
+        elif isinstance(value, dict):
+            # Nested errors — recurse once
+            messages.append(_flatten_serializer_errors(value))
+        else:
+            msg = str(value)
+            if field == 'non_field_errors':
+                messages.append(msg)
+            else:
+                messages.append(f"{field}: {msg}")
+    return ' | '.join(messages) if messages else 'Registration failed. Please check your details.'
 
 
 CITY_ALIASES = {
@@ -73,12 +102,16 @@ class UserRegistrationView(generics.CreateAPIView):
         email = User.objects.normalize_email(request.data.get('email', '')).strip()
         if email and User.objects.filter(email__iexact=email).exists():
             return Response(
-                {'detail': 'Email already registered'},
+                {'detail': 'An account with this email already exists. Please sign in instead.'},
                 status=status.HTTP_409_CONFLICT,
             )
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            errors = serializer.errors
+            # Flatten nested serializer error dicts into a single human-readable string
+            friendly = _flatten_serializer_errors(errors)
+            return Response({'detail': friendly}, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
 
         refresh = RefreshToken.for_user(user)
@@ -156,11 +189,7 @@ class ForgotPasswordView(APIView):
                 frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
                 reset_link = f'{frontend_url}/reset-password?token={token}'
                 print(f'[Reserva] Password reset link for {user.email}: {reset_link}')
-                try:
-                    #  New call name matching email_service.py
-                    send_password_reset_otp(user.email, otp_code)
-                except Exception as exc:
-                    print(f'[Reserva] Password reset email failed for {user.email}: {exc}')
+                # Email sending removed — this view is superseded by OTPForgotPasswordView.
 
         return Response(
             {'detail': 'If this email exists, a reset link has been sent.'},

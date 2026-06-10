@@ -53,20 +53,28 @@ const Login = () => {
             : '/';
         navigate(from === '/' ? fallback : from, { replace: true });
       } else {
+        const backendDetail =
+          typeof result.message?.detail === 'string'
+            ? result.message.detail
+            : null;
         setSubmitError(
           result.status === 401
             ? 'Incorrect email or password. Please try again.'
-            : 'Something went wrong. Please try again.'
+            : backendDetail || 'Something went wrong. Please try again.'
         );
         // Reset reCAPTCHA so the user can try again
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);
       }
     } catch (error) {
+      const backendDetail =
+        typeof error.response?.data?.detail === 'string'
+          ? error.response.data.detail
+          : null;
       setSubmitError(
         error.response?.status === 401
           ? 'Incorrect email or password. Please try again.'
-          : 'Something went wrong. Please try again.'
+          : backendDetail || 'Something went wrong. Please try again.'
       );
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);

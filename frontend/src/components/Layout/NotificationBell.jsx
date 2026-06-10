@@ -100,11 +100,11 @@ const NotificationBell = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-[1000] mt-2 w-80 rounded-2xl border border-slate-100 bg-white shadow-2xl overflow-hidden">
+        <div className="absolute right-0 top-full z-[1000] mt-2 w-80 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-            <p className="text-sm font-semibold text-slate-900">
-              Notifications {unread > 0 && <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-600">{unread}</span>}
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">
+              Notifications {unread > 0 && <span className="ml-1 rounded-full bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">{unread}</span>}
             </p>
             <div className="flex items-center gap-3">
               {unread > 0 && (
@@ -131,7 +131,7 @@ const NotificationBell = () => {
           {/* List */}
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-slate-400">
+              <div className="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
                 No notifications yet
               </div>
             ) : (
@@ -139,16 +139,16 @@ const NotificationBell = () => {
                 <button
                   key={n.id}
                   onClick={() => markOne(n.id)}
-                  className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 ${n.is_read ? '' : 'bg-blue-50/50'}`}
+                  className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700 ${n.is_read ? '' : 'bg-blue-50/50 dark:bg-blue-900/10'}`}
                 >
                   <span className="mt-0.5 flex-shrink-0 text-lg leading-none">{typeIcon(n.notification_type)}</span>
                   <div className="min-w-0 flex-1">
-                    <p className={`text-sm leading-snug ${n.is_read ? 'text-slate-600' : 'font-semibold text-slate-900'}`}>
+                    <p className={`text-sm leading-snug ${n.is_read ? 'text-slate-600 dark:text-slate-400' : 'font-semibold text-slate-900 dark:text-white'}`}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 text-xs leading-5 text-slate-500">{n.message}</p>
+                    <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">{n.message}</p>
                     {formatTime(n.created_at) && (
-                      <p className="mt-1 text-[11px] font-medium text-slate-400">{formatTime(n.created_at)}</p>
+                      <p className="mt-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">{formatTime(n.created_at)}</p>
                     )}
                   </div>
                   {!n.is_read && <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}

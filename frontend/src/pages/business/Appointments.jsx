@@ -80,17 +80,17 @@ const BusinessAppointments = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
-      <div className="mx-auto max-w-7xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
+      <div className="mx-auto max-w-7xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-            <p className="mt-2 text-gray-500">Manage customer bookings for your services.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Appointments</h1>
+            <p className="mt-2 text-gray-500 dark:text-slate-400">Manage customer bookings for your services.</p>
           </div>
           <select
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
-            className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+            className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]"
           >
             <option value="all">All appointments</option>
             <option value="active">Active</option>
@@ -102,17 +102,17 @@ const BusinessAppointments = () => {
         </div>
 
         {loading ? (
-          <div className="text-gray-500">Loading appointments...</div>
+          <div className="text-gray-500 dark:text-slate-400">Loading appointments...</div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="rounded-2xl bg-gray-50 p-8 text-gray-500">No appointments found.</div>
+          <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-8 text-gray-500 dark:text-slate-400">No appointments found.</div>
         ) : (
           <div className="space-y-4">
             {filteredAppointments.map((appointment) => (
-              <div key={appointment.id} className="rounded-2xl border border-gray-200 p-5">
+              <div key={appointment.id} className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-lg font-semibold text-gray-900">
+                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {appointment.service_details?.name}
                       </h2>
                       <span
@@ -123,7 +123,7 @@ const BusinessAppointments = () => {
                         {appointment.status.replace('_', ' ')}
                       </span>
                     </div>
-                    <div className="mt-3 grid gap-2 text-sm text-gray-600 md:grid-cols-2">
+                    <div className="mt-3 grid gap-2 text-sm text-gray-600 dark:text-slate-300 md:grid-cols-2">
                       <p>
                         Customer: {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
                       </p>
@@ -134,7 +134,7 @@ const BusinessAppointments = () => {
                       <p>Duration: {appointment.duration} min</p>
                     </div>
                     {appointment.customer_notes ? (
-                      <p className="mt-3 text-sm text-gray-500">
+                      <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">
                         Customer note: {appointment.customer_notes}
                       </p>
                     ) : null}

@@ -30,11 +30,11 @@ const EmployeeLayout = ({ children }) => {
 
   const SidebarContent = () => (
     <>
-      <div className="flex h-16 items-center gap-3 border-b border-slate-100 px-5">
+      <div className="flex h-16 items-center gap-3 border-b border-slate-100 dark:border-slate-700 px-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600">
           <CalendarDaysIcon className="h-5 w-5 text-white" />
         </div>
-        <span className="text-xl font-bold text-slate-900">Reserva</span>
+        <span className="text-xl font-bold text-slate-900 dark:text-white">Reserva</span>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-4">
@@ -48,7 +48,7 @@ const EmployeeLayout = ({ children }) => {
               className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
                 active
                   ? 'bg-violet-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -58,27 +58,27 @@ const EmployeeLayout = ({ children }) => {
         })}
       </nav>
 
-      <div className="border-t border-slate-100 p-4 space-y-1">
+      <div className="border-t border-slate-100 dark:border-slate-700 p-4 space-y-1">
         <div className="flex items-center gap-3 rounded-xl px-4 py-2.5">
           {user?.profile_picture ? (
             <img src={user.profile_picture} alt="" className="h-8 w-8 rounded-full object-cover" />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100">
-              <span className="text-sm font-semibold text-violet-700">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30">
+              <span className="text-sm font-semibold text-violet-700 dark:text-violet-400">
                 {user?.first_name?.[0]?.toUpperCase() || 'E'}
               </span>
             </div>
           )}
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
               {user?.first_name} {user?.last_name}
             </p>
-            <p className="text-xs text-slate-500">Employee</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Employee</p>
           </div>
         </div>
         <button
           onClick={logout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
           Logout
@@ -88,7 +88,7 @@ const EmployeeLayout = ({ children }) => {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f5f3ff]">
+    <div className="flex h-screen overflow-hidden bg-[#f5f3ff] dark:bg-[#0f1118]">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/40 lg:hidden"
@@ -97,7 +97,7 @@ const EmployeeLayout = ({ children }) => {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex w-60 flex-shrink-0 flex-col bg-white shadow-lg transition-transform duration-200 lg:relative lg:translate-x-0 lg:shadow-sm ${
+        className={`fixed inset-y-0 left-0 z-30 flex w-60 flex-shrink-0 flex-col bg-white dark:bg-slate-900 shadow-lg transition-transform duration-200 lg:relative lg:translate-x-0 lg:shadow-sm ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -105,15 +105,15 @@ const EmployeeLayout = ({ children }) => {
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-6">
+        <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 lg:px-6">
           <div className="flex items-center gap-3">
             <button
-              className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden"
+              className="rounded-lg p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <Bars3Icon className="h-5 w-5" />
             </button>
-            <p className="text-base font-semibold text-slate-700">
+            <p className="text-base font-semibold text-slate-700 dark:text-slate-200">
               {currentPage?.name || 'Employee Portal'}
             </p>
           </div>
@@ -124,17 +124,17 @@ const EmployeeLayout = ({ children }) => {
               {user?.profile_picture ? (
                 <img src={user.profile_picture} alt="" className="h-8 w-8 rounded-full object-cover" />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100">
-                  <span className="text-sm font-semibold text-violet-700">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30">
+                  <span className="text-sm font-semibold text-violet-700 dark:text-violet-400">
                     {user?.first_name?.[0]?.toUpperCase() || 'E'}
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {user?.first_name} {user?.last_name}
                 </p>
-                <p className="text-xs text-slate-500">Employee</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Employee</p>
               </div>
             </div>
           </div>

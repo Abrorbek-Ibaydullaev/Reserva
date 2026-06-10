@@ -744,21 +744,21 @@ const BusinessDetail = () => {
         {/* Right column */}
         <div className="order-1 xl:order-2 space-y-6">
           {hasBookingDraftForBusiness ? (
-            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your order</h2>
+            <div className="rounded-[24px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Your order</h2>
               <div className="mt-6 space-y-3">
                 {(draft.services || []).map((item) => (
-                  <div key={item.id} className="rounded-[24px] bg-[#f2f2f1] p-4">
+                  <div key={item.id} className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <p className="text-base text-gray-900">{item.name}</p>
-                        <p className="mt-2 text-sm text-gray-500">{formatDuration(item.duration)}</p>
+                        <p className="text-base text-gray-900 dark:text-white">{item.name}</p>
+                        <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">{formatDuration(item.duration)}</p>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="text-right">
-                          <p className="text-xl font-semibold text-gray-900">{formatPrice(item.price)}</p>
+                          <p className="text-xl font-semibold text-gray-900 dark:text-white">{formatPrice(item.price)}</p>
                         </div>
-                        <button type="button" onClick={() => handleRemoveDraftService(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 text-white">
+                        <button type="button" onClick={() => handleRemoveDraftService(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 dark:bg-slate-500 text-white">
                           <XMarkIcon className="h-5 w-5" />
                         </button>
                       </div>
@@ -766,21 +766,21 @@ const BusinessDetail = () => {
                   </div>
                 ))}
 
-                <div className="rounded-[24px] bg-[#f2f2f1] p-4">
+                <div className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Available staff</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Available staff</h3>
                     <div className="flex gap-3">
-                      <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900"><ChevronLeftIcon className="h-4 w-4" /></button>
-                      <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900"><ChevronRightIcon className="h-4 w-4" /></button>
+                      <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200"><ChevronLeftIcon className="h-4 w-4" /></button>
+                      <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200"><ChevronRightIcon className="h-4 w-4" /></button>
                     </div>
                   </div>
                   <div className="flex gap-3 overflow-x-auto pb-2">
                     <div className="min-w-[74px] text-center">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#4a90b0] bg-white text-gray-500">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#4a90b0] bg-white dark:bg-slate-600 text-gray-500 dark:text-slate-300">
                         <UserGroupIcon className="h-7 w-7" />
                       </div>
-                      <p className="mt-2 text-sm text-gray-800">No</p>
-                      <p className="text-sm text-gray-800">preference</p>
+                      <p className="mt-2 text-sm text-gray-800 dark:text-slate-300">No</p>
+                      <p className="text-sm text-gray-800 dark:text-slate-300">preference</p>
                     </div>
                     {orderEmployees.map((employee) => {
                       const label = staffPreviewSlots[employee.id];
@@ -790,21 +790,21 @@ const BusinessDetail = () => {
                           <div className="mb-1 h-6 text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
                             {staffLoading ? '' : label ? `From ${formatPreviewTime(label)}` : ''}
                           </div>
-                          <div className="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#e9ecef] text-xs font-semibold text-gray-700">
+                          <div className="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#e9ecef] dark:bg-slate-600 text-xs font-semibold text-gray-700 dark:text-slate-200">
                             {employee.user_details?.profile_picture ? (
                               <img src={normalizeMediaUrl(employee.user_details.profile_picture)} alt={employee.user_details.first_name} className="h-full w-full object-cover" />
                             ) : initials}
                           </div>
                           <div className={`mx-auto mt-2 h-2.5 w-2.5 rounded-full ${label ? 'bg-green-500' : 'bg-orange-500'}`} />
-                          <p className="mt-1.5 text-sm text-gray-800">{employee.user_details?.first_name || employee.user_details?.email}</p>
+                          <p className="mt-1.5 text-sm text-gray-800 dark:text-slate-300">{employee.user_details?.first_name || employee.user_details?.email}</p>
                         </div>
                       );
                     })}
                   </div>
                 </div>
               </div>
-              <div className="mt-8 border-t border-gray-200 pt-5">
-                <div className="flex items-center justify-between text-xl font-semibold text-gray-900">
+              <div className="mt-8 border-t border-gray-200 dark:border-slate-700 pt-5">
+                <div className="flex items-center justify-between text-xl font-semibold text-gray-900 dark:text-white">
                   <span>Total</span>
                   <span>{formatPrice(totalDraftAmount)}</span>
                 </div>

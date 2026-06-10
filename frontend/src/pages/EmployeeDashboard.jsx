@@ -33,13 +33,13 @@ const apptStart = (a) => {
 };
 
 const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+  <div className="flex items-center gap-4 rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm">
     <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
       <Icon className="h-5 w-5" />
     </div>
     <div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
-      <p className="text-xs text-slate-500">{label}</p>
+      <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
     </div>
   </div>
 );
@@ -102,11 +102,11 @@ const EmployeeDashboard = () => {
     <div className="space-y-5 p-5">
       {/* Greeting */}
       <div>
-        <h1 className="text-xl font-bold text-slate-900">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">
           Good {now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening'},{' '}
           {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {format(now, 'EEEE, MMMM d, yyyy')} ·{' '}
           {todayAppts.length} appointment{todayAppts.length !== 1 ? 's' : ''} today
         </p>
@@ -121,9 +121,9 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* Today's schedule */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900">Today's Schedule</h2>
+          <h2 className="font-semibold text-slate-900 dark:text-white">Today's Schedule</h2>
           <Link
             to="/employee/appointments"
             className="flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline"
@@ -133,9 +133,9 @@ const EmployeeDashboard = () => {
         </div>
 
         {todayAppts.length === 0 ? (
-          <div className="rounded-xl bg-slate-50 p-8 text-center">
+          <div className="rounded-xl bg-slate-50 dark:bg-slate-700 p-8 text-center">
             <p className="mb-2 text-2xl">🗓️</p>
-            <p className="text-sm text-slate-500">No appointments scheduled for today.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">No appointments scheduled for today.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -152,22 +152,22 @@ const EmployeeDashboard = () => {
                   key={a.id}
                   className={`flex items-center gap-4 rounded-xl border p-4 ${
                     isPast
-                      ? 'border-slate-100 bg-slate-50'
-                      : 'border-violet-100 bg-violet-50/40'
+                      ? 'border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50'
+                      : 'border-violet-100 dark:border-violet-900/50 bg-violet-50/40 dark:bg-violet-900/10'
                   }`}
                 >
                   <div className="w-16 flex-shrink-0 text-center">
-                    <p className="text-sm font-bold text-slate-900">{fmtTime(a.start_time)}</p>
-                    <p className="text-xs text-slate-400">{a.duration}min</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{fmtTime(a.start_time)}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">{a.duration}min</p>
                   </div>
 
-                  <div className="h-10 w-px flex-shrink-0 bg-slate-200" />
+                  <div className="h-10 w-px flex-shrink-0 bg-slate-200 dark:bg-slate-600" />
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-slate-900">
+                    <p className="truncate font-semibold text-slate-900 dark:text-white">
                       {a.service_details?.name}
                     </p>
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                       <UserCircleIcon className="h-3.5 w-3.5" />
                       {custName}
                     </div>
@@ -211,8 +211,8 @@ const EmployeeDashboard = () => {
 
       {/* Coming up (non-today upcoming) */}
       {upcoming.filter((a) => a.date !== today).length > 0 && (
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-4 font-semibold text-slate-900">Coming up</h2>
+        <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-sm">
+          <h2 className="mb-4 font-semibold text-slate-900 dark:text-white">Coming up</h2>
           <div className="space-y-2">
             {upcoming
               .filter((a) => a.date !== today)
@@ -224,16 +224,16 @@ const EmployeeDashboard = () => {
                 return (
                   <div
                     key={a.id}
-                    className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3"
+                    className="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-700 px-4 py-3"
                   >
-                    <CalendarDaysIcon className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                    <CalendarDaysIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
                         {a.service_details?.name}
                       </p>
-                      <p className="text-xs text-slate-500">{custName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{custName}</p>
                     </div>
-                    <div className="text-right text-xs text-slate-500">
+                    <div className="text-right text-xs text-slate-500 dark:text-slate-400">
                       <p className="font-medium">
                         {new Date(`${a.date}T00:00:00`).toLocaleDateString('en-US', {
                           month: 'short',

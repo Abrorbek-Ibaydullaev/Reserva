@@ -123,13 +123,13 @@ const BusinessEmployees = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] p-4 md:p-6">
+    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Employees</h1>
-              <p className="mt-2 text-gray-500">Create staff accounts and assign services.</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Employees</h1>
+              <p className="mt-2 text-gray-500 dark:text-slate-400">Create staff accounts and assign services.</p>
             </div>
             <button
               type="button"
@@ -147,14 +147,14 @@ const BusinessEmployees = () => {
                 value={form.first_name}
                 onChange={(event) => setForm((prev) => ({ ...prev, first_name: event.target.value }))}
                 placeholder="First name"
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
                 required
               />
               <input
                 value={form.last_name}
                 onChange={(event) => setForm((prev) => ({ ...prev, last_name: event.target.value }))}
                 placeholder="Last name"
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
                 required
               />
             </div>
@@ -164,7 +164,7 @@ const BusinessEmployees = () => {
                 value={form.email}
                 onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
                 placeholder="Email"
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
                 required
               />
               <input
@@ -172,7 +172,7 @@ const BusinessEmployees = () => {
                 value={form.password}
                 onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
                 placeholder={editingId ? 'New password (optional)' : 'Password'}
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
                 required={!editingId}
               />
             </div>
@@ -181,13 +181,13 @@ const BusinessEmployees = () => {
                 value={form.phone_number}
                 onChange={(event) => setForm((prev) => ({ ...prev, phone_number: event.target.value }))}
                 placeholder="Phone number"
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
               />
               <input
                 value={form.position}
                 onChange={(event) => setForm((prev) => ({ ...prev, position: event.target.value }))}
                 placeholder="Position"
-                className="rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
                 required
               />
             </div>
@@ -196,10 +196,10 @@ const BusinessEmployees = () => {
               onChange={(event) => setForm((prev) => ({ ...prev, bio: event.target.value }))}
               placeholder="Bio"
               rows={3}
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-[#4a90b0]"
+              className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 px-4 py-3 outline-none focus:border-[#4a90b0]"
             />
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-900">Services</p>
+              <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-slate-200">Services</p>
               <div className="flex flex-wrap gap-2">
                 {services.map((service) => {
                   const active = form.service_ids.includes(service.id);
@@ -209,7 +209,7 @@ const BusinessEmployees = () => {
                       type="button"
                       onClick={() => handleServiceToggle(service.id)}
                       className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                        active ? 'bg-[#4a90b0] text-white' : 'bg-gray-100 text-gray-700'
+                        active ? 'bg-[#4a90b0] text-white' : 'bg-gray-100 dark:bg-slate-600 text-gray-700 dark:text-slate-200'
                       }`}
                     >
                       {service.name}
@@ -218,12 +218,12 @@ const BusinessEmployees = () => {
                 })}
               </div>
             </div>
-            <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700">
+            <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.is_active}
                 onChange={(event) => setForm((prev) => ({ ...prev, is_active: event.target.checked }))}
-                className="h-4 w-4 rounded border-gray-300 text-[#4a90b0]"
+                className="h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-[#4a90b0]"
               />
               Employee is active
             </label>
@@ -239,7 +239,7 @@ const BusinessEmployees = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="rounded-2xl border border-gray-300 px-5 py-3 font-semibold text-gray-700"
+                  className="rounded-2xl border border-gray-300 dark:border-slate-600 px-5 py-3 font-semibold text-gray-700 dark:text-slate-300"
                 >
                   Cancel
                 </button>
@@ -248,33 +248,33 @@ const BusinessEmployees = () => {
           </form>
         </section>
 
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900">Team</h2>
-          <p className="mt-2 text-gray-500">Staff members synced from your business workspace.</p>
+        <section className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Team</h2>
+          <p className="mt-2 text-gray-500 dark:text-slate-400">Staff members synced from your business workspace.</p>
           <div className="mt-6 space-y-4">
             {loading ? (
-              <div className="text-gray-500">Loading employees...</div>
+              <div className="text-gray-500 dark:text-slate-400">Loading employees...</div>
             ) : employees.length === 0 ? (
-              <div className="rounded-2xl bg-gray-50 p-6 text-gray-500">No employees yet.</div>
+              <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-6 text-gray-500 dark:text-slate-400">No employees yet.</div>
             ) : (
               employees.map((employee) => (
-                <div key={employee.id} className="rounded-2xl border border-gray-200 p-5">
+                <div key={employee.id} className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {employee.user_details?.first_name} {employee.user_details?.last_name}
                         </h3>
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${employee.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${employee.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 dark:bg-slate-600 text-gray-600 dark:text-slate-400'}`}>
                           {employee.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm font-medium text-gray-700">{employee.position}</p>
-                      <p className="mt-2 text-sm text-gray-500">{employee.user_details?.email}</p>
-                      {employee.bio ? <p className="mt-3 text-sm text-gray-500">{employee.bio}</p> : null}
+                      <p className="mt-2 text-sm font-medium text-gray-700 dark:text-slate-300">{employee.position}</p>
+                      <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">{employee.user_details?.email}</p>
+                      {employee.bio ? <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">{employee.bio}</p> : null}
                       <div className="mt-3 flex flex-wrap gap-2">
                         {employee.services_details?.map((service) => (
-                          <span key={service.id} className="rounded-full bg-[#e8f2f6] px-3 py-1 text-xs font-semibold text-[#326e88]">
+                          <span key={service.id} className="rounded-full bg-[#e8f2f6] dark:bg-slate-600 px-3 py-1 text-xs font-semibold text-[#326e88] dark:text-slate-200">
                             {service.name}
                           </span>
                         ))}
@@ -284,7 +284,7 @@ const BusinessEmployees = () => {
                       <button
                         type="button"
                         onClick={() => handleEdit(employee)}
-                        className="inline-flex items-center rounded-2xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700"
+                        className="inline-flex items-center rounded-2xl border border-gray-300 dark:border-slate-600 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-slate-300"
                       >
                         <PencilSquareIcon className="mr-2 h-4 w-4" />
                         Edit
@@ -292,7 +292,7 @@ const BusinessEmployees = () => {
                       <button
                         type="button"
                         onClick={() => handleDelete(employee.id)}
-                        className="inline-flex items-center rounded-2xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600"
+                        className="inline-flex items-center rounded-2xl border border-red-200 dark:border-red-800 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400"
                       >
                         <TrashIcon className="mr-2 h-4 w-4" />
                         Delete

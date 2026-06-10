@@ -179,10 +179,22 @@ const Register = () => {
     setEmailError('');
   };
 
-  const getDetailMessage = (message, fallback) => {
+  /**
+   * Extract a single human-readable string from the backend error payload.
+   * The backend now always returns { detail: "..." } for 400/409 errors.
+   * Legacy fallback handles older array/string shapes too.
+   */
+  const extractErrorMessage = (message, fallback) => {
+    if (!message) return fallback;
     if (typeof message === 'string') return message;
-    if (Array.isArray(message?.detail)) return message.detail[0] || fallback;
-    return message?.detail || fallback;
+    // Backend always sends { detail: "..." } now
+    if (typeof message.detail === 'string') return message.detail;
+    if (Array.isArray(message.detail)) return message.detail[0] || fallback;
+    // Legacy: field-level errors from DRF (e.g. { email: ["..."] })
+    const firstField = Object.values(message)[0];
+    if (Array.isArray(firstField)) return firstField[0] || fallback;
+    if (typeof firstField === 'string') return firstField;
+    return fallback;
   };
 
   const onSubmit = async (data) => {
@@ -223,22 +235,16 @@ const Register = () => {
         if (result.status === 409) {
           setEmailError(
             <>
-              An account with this email already exists. Try signing in instead.{' '}
+              This email is already registered under a different account type. Please{' '}
               <Link to="/login" className="font-semibold text-red-700 underline">
-                Sign in
-              </Link>
+                sign in instead
+              </Link>.
             </>
           );
-        } else if (result.status === 400) {
-          setError(getDetailMessage(msg, 'Registration failed. Please check your details and try again.'));
-        } else if (typeof msg === 'string') {
-          setError(msg);
-        } else if (msg?.recaptcha) {
-          setError(Array.isArray(msg.recaptcha) ? msg.recaptcha[0] : msg.recaptcha);
-        } else if (msg?.detail) {
-          setError(msg.detail);
         } else {
-          setError('Registration failed. Please check your details and try again.');
+          setError(
+            extractErrorMessage(msg, 'Registration failed. Please check your details and try again.')
+          );
         }
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);

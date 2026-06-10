@@ -870,11 +870,11 @@ const Home = () => {
         <span className="hidden sm:inline">{user?.first_name || 'Profile'}</span>
       </button>
       {userMenu && (
-        <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white shadow-xl border border-slate-100 py-1 text-sm z-[200]">
-          <Link to="/profile" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Profile</Link>
-          <Link to="/appointments" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Appointments</Link>
-          <Link to="/settings" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 hover:bg-slate-50">Settings</Link>
-          <button onClick={() => { logout(); setUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-slate-50">Logout</button>
+        <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 py-1 text-sm z-[200]">
+          <Link to="/profile" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Profile</Link>
+          <Link to="/appointments" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Appointments</Link>
+          <Link to="/settings" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Settings</Link>
+          <button onClick={() => { logout(); setUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700">Logout</button>
         </div>
       )}
     </div>

@@ -577,14 +577,14 @@ const BookAppointment = () => {
         <button
           type="button"
           onClick={handleBackToServices}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900 dark:text-slate-200"
         >
           <ArrowLeftIcon className="h-7 w-7" />
         </button>
         <button
           type="button"
           onClick={() => setShowDiscardModal(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900 dark:text-slate-200"
         >
           <XMarkIcon className="h-7 w-7" />
         </button>
@@ -592,15 +592,15 @@ const BookAppointment = () => {
 
       <div className="mx-auto grid max-w-[1280px] items-start gap-8 xl:grid-cols-[1.35fr_0.85fr]">
         <section>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Select Date & Time</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Select Date & Time</h1>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">{headerLabel}</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">{headerLabel}</h2>
               <button
                 type="button"
                 onClick={() => setCalendarOpen((prev) => !prev)}
-                className="inline-flex items-center gap-3 rounded-full border border-gray-300 px-4 py-2.5 text-gray-800"
+                className="inline-flex items-center gap-3 rounded-full border border-gray-300 dark:border-slate-600 px-4 py-2.5 text-gray-800 dark:text-slate-200"
               >
                 <CalendarDaysIcon className="h-5 w-5" />
                 <ChevronRightIcon className={`h-4 w-4 transition-transform ${calendarOpen ? '-rotate-90' : 'rotate-90'}`} />
@@ -618,7 +618,7 @@ const BookAppointment = () => {
                   const nextStart = format(addDays(parseISO(visibleStart), -7), 'yyyy-MM-dd');
                   setVisibleStart(nextStart < getToday() ? getToday() : nextStart);
                 }}
-                className="rounded-2xl border border-gray-300 p-3 text-gray-900"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 p-3 text-gray-900 dark:text-slate-200"
               >
                 <ChevronLeftIcon className="h-4 w-4" />
               </button>
@@ -631,7 +631,7 @@ const BookAppointment = () => {
                   }
                   setVisibleStart(format(addDays(parseISO(visibleStart), 7), 'yyyy-MM-dd'));
                 }}
-                className="rounded-2xl border border-gray-300 p-3 text-gray-900"
+                className="rounded-2xl border border-gray-300 dark:border-slate-600 p-3 text-gray-900 dark:text-slate-200"
               >
                 <ChevronRightIcon className="h-4 w-4" />
               </button>
@@ -639,10 +639,10 @@ const BookAppointment = () => {
           </div>
 
           {calendarOpen ? (
-            <div className="mt-8 max-w-[860px] rounded-[24px] bg-white/60 p-1">
+            <div className="mt-8 max-w-[860px] rounded-[24px] bg-white/60 dark:bg-slate-800/60 p-1">
               <div className="flex flex-wrap gap-2.5">
                 {['Morning', 'Afternoon', 'Evening'].map((label) => (
-                  <div key={label} className="rounded-full bg-[#efefee] px-4 py-2 text-sm text-gray-900">
+                  <div key={label} className="rounded-full bg-[#efefee] dark:bg-slate-700 px-4 py-2 text-sm text-gray-900 dark:text-slate-200">
                     {label}
                   </div>
                 ))}
@@ -650,7 +650,7 @@ const BookAppointment = () => {
 
               <div className="mt-6 grid grid-cols-7 gap-y-3">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-base text-gray-500">
+                  <div key={day} className="text-center text-base text-gray-500 dark:text-slate-400">
                     {day}
                   </div>
                 ))}
@@ -678,9 +678,9 @@ const BookAppointment = () => {
                           active
                             ? 'border-[#4a90b0] bg-[#2f95bb] text-white'
                             : inMonth
-                              ? 'border-gray-200 bg-[#f2f2f1] text-gray-900'
-                              : 'border-gray-200 bg-white text-gray-300'
-                        } ${disabled ? 'bg-white text-gray-300' : ''}`}
+                              ? 'border-gray-200 dark:border-slate-600 bg-[#f2f2f1] dark:bg-slate-700 text-gray-900 dark:text-slate-200'
+                              : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-300 dark:text-slate-600'
+                        } ${disabled ? 'bg-white dark:bg-slate-800 text-gray-300 dark:text-slate-600' : ''}`}
                       >
                         <span className="relative">
                           {format(day, 'd')}
@@ -697,7 +697,7 @@ const BookAppointment = () => {
                 })}
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-slate-400">
                 <span>Available slots:</span>
                 <div className="flex items-center gap-2">
                   <span className="h-1.5 w-6 rounded-full bg-[#7cc089]" />
@@ -728,7 +728,7 @@ const BookAppointment = () => {
                       className={`mx-auto flex h-11 w-11 md:h-14 md:w-14 lg:h-16 lg:w-16 items-center justify-center rounded-full border text-sm md:text-base lg:text-xl font-medium transition ${
                         active
                           ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
-                          : 'border-gray-200 bg-[#f2f2f1] text-gray-900'
+                          : 'border-gray-200 dark:border-slate-600 bg-[#f2f2f1] dark:bg-slate-700 text-gray-900 dark:text-slate-200'
                       }`}
                     >
                       <span className="relative">
@@ -736,18 +736,18 @@ const BookAppointment = () => {
                         <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
                       </span>
                     </div>
-                    <div className="mt-2 text-sm md:text-base text-gray-800">{format(day, 'EEE')}</div>
+                    <div className="mt-2 text-sm md:text-base text-gray-800 dark:text-slate-300">{format(day, 'EEE')}</div>
                   </button>
                 );
               })}
             </div>
           )}
 
-          <div className="mt-8 border-t border-gray-200 pt-8">
+          <div className="mt-8 border-t border-gray-200 dark:border-slate-700 pt-8">
             <div className="grid gap-6 sm:grid-cols-3">
               {['Morning', 'Afternoon', 'Evening'].map((label) => (
                 <div key={label}>
-                  <p className="mb-4 text-center text-sm text-gray-500">
+                  <p className="mb-4 text-center text-sm text-gray-500 dark:text-slate-400">
                     {label} ({groupedSlots[label].length})
                   </p>
                   <div className="space-y-3">
@@ -761,8 +761,8 @@ const BookAppointment = () => {
                             onClick={() => setSelectedTime(slot.start_time)}
                             className={`w-full rounded-full px-4 py-3 text-sm md:text-base font-semibold transition ${
                               active
-                                ? 'border-2 border-[#4a90b0] bg-[#dcedf6] text-gray-900'
-                                : 'bg-[#efefee] text-gray-900'
+                                ? 'border-2 border-[#4a90b0] bg-[#dcedf6] dark:bg-[#1e3a4a] text-gray-900 dark:text-white'
+                                : 'bg-[#efefee] dark:bg-slate-700 text-gray-900 dark:text-slate-200'
                             }`}
                           >
                             {formatSlotTime(slot.start_time)}
@@ -770,7 +770,7 @@ const BookAppointment = () => {
                         );
                       })
                     ) : (
-                      <div className="rounded-[24px] bg-[#f5f5f4] px-6 py-8 text-center text-sm text-gray-400">
+                      <div className="rounded-[24px] bg-[#f5f5f4] dark:bg-slate-700/50 px-6 py-8 text-center text-sm text-gray-400 dark:text-slate-500">
                         No slots
                       </div>
                     )}
@@ -780,48 +780,48 @@ const BookAppointment = () => {
             </div>
 
             {(slotsLoading || slotsMessage) && (
-              <div className="mt-6 rounded-2xl bg-[#f5f7f8] px-5 py-4 text-sm text-gray-600">
+              <div className="mt-6 rounded-2xl bg-[#f5f7f8] dark:bg-slate-700 px-5 py-4 text-sm text-gray-600 dark:text-slate-300">
                 {slotsLoading ? 'Loading slots...' : slotsMessage}
               </div>
             )}
           </div>
         </section>
 
-        <aside className="h-fit self-start rounded-[24px] border border-gray-200 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">Your order</h2>
+        <aside className="h-fit self-start rounded-[24px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Your order</h2>
 
           <div className="mt-6 space-y-3">
             {draftServices.map((draftService) => {
               const isActiveDraftService = String(draftService.id) === String(serviceId);
 
               return (
-                <div key={draftService.id} className="rounded-[24px] bg-[#f2f2f1] p-4">
+                <div key={draftService.id} className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <p className="text-base md:text-lg text-gray-900">{draftService.name}</p>
-                      <p className="mt-2 text-sm md:text-base text-gray-500">{formatDuration(draftService.duration)}</p>
+                      <p className="text-base md:text-lg text-gray-900 dark:text-white">{draftService.name}</p>
+                      <p className="mt-2 text-sm md:text-base text-gray-500 dark:text-slate-400">{formatDuration(draftService.duration)}</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="text-right">
-                        <p className="text-lg md:text-xl font-semibold text-gray-900">
+                        <p className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">
                           {formatCurrency(draftService.price)}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveDraftService(draftService.id)}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 text-white"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 dark:bg-slate-500 text-white"
                       >
                         <XMarkIcon className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="mt-5 border-t border-gray-200 pt-5">
+                  <div className="mt-5 border-t border-gray-200 dark:border-slate-600 pt-5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-slate-300">
                         <span className="font-medium">Staff:</span>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-500">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white dark:bg-slate-600 text-gray-500 dark:text-slate-300">
                           <UserGroupIcon className="h-5 w-5" />
                         </div>
                         <span>
@@ -836,7 +836,7 @@ const BookAppointment = () => {
                         <button
                           type="button"
                           onClick={() => handleActivateDraftService(draftService.id)}
-                          className="rounded-2xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-900"
+                          className="rounded-2xl border border-gray-300 dark:border-slate-500 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-slate-200"
                         >
                           Change
                         </button>
@@ -847,14 +847,14 @@ const BookAppointment = () => {
               );
             })}
 
-            <div className="rounded-[24px] bg-[#f2f2f1] p-4">
+            <div className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900">Available staff</h3>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">Available staff</h3>
                 <div className="flex gap-3">
-                  <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900">
+                  <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200">
                     <ChevronLeftIcon className="h-4 w-4" />
                   </button>
-                  <button type="button" className="rounded-2xl border border-gray-300 p-2.5 text-gray-900">
+                  <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200">
                     <ChevronRightIcon className="h-4 w-4" />
                   </button>
                 </div>
@@ -867,12 +867,12 @@ const BookAppointment = () => {
                   className="flex min-w-[92px] flex-col items-center text-center"
                 >
                   <div className="mb-1 h-6" />
-                  <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] ${selectedEmployee === 'none' ? 'border-[#4a90b0]' : 'border-gray-300'} bg-white text-gray-500`}>
+                  <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] ${selectedEmployee === 'none' ? 'border-[#4a90b0]' : 'border-gray-300 dark:border-slate-500'} bg-white dark:bg-slate-600 text-gray-500 dark:text-slate-300`}>
                     <UserGroupIcon className="h-7 w-7" />
                   </div>
                   <div className="mt-2 h-2.5 w-2.5 rounded-full bg-green-500" />
-                  <p className="mt-2 text-sm text-gray-800">No</p>
-                  <p className="text-sm text-gray-800">preference</p>
+                  <p className="mt-2 text-sm text-gray-800 dark:text-slate-300">No</p>
+                  <p className="text-sm text-gray-800 dark:text-slate-300">preference</p>
                 </button>
 
                 {filteredEmployees.map((employee) => {
@@ -899,7 +899,7 @@ const BookAppointment = () => {
                       <div className="mb-1 h-6 text-center text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
                         {staffLoading ? '' : isBlockedForSelectedTime ? 'Unavailable' : label ? `From ${formatSlotTime(label)}` : ''}
                       </div>
-                      <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-[#4a90b0]' : 'border-transparent'} bg-[#e9ecef] text-xs font-semibold text-gray-700`}>
+                      <div className={`mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] ${active ? 'border-[#4a90b0]' : 'border-transparent'} bg-[#e9ecef] dark:bg-slate-600 text-xs font-semibold text-gray-700 dark:text-slate-200`}>
                         {employee.user_details?.profile_picture ? (
                           <img
                             src={employee.user_details.profile_picture}
@@ -911,7 +911,7 @@ const BookAppointment = () => {
                         )}
                       </div>
                       <div className={`mx-auto mt-2 h-2.5 w-2.5 rounded-full ${label ? 'bg-green-500' : 'bg-orange-500'}`} />
-                      <p className="mt-2 max-w-[92px] text-sm text-gray-800">
+                      <p className="mt-2 max-w-[92px] text-sm text-gray-800 dark:text-slate-300">
                         {employee.user_details?.first_name || employee.user_details?.email}
                       </p>
                     </button>
@@ -930,8 +930,8 @@ const BookAppointment = () => {
             Add another service
           </button>
 
-          <div className="mt-8 border-t border-gray-200 pt-5">
-            <div className="flex items-center justify-between text-lg md:text-xl font-semibold text-gray-900">
+          <div className="mt-8 border-t border-gray-200 dark:border-slate-700 pt-5">
+            <div className="flex items-center justify-between text-lg md:text-xl font-semibold text-gray-900 dark:text-white">
               <span>Total</span>
               <span>{formatCurrency(totalAmount)}</span>
             </div>

@@ -50,21 +50,21 @@ const delta = (v) => `${v >= 0 ? '+' : ''}${v}%`;
 
 // ── Compact stat card ────────────────────────────────────────────────────────
 const StatCard = ({ title, value, sub, icon: Icon, color, trend }) => (
-  <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm">
+  <div className="flex items-center gap-3 rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-sm">
     <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${color}`}>
       <Icon className="h-5 w-5" />
     </div>
     <div className="min-w-0 flex-1">
-      <p className="truncate text-xs font-medium text-slate-500">{title}</p>
+      <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">{title}</p>
       <div className="flex flex-wrap items-baseline gap-x-1.5">
-        <p className="text-xl font-bold leading-tight text-slate-900">{value}</p>
+        <p className="text-xl font-bold leading-tight text-slate-900 dark:text-white">{value}</p>
         {trend !== undefined && (
           <span className={`text-xs font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
             {trend >= 0 ? '↑' : '↓'}{Math.abs(trend)}%
           </span>
         )}
       </div>
-      {sub && <p className="truncate text-xs text-slate-400">{sub}</p>}
+      {sub && <p className="truncate text-xs text-slate-400 dark:text-slate-500">{sub}</p>}
     </div>
   </div>
 );
@@ -139,10 +139,10 @@ const BusinessDashboard = () => {
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
             Hello, {user?.first_name || 'there'} 👋
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {format(new Date(), 'EEEE, MMMM d, yyyy')}
             {dashboard.schedule_overview.today_is_open
               ? ` · Open ${dashboard.schedule_overview.today_opening_time || ''} – ${dashboard.schedule_overview.today_closing_time || ''}`
@@ -196,34 +196,34 @@ const BusinessDashboard = () => {
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
 
         {/* Employee list */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Employees</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Employees</h2>
             <Link to="/dashboard/employees" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
               All <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
           {top_employees.length === 0 ? (
-            <p className="text-center text-xs text-slate-400 py-4">No employees yet.</p>
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500 py-4">No employees yet.</p>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              <div className="grid grid-cols-3 text-xs text-slate-400 font-medium px-2 mb-1">
+              <div className="grid grid-cols-3 text-xs text-slate-400 dark:text-slate-500 font-medium px-2 mb-1">
                 <span>Name</span>
                 <span className="text-center">Status</span>
                 <span className="text-right">Done</span>
               </div>
               {top_employees.map((emp) => (
-                <div key={emp.id} className="grid grid-cols-3 items-center rounded-xl bg-slate-50 px-3 py-2">
+                <div key={emp.id} className="grid grid-cols-3 items-center rounded-xl bg-slate-50 dark:bg-slate-700 px-3 py-2">
                   <div>
-                    <p className="text-xs font-semibold text-slate-900 truncate">{emp.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{emp.position || 'Staff'}</p>
+                    <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{emp.name}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{emp.position || 'Staff'}</p>
                   </div>
                   <div className="flex justify-center">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400'}`}>
                       {emp.is_active ? 'Active' : 'Off'}
                     </span>
                   </div>
-                  <p className="text-right text-sm font-bold text-slate-900">{emp.completed}</p>
+                  <p className="text-right text-sm font-bold text-slate-900 dark:text-white">{emp.completed}</p>
                 </div>
               ))}
             </div>
@@ -231,10 +231,10 @@ const BusinessDashboard = () => {
         </div>
 
         {/* Segmentation / Status donut */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Appointment Status</h2>
-            <span className="text-xs text-slate-400">{overview.completion_rate}% complete</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Appointment Status</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{overview.completion_rate}% complete</span>
           </div>
           <div>
             <div className="h-[130px]">
@@ -258,10 +258,10 @@ const BusinessDashboard = () => {
             </div>
             <div className="mt-2 grid grid-cols-2 gap-1.5">
               {statusData.map((item) => (
-                <div key={item.name} className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2 py-1">
+                <div key={item.name} className="flex items-center gap-1.5 rounded-lg bg-slate-50 dark:bg-slate-700 px-2 py-1">
                   <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="truncate text-xs text-slate-600 capitalize">{item.name}</span>
-                  <span className="ml-auto text-xs font-bold text-slate-900">{item.value}</span>
+                  <span className="truncate text-xs text-slate-600 dark:text-slate-300 capitalize">{item.name}</span>
+                  <span className="ml-auto text-xs font-bold text-slate-900 dark:text-white">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -269,10 +269,10 @@ const BusinessDashboard = () => {
         </div>
 
         {/* Bookings trend */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Booking Trend</h2>
-            <span className="text-xs text-slate-400">Last 14 days</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Booking Trend</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">Last 14 days</span>
           </div>
           <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -305,10 +305,10 @@ const BusinessDashboard = () => {
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
 
         {/* Busiest days */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Busiest Days</h2>
-            <span className="text-xs text-slate-400">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Busiest Days</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
           </div>
           <div className="h-[150px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -324,9 +324,9 @@ const BusinessDashboard = () => {
         </div>
 
         {/* Services-wise bookings */}
-        <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Services-wise Bookings</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Services-wise Bookings</h2>
             <Link to="/dashboard/services" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
               Manage <ChevronRightIcon className="h-3 w-3" />
             </Link>
