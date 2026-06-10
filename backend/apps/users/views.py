@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from .utils.email import send_password_reset_email
+from apps.users.notifications.email_service import send_password_reset_otp
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -157,7 +157,8 @@ class ForgotPasswordView(APIView):
                 reset_link = f'{frontend_url}/reset-password?token={token}'
                 print(f'[Reserva] Password reset link for {user.email}: {reset_link}')
                 try:
-                    send_password_reset_email(user.email, token)
+                    #  New call name matching email_service.py
+                    send_password_reset_otp(user.email, otp_code)
                 except Exception as exc:
                     print(f'[Reserva] Password reset email failed for {user.email}: {exc}')
 
