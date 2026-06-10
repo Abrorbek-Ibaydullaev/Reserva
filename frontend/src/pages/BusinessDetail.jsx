@@ -824,7 +824,7 @@ const BusinessDetail = () => {
 
       {/* Gallery lightbox */}
       {activeGalleryIndex !== null ? (
-        <div className="fixed inset-0 z-[60] bg-white" onClick={closeGallery}>
+        <div className="fixed inset-0 z-[1001] bg-white" onClick={closeGallery}>
           <div className="flex h-full flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
               <div className="mx-auto grid w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4">
