@@ -406,50 +406,26 @@ const BusinessDetail = () => {
   // ── LEFT COLUMN: hero photos + name + portfolio ──
   const businessHeroSection = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-      {/* Bento photo grid */}
-      {spaceGallery.length > 0 ? (
-        <div
-          className="p-2 bg-white"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gridTemplateRows: 'repeat(2, 1fr)',
-            gap: '8px',
-            height: 'clamp(220px, 40vw, 520px)',
-          }}
-        >
-          {spaceGallery.slice(0, 4).map((image, index) => {
-            const spanStyle =
-              index === 0
-                ? { gridColumn: 'span 2', gridRow: 'span 2' }
-                : index === 1
-                ? { gridColumn: 'span 1', gridRow: 'span 1' }
-                : index === 2
-                ? { gridColumn: 'span 1', gridRow: 'span 1' }
-                : { gridColumn: 'span 1', gridRow: 'span 1' };
+      {/* 2×2 photo grid */}
+      <div className="grid grid-cols-2 gap-2 bg-white p-2">
+        {spaceGallery.length > 0 ? (
+          spaceGallery.slice(0, 4).map((image, index) => {
+            const isOddLast = spaceGallery.slice(0,4).length % 2 === 1 && index === spaceGallery.slice(0,4).length - 1;
             return (
               <button
                 key={`${image}-${index}-space`}
                 type="button"
                 onClick={() => openGalleryAt(index, 'space')}
-                className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer"
-                style={spanStyle}
+                className={`group relative overflow-hidden rounded-lg bg-gray-100 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
               >
-                <img
-                  src={image}
-                  alt={`${publicBusinessName || 'Business'} space ${index + 1}`}
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                  onError={(e) => { e.target.closest('button').style.display = 'none'; }}
-                />
+                <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
               </button>
             );
-          })}
-        </div>
-      ) : (
-        <div className="p-2 bg-white">
-          <div className="rounded-lg bg-gray-100" style={{ height: 'clamp(220px, 40vw, 520px)' }} />
-        </div>
-      )}
+          })
+        ) : (
+          <div className="col-span-2 aspect-[2/1] rounded-lg bg-gray-100" />
+        )}
+      </div>
 
       {/* Name + address + rating */}
       <div className="px-6 pb-5 pt-5">
