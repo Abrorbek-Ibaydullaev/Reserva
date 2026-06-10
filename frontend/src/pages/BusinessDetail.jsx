@@ -844,10 +844,10 @@ const BusinessDetail = () => {
             </div>
             <div className="flex-1 overflow-y-auto bg-[#fafafa] px-4 py-6 sm:px-6">
               {activeGallerySection === 'portfolio' ? (
-                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="mx-auto max-w-7xl [column-count:2] md:[column-count:3] [column-gap:8px]">
                   {orderedGalleryImages.map((image, index) => (
-                    <div key={`${image}-${index}-portfolio`} className="overflow-hidden rounded-[24px] bg-white shadow-sm">
-                      <img src={image} alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`} className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
+                    <div key={`${image}-${index}-portfolio`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white shadow-sm">
+                      <img src={image} alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`} className="h-auto w-full object-cover" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
                     </div>
                   ))}
                 </div>
