@@ -176,9 +176,7 @@ const BusinessDetail = () => {
   const loadBusinessExtras = async () => {
     try {
       const [employeesResponse, hoursResponse] = await Promise.all([
-        isAuthenticated
-          ? scheduleService.getEmployees({ business_owner: businessId, is_active: true })
-          : Promise.resolve({ data: [] }),
+        scheduleService.getEmployees({ business_owner: businessId, is_active: true }),
         scheduleService.getBusinessHours({ business_owner: businessId }),
       ]);
       setBusinessEmployees(normalizeList(employeesResponse));
@@ -408,26 +406,50 @@ const BusinessDetail = () => {
   // ── LEFT COLUMN: hero photos + name + portfolio ──
   const businessHeroSection = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-      {/* 2×2 photo grid */}
-      <div className="grid grid-cols-2 gap-2 bg-white p-2">
-        {spaceGallery.length > 0 ? (
-          spaceGallery.slice(0, 4).map((image, index) => {
-            const isOddLast = spaceGallery.slice(0,4).length % 2 === 1 && index === spaceGallery.slice(0,4).length - 1;
+      {/* Bento photo grid */}
+      {spaceGallery.length > 0 ? (
+        <div
+          className="p-2 bg-white"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
+            gap: '8px',
+            height: 'clamp(220px, 40vw, 520px)',
+          }}
+        >
+          {spaceGallery.slice(0, 4).map((image, index) => {
+            const spanStyle =
+              index === 0
+                ? { gridColumn: 'span 2', gridRow: 'span 2' }
+                : index === 1
+                ? { gridColumn: 'span 1', gridRow: 'span 1' }
+                : index === 2
+                ? { gridColumn: 'span 1', gridRow: 'span 1' }
+                : { gridColumn: 'span 1', gridRow: 'span 1' };
             return (
               <button
                 key={`${image}-${index}-space`}
                 type="button"
                 onClick={() => openGalleryAt(index, 'space')}
-                className={`group relative overflow-hidden rounded-lg bg-gray-100 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
+                className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer"
+                style={spanStyle}
               >
-                <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
+                <img
+                  src={image}
+                  alt={`${publicBusinessName || 'Business'} space ${index + 1}`}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                  onError={(e) => { e.target.closest('button').style.display = 'none'; }}
+                />
               </button>
             );
-          })
-        ) : (
-          <div className="col-span-2 aspect-[2/1] rounded-lg bg-gray-100" />
-        )}
-      </div>
+          })}
+        </div>
+      ) : (
+        <div className="p-2 bg-white">
+          <div className="rounded-lg bg-gray-100" style={{ height: 'clamp(220px, 40vw, 520px)' }} />
+        </div>
+      )}
 
       {/* Name + address + rating */}
       <div className="px-6 pb-5 pt-5">
@@ -826,8 +848,8 @@ const BusinessDetail = () => {
 
       {/* Gallery lightbox */}
       {activeGalleryIndex !== null ? (
-        <div className="fixed inset-0 z-50 bg-white">
-          <div className="flex h-full flex-col">
+        <div className="fixed inset-0 z-[60] bg-white" onClick={closeGallery}>
+          <div className="flex h-full flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
               <div className="mx-auto grid w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4">
                 <button type="button" onClick={closeGallery} className="inline-flex items-center gap-2 text-gray-900">
