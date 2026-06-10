@@ -69,8 +69,16 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // The OTP flow passes the plain token as ?token=
-  const token = searchParams.get('token') || '';
+  // Read token from sessionStorage (keeps it out of browser history and server logs).
+  // Falls back to ?token= URL param for backwards compatibility.
+  const [token] = useState(() => {
+    const stored = sessionStorage.getItem('pw_reset_token');
+    if (stored) {
+      sessionStorage.removeItem('pw_reset_token');
+      return stored;
+    }
+    return searchParams.get('token') || '';
+  });
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

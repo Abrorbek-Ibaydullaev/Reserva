@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const OTP_LENGTH = 6;
-const COUNTDOWN_SECONDS = 300; // 5 minutes
+const COUNTDOWN_SECONDS = 60; // 1 minute
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -134,7 +134,8 @@ function OTPStep({ email, onResend }) {
       try {
         const response = await authService.verifyOTP(email, code);
         const { reset_token } = response.data;
-        navigate(`/reset-password?token=${encodeURIComponent(reset_token)}`, { replace: true });
+        sessionStorage.setItem('pw_reset_token', reset_token);
+        navigate('/reset-password', { replace: true });
       } catch (err) {
         const msg =
           err.response?.data?.error ||

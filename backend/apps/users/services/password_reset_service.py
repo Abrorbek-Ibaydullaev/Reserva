@@ -45,12 +45,20 @@ def initiate_password_reset(email: str) -> None:
     Always returns ``None`` regardless of whether the email is registered,
     to prevent user-enumeration attacks.  Any internal error is swallowed
     and logged server-side so the caller still receives a generic 200.
-    """
-    user = User.objects.filter(email__iexact=email).first()
 
-    # Delete any existing OTP for this email (whether the user exists or not)
-    # to guarantee only one active OTP exists at a time.
+    Rate limiting: if a valid (unexpired) OTP already exists for this email,
+    the request is silently ignored — the caller cannot distinguish this from
+    a normal response.
+    """
+    # Rate limit: if an OTP is still valid, don't allow a new one yet.
+    existing = get_otp_record(email)
+    if existing is not None and timezone.now() < existing.expires_at:
+        return
+
+    # Delete any stale OTP for this email to keep one active record at a time.
     delete_otp_record(email)
+
+    user = User.objects.filter(email__iexact=email).first()
 
     if user is None:
         # Anti-enumeration: behave identically but do not send an email.
@@ -131,6 +139,9 @@ def reset_password(reset_token: str, new_password: str) -> None:
     if user is None:
         # Extremely unlikely: user deleted between OTP issue and reset.
         raise ServiceError("not_found", f"User {record.email} no longer exists")
+
+    if len(new_password) < 8:
+        raise ServiceError("weak_password", "Password must be at least 8 characters")
 
     user.set_password(new_password)
     user.save(update_fields=["password"])

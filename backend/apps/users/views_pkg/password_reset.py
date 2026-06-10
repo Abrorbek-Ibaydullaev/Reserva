@@ -117,7 +117,12 @@ class OTPResetPasswordView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        except ServiceError:
+        except ServiceError as exc:
+            if exc.code == "weak_password":
+                return Response(
+                    {"error": "Password must be at least 8 characters."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             return Response(
                 {"error": _GENERIC_RESET_ERROR},
                 status=status.HTTP_400_BAD_REQUEST,
