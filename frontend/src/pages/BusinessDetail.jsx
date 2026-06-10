@@ -847,7 +847,7 @@ const BusinessDetail = () => {
                 <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 md:grid-cols-2">
                   {orderedGalleryImages.map((image, index) => (
                     <div key={`${image}-${index}-portfolio`} className="overflow-hidden rounded-[24px] bg-white shadow-sm">
-                      <img src={image} alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`} className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]" onError={(e) => { e.target.style.display = 'none'; }} />
+                      <img src={image} alt={`${publicBusinessName || 'Business'} gallery ${index + 1}`} className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
                     </div>
                   ))}
                 </div>
