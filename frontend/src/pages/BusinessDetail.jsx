@@ -420,7 +420,7 @@ const BusinessDetail = () => {
                 onClick={() => openGalleryAt(index, 'space')}
                 className={`group relative overflow-hidden rounded-lg bg-gray-100 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
               >
-                <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
               </button>
             );
           })
@@ -456,7 +456,7 @@ const BusinessDetail = () => {
                 onClick={() => openGalleryAt(index, 'portfolio')}
                 className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"
               >
-                <img src={image} alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src={image} alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
               </button>
             ))}
           </div>
