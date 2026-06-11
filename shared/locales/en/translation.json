@@ -175,7 +175,14 @@
     "recent_searches": "Recent searches",
     "no_results_for": "No results for \"{{query}}\"",
     "type_to_search": "Type to search services or businesses…",
-    "enter_city": "Enter your city to find services near you"
+    "enter_city": "Enter your city to find services near you",
+    "headline1_l1": "Find the best",
+    "headline1_l2": "professionals in Uzbekistan",
+    "headline2_l1": "Barbers, spas, salons —",
+    "headline2_l2": "one place, one minute",
+    "headline3_l1": "Pick a convenient time,",
+    "headline3_l2": "book it, show up",
+    "hero_subtitle": "Discover and book beauty and wellness professionals near you"
   },
   "footer": {
     "product": "Product",

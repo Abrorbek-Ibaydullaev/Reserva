@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NotificationBell from './NotificationBell';
+import LanguageSwitcher from '../LanguageSwitcher';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -120,6 +121,7 @@ const EmployeeLayout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <NotificationBell />
             <div className="hidden items-center gap-2 md:flex">
               {user?.profile_picture ? (

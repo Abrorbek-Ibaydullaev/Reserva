@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NotificationBell from './NotificationBell';
+import LanguageSwitcher from '../LanguageSwitcher';
 import { Link, useLocation } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
@@ -289,6 +290,7 @@ const BusinessLayout = ({ children }) => {
               <QrCodeIcon className="h-4 w-4" />
               {t('layout.my_qr_code')}
             </button>
+            <LanguageSwitcher />
             <NotificationBell />
             <div className="hidden items-center gap-2 md:flex">
               {user?.profile_picture ? (

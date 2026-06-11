@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { userService, serviceService, fixMediaUrl } from '../services/api';
 import Footer from '../components/Layout/Footer';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -31,10 +32,10 @@ import {
 // Place your video at /public/hero.mp4 — gradient shows as fallback
 const HERO_VIDEO = '/hero.mp4';
 
-const HEADLINES = [
-  ['O\'zbekistondagi eng yaxshi', 'mutaxassislarni toping'],
-  ['Sartarosh, spa, salon —', 'bir joyda, bir daqiqada'],
-  ['Qulay vaqtni tanlang,', 'bron qiling, keling'],
+const HEADLINE_KEYS = [
+  ['home.headline1_l1', 'home.headline1_l2'],
+  ['home.headline2_l1', 'home.headline2_l2'],
+  ['home.headline3_l1', 'home.headline3_l2'],
 ];
 
 // ── Category icons ────────────────────────────────────────────────────────────
@@ -462,12 +463,20 @@ const BizCard = ({ biz }) => {
 
 // ── Typewriter — isolated so its state never re-renders the parent ────────────
 const TypewriterText = () => {
+  const { t, i18n } = useTranslation();
   const [tw, setTw] = useState({ l1: '', l2: '', phase: 'typing1', idx: 0 });
   const [cursorOn, setCursorOn] = useState(true);
 
+  const headlines = HEADLINE_KEYS.map(([k1, k2]) => [t(k1), t(k2)]);
+
+  // Restart the animation from scratch when the language changes
+  useEffect(() => {
+    setTw({ l1: '', l2: '', phase: 'typing1', idx: 0 });
+  }, [i18n.language]);
+
   useEffect(() => {
     const { l1, l2, phase, idx } = tw;
-    const target = HEADLINES[idx];
+    const target = headlines[idx];
     let t;
     if (phase === 'typing1') {
       if (l1.length < target[0].length) {
@@ -487,7 +496,7 @@ const TypewriterText = () => {
       } else if (l1.length > 0) {
         t = setTimeout(() => setTw((s) => ({ ...s, l1: s.l1.slice(0, -1) })), 48);
       } else {
-        t = setTimeout(() => setTw({ l1: '', l2: '', phase: 'typing1', idx: (idx + 1) % HEADLINES.length }), 400);
+        t = setTimeout(() => setTw({ l1: '', l2: '', phase: 'typing1', idx: (idx + 1) % headlines.length }), 400);
       }
     }
     return () => clearTimeout(t);
@@ -1107,6 +1116,7 @@ const Home = () => {
             </form>
 
             <div className="flex-shrink-0 flex items-center gap-3 ml-1">
+              <LanguageSwitcher dark />
               <AuthActionSlot dark />
             </div>
           </div>
@@ -1129,6 +1139,7 @@ const Home = () => {
         <div className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <Link to="/" className="text-2xl font-extrabold text-white tracking-tight">Reserva</Link>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher dark />
             <AuthActionSlot />
           </div>
         </div>
@@ -1136,7 +1147,7 @@ const Home = () => {
         {/* Centre content */}
         <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-4 text-center">
           <TypewriterText />
-          <p className="mb-7 px-2 text-sm text-white/70 sm:text-base">Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering</p>
+          <p className="mb-7 px-2 text-sm text-white/70 sm:text-base">{t('home.hero_subtitle')}</p>
 
           {/* Search bar — single field like Booksy */}
           <form onSubmit={doSearch} className="w-full max-w-xl px-2 sm:px-0">

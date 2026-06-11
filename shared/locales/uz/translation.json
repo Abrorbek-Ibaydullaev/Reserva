@@ -175,7 +175,14 @@
     "recent_searches": "So'nggi qidiruvlar",
     "no_results_for": "\"{{query}}\" uchun natija topilmadi",
     "type_to_search": "Xizmat yoki biznes qidirish uchun yozing…",
-    "enter_city": "Yaqin xizmatlarni topish uchun shahringizni kiriting"
+    "enter_city": "Yaqin xizmatlarni topish uchun shahringizni kiriting",
+    "headline1_l1": "O'zbekistondagi eng yaxshi",
+    "headline1_l2": "mutaxassislarni toping",
+    "headline2_l1": "Sartarosh, spa, salon —",
+    "headline2_l2": "bir joyda, bir daqiqada",
+    "headline3_l1": "Qulay vaqtni tanlang,",
+    "headline3_l2": "bron qiling, keling",
+    "hero_subtitle": "Yaqin atrofingizdagi go'zallik va sog'lomlashtirish bo'yicha mutaxassislarni kashf eting va buyurtma bering"
   },
   "footer": {
     "product": "Mahsulot",
