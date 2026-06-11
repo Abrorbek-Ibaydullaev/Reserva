@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 from .models import UserProfile, Notification, BusinessGalleryImage
 from .recaptcha import verify_recaptcha
 from django.contrib.auth.password_validation import validate_password
@@ -50,11 +51,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         remote_ip = request.META.get('REMOTE_ADDR') if request else None
         if not verify_recaptcha(token, remote_ip):
             raise serializers.ValidationError(
-                {'recaptcha': 'reCAPTCHA verification failed. Please check the box and try again.'})
+                {'recaptcha': _('reCAPTCHA verification failed. Please check the box and try again.')})
 
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
-                {"password": "Password fields didn't match."})
+                {"password": _("Password fields didn't match.")})
         return attrs
 
     def create(self, validated_data):

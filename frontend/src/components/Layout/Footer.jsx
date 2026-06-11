@@ -1,32 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarIcon, EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   const footerLinks = {
-    Product: [
-      { name: 'Features', href: '/features' },
-      { name: 'Pricing', href: '/pricing' },
-      { name: 'API', href: '/api' },
-      { name: 'Documentation', href: '/docs' },
+    [t('footer.product')]: [
+      { name: t('footer.features'), href: '/features' },
+      { name: t('footer.pricing'), href: '/pricing' },
+      { name: t('footer.api'), href: '/api' },
+      { name: t('footer.documentation'), href: '/docs' },
     ],
-    Company: [
-      { name: 'About', href: '/about' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Press', href: '/press' },
+    [t('footer.company')]: [
+      { name: t('footer.about'), href: '/about' },
+      { name: t('footer.blog'), href: '/blog' },
+      { name: t('footer.careers'), href: '/careers' },
+      { name: t('footer.press'), href: '/press' },
     ],
-    Legal: [
-      { name: 'Privacy', href: '/privacy' },
-      { name: 'Terms', href: '/terms' },
-      { name: 'Security', href: '/security' },
-      { name: 'Cookie Policy', href: '/cookies' },
+    [t('footer.legal')]: [
+      { name: t('footer.privacy'), href: '/privacy' },
+      { name: t('footer.terms'), href: '/terms' },
+      { name: t('footer.security'), href: '/security' },
+      { name: t('footer.cookie_policy'), href: '/cookies' },
     ],
-    Support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Status', href: '/status' },
-      { name: 'Community', href: '/community' },
+    [t('footer.support')]: [
+      { name: t('footer.help_center'), href: '/help' },
+      { name: t('footer.contact_us'), href: '/contact' },
+      { name: t('footer.status'), href: '/status' },
+      { name: t('footer.community'), href: '/community' },
     ],
   };
 
@@ -41,8 +44,7 @@ const Footer = () => {
               <span className="text-2xl font-bold">Reserva</span>
             </div>
             <p className="text-gray-400 dark:text-gray-300 text-sm mb-6 max-w-md">
-              Reserva helps you discover and book appointments with top professionals. 
-              Join thousands of customers and businesses using our platform.
+              {t('footer.tagline')}
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 dark:text-gray-300 hover:text-white dark:hover:text-gray-100">
@@ -80,7 +82,7 @@ const Footer = () => {
               </h3>
               <ul className="space-y-2">
                 {links.map((link) => (
-                  <li key={link.name}>
+                  <li key={link.href}>
                     <Link
                       to={link.href}
                       className="text-gray-400 dark:text-gray-300 hover:text-white dark:hover:text-gray-100 text-sm"
@@ -99,22 +101,22 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-center space-x-3 min-w-0">
               <EnvelopeIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
-              <span className="truncate text-gray-400 dark:text-gray-300">support@Reserva.com</span>
+              <span className="truncate text-gray-400 dark:text-gray-300">support@reserva.uz</span>
             </div>
             <div className="flex items-center space-x-3 min-w-0">
               <PhoneIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
-              <span className="text-gray-400 dark:text-gray-300">+1 (555) 123-4567</span>
+              <span className="text-gray-400 dark:text-gray-300">+998 71 123-45-67</span>
             </div>
             <div className="flex items-center space-x-3 min-w-0">
               <MapPinIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
-              <span className="truncate text-gray-400 dark:text-gray-300">123 Business St, San Francisco, CA</span>
+              <span className="truncate text-gray-400 dark:text-gray-300">Tashkent, Uzbekistan</span>
             </div>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="mt-8 text-center text-gray-400 dark:text-gray-300 text-sm">
-          <p>&copy; {new Date().getFullYear()} Reserva. All rights reserved.</p>
+          <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </footer>

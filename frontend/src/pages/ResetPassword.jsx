@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/api';
 import {
   CalendarDaysIcon,
@@ -15,7 +16,7 @@ import {
  * Returns { level: 0|1|2|3, label: string, color: string }
  * 0 = empty, 1 = weak, 2 = medium, 3 = strong
  */
-function measureStrength(password) {
+function measureStrength(password, t) {
   if (!password) return { level: 0, label: '', color: '' };
 
   let score = 0;
@@ -25,13 +26,14 @@ function measureStrength(password) {
   if (/\d/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
 
-  if (score <= 2) return { level: 1, label: 'Weak', color: 'bg-red-500' };
-  if (score <= 3) return { level: 2, label: 'Medium', color: 'bg-yellow-400' };
-  return { level: 3, label: 'Strong', color: 'bg-green-500' };
+  if (score <= 2) return { level: 1, label: t('auth.password_strength_weak'), color: 'bg-red-500' };
+  if (score <= 3) return { level: 2, label: t('auth.password_strength_medium'), color: 'bg-yellow-400' };
+  return { level: 3, label: t('auth.password_strength_strong'), color: 'bg-green-500' };
 }
 
 function StrengthBar({ password }) {
-  const { level, label, color } = measureStrength(password);
+  const { t } = useTranslation();
+  const { level, label, color } = measureStrength(password, t);
   if (!label) return null;
 
   return (
@@ -66,6 +68,7 @@ function StrengthBar({ password }) {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -94,24 +97,24 @@ const ResetPassword = () => {
     setError('');
 
     if (!token) {
-      setError('Reset token is missing. Please use the link from your email or start over.');
+      setError(t('auth.reset_token_missing'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.passwords_do_not_match'));
       return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(t('auth.password_min_8'));
       return;
     }
 
     setLoading(true);
     try {
       await authService.resetPassword({ reset_token: token, password });
-      setMessage('Password updated successfully. Redirecting to sign in…');
+      setMessage(t('auth.password_updated'));
       setPassword('');
       setConfirmPassword('');
       setTimeout(() => navigate('/login', { replace: true, state: { flashMessage: 'Password updated. Please sign in.' } }), 2000);
@@ -120,7 +123,7 @@ const ResetPassword = () => {
         err.response?.data?.error ||
         err.response?.data?.detail ||
         null;
-      setError(detail || 'Link expired or invalid. Please request a new code.');
+      setError(detail || t('auth.link_expired'));
     } finally {
       setLoading(false);
     }
@@ -138,17 +141,17 @@ const ResetPassword = () => {
         </Link>
 
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Choose a new password
+          {t('auth.choose_new_password')}
         </h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Enter and confirm your new password below.
+          {t('auth.enter_confirm_new_password')}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {/* New password */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-              New password
+              {t('auth.new_password')}
             </label>
             <div className="relative">
               <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -160,7 +163,7 @@ const ResetPassword = () => {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(''); }}
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                placeholder="New password (min. 8 characters)"
+                placeholder={t('auth.new_password_placeholder')}
               />
               <button
                 type="button"
@@ -177,7 +180,7 @@ const ResetPassword = () => {
           {/* Confirm password */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-              Confirm password
+              {t('auth.confirm_new_password')}
             </label>
             <div className="relative">
               <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -196,7 +199,7 @@ const ResetPassword = () => {
                     ? 'border-red-400 focus:border-red-400'
                     : 'border-slate-200 dark:border-slate-700 focus:border-blue-500',
                 ].join(' ')}
-                placeholder="Confirm new password"
+                placeholder={t('auth.confirm_password_placeholder')}
               />
               <button
                 type="button"
@@ -208,7 +211,7 @@ const ResetPassword = () => {
               </button>
             </div>
             {confirmPassword && confirmPassword !== password && (
-              <p className="mt-1 text-xs text-red-600">Passwords do not match.</p>
+              <p className="mt-1 text-xs text-red-600">{t('auth.passwords_do_not_match')}</p>
             )}
           </div>
 
@@ -228,7 +231,7 @@ const ResetPassword = () => {
                     to="/forgot-password"
                     className="font-semibold underline hover:text-red-800 dark:hover:text-red-300"
                   >
-                    Request a new code
+                    {t('auth.request_new_code')}
                   </Link>
                 </span>
               )}
@@ -246,11 +249,11 @@ const ResetPassword = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Saving…
+                {t('auth.saving')}
               </>
             ) : (
               <>
-                Set new password
+                {t('auth.set_new_password')}
                 <ArrowRightIcon className="h-4 w-4" />
               </>
             )}
@@ -261,7 +264,7 @@ const ResetPassword = () => {
           to="/login"
           className="mt-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline"
         >
-          &larr; Back to sign in
+          &larr; {t('auth.back_to_sign_in')}
         </Link>
       </div>
     </div>

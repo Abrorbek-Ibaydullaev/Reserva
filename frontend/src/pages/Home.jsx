@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { userService, serviceService, fixMediaUrl } from '../services/api';
 import Footer from '../components/Layout/Footer';
@@ -181,6 +182,7 @@ const getCityFromCoordinates = async (latitude, longitude) => {
 
 // ── City Picker Modal ─────────────────────────────────────────────────────────
 const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation }) => {
+  const { t } = useTranslation();
   const [q, setQ] = useState('');
   const inputRef = useRef(null);
 
@@ -205,8 +207,8 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Where are you located?</h3>
-            <p className="mt-0.5 text-sm text-slate-400 dark:text-slate-400">We'll show services available in your city</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('home.where_are_you')}</h3>
+            <p className="mt-0.5 text-sm text-slate-400 dark:text-slate-400">{t('home.show_services_in_city')}</p>
           </div>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
@@ -222,7 +224,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
             <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
             </svg>
-            Use my location
+            {t('home.use_my_location')}
           </button>
 
           {/* Search input */}
@@ -232,7 +234,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search city…"
+              placeholder={t('home.search_city')}
               className="w-full bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
             />
             {q && (
@@ -245,7 +247,7 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
           {/* City list */}
           <div className="max-h-56 overflow-y-auto space-y-0.5">
             {filtered.length === 0 ? (
-              <p className="px-3 py-4 text-center text-sm text-slate-400">No cities found</p>
+              <p className="px-3 py-4 text-center text-sm text-slate-400">{t('home.no_cities_found')}</p>
             ) : (
               filtered.map((city) => (
                 <button
@@ -267,12 +269,14 @@ const CityPickerModal = ({ onSelect, onClose, knownCities = [], onDetectLocation
   );
 };
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DAY_HEADERS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
 // ── Calendar popup ────────────────────────────────────────────────────────────
 const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
+  const { t, i18n } = useTranslation();
   const today = new Date();
+  // 2023-01-01 was a Sunday — used as anchor for localized weekday headers
+  const dayHeaders = Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }).format(new Date(2023, 0, 1 + i))
+  );
   const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
 
   const prevMonth = () =>
@@ -319,7 +323,7 @@ const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
       <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Preferred time</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{t('booking.preferred_time')}</h3>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800">
             <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
@@ -330,7 +334,7 @@ const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
           <button onClick={prevMonth} disabled={!canPrev} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30">
             <ChevronLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
-          <p className="font-semibold text-slate-900 dark:text-white">{MONTHS[view.month]} {view.year}</p>
+          <p className="font-semibold text-slate-900 dark:text-white">{new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(new Date(view.year, view.month, 1))} {view.year}</p>
           <button onClick={nextMonth} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800">
             <ChevronRightIcon className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
@@ -338,7 +342,7 @@ const CalendarModal = ({ selectedDate, onSelect, onClose }) => {
 
         {/* Day headers */}
         <div className="grid grid-cols-7 px-6 pb-1">
-          {DAY_HEADERS.map((h) => (
+          {dayHeaders.map((h) => (
             <div key={h} className="py-1 text-center text-xs font-semibold text-slate-400">{h}</div>
           ))}
         </div>
@@ -515,6 +519,7 @@ const TypewriterText = () => {
 
 // ── Home ──────────────────────────────────────────────────────────────────────
 const Home = () => {
+  const { t } = useTranslation();
   const { isAuthenticated, user, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -871,10 +876,10 @@ const Home = () => {
       </button>
       {userMenu && (
         <div className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 py-1 text-sm z-[200]">
-          <Link to="/profile" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Profile</Link>
-          <Link to="/appointments" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Appointments</Link>
-          <Link to="/settings" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Settings</Link>
-          <button onClick={() => { logout(); setUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700">Logout</button>
+          <Link to="/profile" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">{t('nav.profile')}</Link>
+          <Link to="/appointments" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">{t('nav.appointments')}</Link>
+          <Link to="/settings" onClick={() => setUserMenu(false)} className="block px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">{t('nav.settings')}</Link>
+          <button onClick={() => { logout(); setUserMenu(false); }} className="block w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700">{t('layout.logout')}</button>
         </div>
       )}
     </div>
@@ -905,7 +910,7 @@ const Home = () => {
               : 'rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
           }
         >
-          List your business
+          {t('home.add_business')}
         </Link>
       </>
     );
@@ -929,7 +934,7 @@ const Home = () => {
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setShowSearchDrop(true); }}
                     onFocus={() => setShowSearchDrop(true)}
-                    placeholder="Search services or businesses"
+                    placeholder={t('home.search_placeholder')}
                     className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
                   />
                   {search && (
@@ -971,13 +976,13 @@ const Home = () => {
 
                       {/* No results */}
                       {search.trim() && searchSuggestions.length === 0 && (
-                        <p className="px-3 py-2 text-sm text-slate-400">No results for "{search}"</p>
+                        <p className="px-3 py-2 text-sm text-slate-400">{t('home.no_results_for', { query: search })}</p>
                       )}
 
                       {/* Recent searches when input is empty */}
                       {!search.trim() && recentSearches.length > 0 && (
                         <div>
-                          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Recent searches</p>
+                          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('home.recent_searches')}</p>
                           {recentSearches.map((term) => (
                             <button
                               key={term}
@@ -996,7 +1001,7 @@ const Home = () => {
 
                       {/* Empty state */}
                       {!search.trim() && recentSearches.length === 0 && (
-                        <p className="px-3 py-2 text-sm text-slate-400">Type to search services or businesses…</p>
+                        <p className="px-3 py-2 text-sm text-slate-400">{t('home.type_to_search')}</p>
                       )}
                     </div>
                   </div>
@@ -1010,7 +1015,7 @@ const Home = () => {
                     value={where}
                     onChange={(e) => { setWhere(e.target.value); setShowWhereDrop(true); }}
                     onFocus={() => setShowWhereDrop(true)}
-                    placeholder="Where?"
+                    placeholder={t('home.where_placeholder')}
                     className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
                   />
                   {where && (
@@ -1036,7 +1041,7 @@ const Home = () => {
                         <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
                         </svg>
-                        Enable location access
+                        {t('home.enable_location')}
                       </button>
 
                       {/* Suggestions when typing */}
@@ -1061,7 +1066,7 @@ const Home = () => {
                       {/* Recent searches when not typing */}
                       {!where.trim() && recentCities.length > 0 && (
                         <div className="mt-3">
-                          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Recent searches</p>
+                          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('home.recent_searches')}</p>
                           {recentCities.map((city) => (
                             <button
                               key={city}
@@ -1080,7 +1085,7 @@ const Home = () => {
 
                       {/* Nothing to show */}
                       {!where.trim() && recentCities.length === 0 && (
-                        <p className="mt-2 px-3 py-2 text-sm text-slate-400">Start typing a city name…</p>
+                        <p className="mt-2 px-3 py-2 text-sm text-slate-400">{t('home.start_typing_city')}</p>
                       )}
                     </div>
                   </div>
@@ -1097,7 +1102,7 @@ const Home = () => {
               </button>
 
               <button type="submit" className="flex-shrink-0 rounded-xl bg-[#2eadd0] px-5 py-2 text-sm font-semibold text-white hover:bg-[#29a0c0] transition">
-                Search
+                {t('home.search')}
               </button>
             </form>
 
@@ -1139,30 +1144,30 @@ const Home = () => {
               <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search services or businesses"
+                placeholder={t('home.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="min-w-0 flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none text-sm"
               />
               <button type="submit" className="flex-shrink-0 rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 transition sm:px-6 sm:py-2">
-                Search
+                {t('home.search')}
               </button>
             </div>
             <div className="mt-3 flex flex-col items-center justify-center gap-2 text-sm sm:flex-row">
               {savedCity ? (
                 <div className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">
-                  Searching in {savedCity}
+                  {t('booking.searching_in', { city: savedCity })}
                   <button type="button" onClick={() => setCityModal('search')} className="ml-2 underline">
-                    Change
+                    {t('booking.change')}
                   </button>
                 </div>
               ) : locationStatus === 'detecting' ? (
-                <p className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">Detecting your city...</p>
+                <p className="rounded-full bg-white/15 px-3 py-1 font-medium text-white">{t('booking.detecting_city')}</p>
               ) : (
                 <input
                   value={where}
                   onChange={(event) => setWhere(event.target.value)}
-                  placeholder="Enter your city to find services near you"
+                  placeholder={t('home.enter_city')}
                   className="w-full rounded-full border border-white/30 bg-white/95 px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 sm:w-80"
                 />
               )}
@@ -1254,8 +1259,8 @@ const Home = () => {
             {grouped.length === 1 && businesses.length > 0 && (
               <div key="all-businesses" className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
                 <div className="mb-5 flex items-end justify-between">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Businesses near you</h2>
-                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">See all <ArrowRightIcon className="h-4 w-4" /></Link>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('home.businesses_near_you')}</h2>
+                  <Link to="/services" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">{t('home.see_all')} <ArrowRightIcon className="h-4 w-4" /></Link>
                 </div>
                 <Carousel>
                   {businesses.map((b) => <BizCard key={b.id} biz={b} />)}
@@ -1265,12 +1270,12 @@ const Home = () => {
             {grouped.map(([cat, list]) => (
               <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
                 <div className="mb-5 flex items-end justify-between">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{cat} near you</h2>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('home.near_you', { category: cat })}</h2>
                   <button
                     onClick={() => handleCatClick(cat)}
                     className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                   >
-                    See all <ArrowRightIcon className="h-4 w-4" />
+                    {t('home.see_all')} <ArrowRightIcon className="h-4 w-4" />
                   </button>
                 </div>
                 <Carousel>
@@ -1285,11 +1290,11 @@ const Home = () => {
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       {!authLoading && !isAuthenticated && (
         <section className="bg-[#1a1a2e] px-6 py-14 text-center">
-          <h2 className="mb-3 text-2xl font-extrabold text-white">Add your business to Reserva</h2>
-          <p className="mb-8 text-slate-400">Connect online booking and grow your client base. Free to start.</p>
+          <h2 className="mb-3 text-2xl font-extrabold text-white">{t('home.add_business')}</h2>
+          <p className="mb-8 text-slate-400">{t('home.add_business_subtitle')}</p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/register" className="rounded-xl bg-[#2eadd0] px-8 py-3 font-semibold text-white hover:bg-[#29a0c0] transition">Register</Link>
-            <Link to="/services" className="rounded-xl border border-white/20 px-8 py-3 font-semibold text-white hover:bg-white/10 transition">Browse businesses</Link>
+            <Link to="/register" className="rounded-xl bg-[#2eadd0] px-8 py-3 font-semibold text-white hover:bg-[#29a0c0] transition">{t('auth.register')}</Link>
+            <Link to="/services" className="rounded-xl border border-white/20 px-8 py-3 font-semibold text-white hover:bg-white/10 transition">{t('home.browse_businesses')}</Link>
           </div>
         </section>
       )}

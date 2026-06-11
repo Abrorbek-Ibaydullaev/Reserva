@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -26,8 +27,8 @@ from apps.users.services.password_reset_service import (
 
 logger = logging.getLogger(__name__)
 
-_GENERIC_INITIATE_MSG = "If that email exists, a reset code was sent."
-_GENERIC_RESET_ERROR = "Invalid or expired reset link."
+_GENERIC_INITIATE_MSG = _("If that email exists, a reset code was sent.")
+_GENERIC_RESET_ERROR = _("Invalid or expired reset link.")
 
 
 class OTPForgotPasswordView(APIView):
@@ -72,17 +73,17 @@ class OTPVerifyOTPView(APIView):
         except ServiceError as exc:
             if exc.code == "expired":
                 return Response(
-                    {"error": "Code expired. Please request a new one."},
+                    {"error": _("Code expired. Please request a new one.")},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if exc.code == "max_attempts":
                 return Response(
-                    {"error": "Too many attempts. Request a new code."},
+                    {"error": _("Too many attempts. Request a new code.")},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             # "not_found" and "invalid" are intentionally indistinguishable.
             return Response(
-                {"error": "Invalid code."},
+                {"error": _("Invalid code.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -91,7 +92,7 @@ class OTPVerifyOTPView(APIView):
                 "Unhandled error in verify_otp for email=%r", email
             )
             return Response(
-                {"error": "Invalid code."},
+                {"error": _("Invalid code.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -113,14 +114,14 @@ class OTPResetPasswordView(APIView):
         try:
             reset_password(reset_token_value, password)
             return Response(
-                {"message": "Password updated successfully."},
+                {"message": _("Password updated successfully.")},
                 status=status.HTTP_200_OK,
             )
 
         except ServiceError as exc:
             if exc.code == "weak_password":
                 return Response(
-                    {"error": "Password must be at least 8 characters."},
+                    {"error": _("Password must be at least 8 characters.")},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response(

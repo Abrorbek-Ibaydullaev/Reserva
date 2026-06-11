@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import {
   UserIcon,
@@ -34,7 +35,6 @@ const COUNTRIES = [
   { code: 'AE', flag: '🇦🇪', dial: '+971', name: 'UAE' },
 ];
 
-// Format UZ number digits as: XX XXX XX XX  (9 digits → "34 738 92 74")
 const formatUZ = (digits) => {
   const d = digits.slice(0, 9);
   let out = d.slice(0, 2);
@@ -45,6 +45,7 @@ const formatUZ = (digits) => {
 };
 
 const PhoneInput = ({ onDigitsChange }) => {
+  const { t } = useTranslation();
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [open, setOpen] = useState(false);
   const [display, setDisplay] = useState('');
@@ -54,16 +55,13 @@ const PhoneInput = ({ onDigitsChange }) => {
 
   const isUZ = country.code === 'UZ';
   const maxDigits = isUZ ? 9 : 15;
-  const isComplete = digits.length === 0 || digits.length === maxDigits;
   const showError = touched && digits.length > 0 && digits.length < maxDigits;
 
   const handleNumberChange = (e) => {
-    // Strip everything except digits, enforce max length
     const raw = e.target.value.replace(/\D/g, '').slice(0, maxDigits);
     setDigits(raw);
     const formatted = isUZ ? formatUZ(raw) : raw;
     setDisplay(formatted);
-    // Emit full number (or empty string so backend skips validation)
     onDigitsChange(raw.length > 0 ? `${country.dial}${raw}` : '');
   };
 
@@ -91,12 +89,12 @@ const PhoneInput = ({ onDigitsChange }) => {
           <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
         </button>
 
-        {/* Number input — controlled */}
+        {/* Number input */}
         <input
           ref={inputRef}
           type="tel"
           inputMode="numeric"
-          placeholder={isUZ ? '90 123 45 67' : 'Phone number'}
+          placeholder={isUZ ? '90 123 45 67' : t('form.phone_number')}
           value={display}
           onChange={handleNumberChange}
           onBlur={() => setTouched(true)}
@@ -124,7 +122,7 @@ const PhoneInput = ({ onDigitsChange }) => {
 
       {showError && (
         <p className="mt-1 text-xs text-red-600">
-          {isUZ ? `${maxDigits - digits.length} ta raqam qoldi` : 'Raqamni to\'liq kiriting'}
+          {t('errors.digits_remaining', { count: maxDigits - digits.length })}
         </p>
       )}
     </div>
@@ -133,16 +131,19 @@ const PhoneInput = ({ onDigitsChange }) => {
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
-const Field = ({ label, error, children, optional }) => (
-  <div>
-    <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200">
-      {label}
-      {optional && <span className="text-xs text-slate-400 dark:text-slate-500">(optional)</span>}
-    </label>
-    {children}
-    {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-  </div>
-);
+const Field = ({ label, error, children, optional }) => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+        {label}
+        {optional && <span className="text-xs text-slate-400 dark:text-slate-500">({t('common.optional')})</span>}
+      </label>
+      {children}
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+  );
+};
 
 const Input = React.forwardRef(({ icon: Icon, ...props }, ref) => (
   <div className="relative">
@@ -160,6 +161,7 @@ const Input = React.forwardRef(({ icon: Icon, ...props }, ref) => (
 const Register = () => {
   const { register: authRegister } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -179,18 +181,11 @@ const Register = () => {
     setEmailError('');
   };
 
-  /**
-   * Extract a single human-readable string from the backend error payload.
-   * The backend now always returns { detail: "..." } for 400/409 errors.
-   * Legacy fallback handles older array/string shapes too.
-   */
   const extractErrorMessage = (message, fallback) => {
     if (!message) return fallback;
     if (typeof message === 'string') return message;
-    // Backend always sends { detail: "..." } now
     if (typeof message.detail === 'string') return message.detail;
     if (Array.isArray(message.detail)) return message.detail[0] || fallback;
-    // Legacy: field-level errors from DRF (e.g. { email: ["..."] })
     const firstField = Object.values(message)[0];
     if (Array.isArray(firstField)) return firstField[0] || fallback;
     if (typeof firstField === 'string') return firstField;
@@ -199,14 +194,12 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     if (hasRecaptcha && !recaptchaToken) {
-      setError('Please complete the reCAPTCHA check before creating your account.');
+      setError(t('auth.recaptcha_required_register'));
       return;
     }
 
-    // Block submission if phone was started but is incomplete
     if (phoneNumber && phoneNumber.replace(/\D/g, '').length < 11) {
-      // dial(3) + 9 digits = 12 chars min for UZ; just check raw digits count
-      setPhoneError('Telefon raqamini to\'liq kiriting yoki bo\'sh qoldiring.');
+      setPhoneError(t('errors.phone_incomplete'));
       return;
     }
     setPhoneError('');
@@ -235,23 +228,23 @@ const Register = () => {
         if (result.status === 409) {
           setEmailError(
             <>
-              This email is already registered under a different account type. Please{' '}
+              {t('auth.email_already_registered')}{' '}
               <Link to="/login" className="font-semibold text-red-700 underline">
-                sign in instead
+                {t('auth.sign_in')}
               </Link>.
             </>
           );
         } else {
           setError(
-            extractErrorMessage(msg, 'Registration failed. Please check your details and try again.')
+            extractErrorMessage(msg, t('auth.registration_failed'))
           );
         }
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);
       }
     } catch {
-      toast.error('Unexpected registration error. Please try again.');
-      setError('An unexpected error occurred. Please try again.');
+      toast.error(t('auth.unexpected_error'));
+      setError(t('auth.unexpected_error'));
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
     } finally {
@@ -272,27 +265,27 @@ const Register = () => {
 
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">
-            Start managing your<br />bookings today
+            {t('auth.start_managing')}
           </h1>
           <p className="mt-4 text-blue-100">
-            Join professionals and customers across Uzbekistan on the easiest appointment platform.
+            {t('auth.start_managing_subtitle')}
           </p>
 
           <div className="mt-10 space-y-4">
             {[
-              { emoji: '📅', text: 'Real-time availability & instant booking' },
-              { emoji: '🔔', text: 'Automatic confirmations & reminders' },
-              { emoji: '📊', text: 'Business dashboard with analytics' },
+              { emoji: '📅', key: 'feature_realtime' },
+              { emoji: '🔔', key: 'feature_confirmations' },
+              { emoji: '📊', key: 'feature_dashboard' },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-3">
+              <div key={item.key} className="flex items-center gap-3">
                 <span className="text-xl">{item.emoji}</span>
-                <span className="text-sm text-blue-50">{item.text}</span>
+                <span className="text-sm text-blue-50">{t(`auth.${item.key}`)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-blue-200">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
+        <p className="text-xs text-blue-200">{t('auth.copyright', { year: new Date().getFullYear() })}</p>
       </div>
 
       {/* Right panel */}
@@ -307,14 +300,14 @@ const Register = () => {
           </Link>
 
           <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline">
-            &larr; Back to home
+            &larr; {t('auth.back_to_home')}
           </Link>
 
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('auth.create_account')}</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Already have an account?{' '}
+            {t('auth.already_have_account')}{' '}
             <Link to="/login" className="font-semibold text-blue-600 hover:underline">
-              Sign in
+              {t('auth.sign_in')}
             </Link>
           </p>
 
@@ -329,7 +322,7 @@ const Register = () => {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
-              <UserGroupIcon className="h-4 w-4" /> Customer
+              <UserGroupIcon className="h-4 w-4" /> {t('form.customer')}
             </button>
             <button
               type="button"
@@ -340,7 +333,7 @@ const Register = () => {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
-              <BuildingOfficeIcon className="h-4 w-4" /> Business Owner
+              <BuildingOfficeIcon className="h-4 w-4" /> {t('form.business_owner')}
             </button>
           </div>
 
@@ -353,57 +346,57 @@ const Register = () => {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="First name" error={errors.first_name?.message}>
+              <Field label={t('form.first_name')} error={errors.first_name?.message}>
                 <Input
                   icon={UserIcon}
-                  placeholder="First name"
-                {...register('first_name', {
-                  required: 'Required',
-                  minLength: { value: 2, message: 'Min 2 characters' },
-                  onChange: clearRegistrationErrors,
-                })}
-              />
+                  placeholder={t('form.first_name')}
+                  {...register('first_name', {
+                    required: t('errors.required_short'),
+                    minLength: { value: 2, message: t('errors.name_min_2') },
+                    onChange: clearRegistrationErrors,
+                  })}
+                />
               </Field>
 
-              <Field label="Last name" error={errors.last_name?.message}>
+              <Field label={t('form.last_name')} error={errors.last_name?.message}>
                 <Input
                   icon={UserIcon}
-                  placeholder="Last name"
-                {...register('last_name', {
-                  required: 'Required',
-                  minLength: { value: 2, message: 'Min 2 characters' },
-                  onChange: clearRegistrationErrors,
-                })}
-              />
+                  placeholder={t('form.last_name')}
+                  {...register('last_name', {
+                    required: t('errors.required_short'),
+                    minLength: { value: 2, message: t('errors.name_min_2') },
+                    onChange: clearRegistrationErrors,
+                  })}
+                />
               </Field>
             </div>
 
-            <Field label="Email address" error={errors.email?.message || emailError}>
+            <Field label={t('form.email_address')} error={errors.email?.message || emailError}>
               <Input
                 icon={EnvelopeIcon}
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('auth.email_placeholder')}
                 autoComplete="email"
                 {...register('email', {
-                  required: 'Email is required',
-                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                  required: t('errors.email_required'),
+                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t('errors.invalid_email') },
                   onChange: clearRegistrationErrors,
                 })}
               />
             </Field>
 
-            <Field label="Telefon raqamingiz" error={phoneError} optional>
+            <Field label={t('form.phone_number')} error={phoneError} optional>
               <PhoneInput onDigitsChange={setPhoneNumber} />
             </Field>
 
             {userType === 'business_owner' && (
-              <Field label="Business name" error={errors.business_name?.message}>
+              <Field label={t('form.business_name')} error={errors.business_name?.message}>
                 <Input
                   icon={BuildingOfficeIcon}
-                  placeholder="Your salon / business name"
+                  placeholder={t('form.business_name_placeholder')}
                   {...register('business_name', {
-                    required: 'Business name is required',
-                    minLength: { value: 2, message: 'Min 2 characters' },
+                    required: t('errors.business_name_required'),
+                    minLength: { value: 2, message: t('errors.name_min_2') },
                     onChange: clearRegistrationErrors,
                   })}
                 />
@@ -411,19 +404,19 @@ const Register = () => {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="Password" error={errors.password?.message}>
+              <Field label={t('form.password')} error={errors.password?.message}>
                 <div className="relative">
                   <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Min. 8 characters"
+                    placeholder={t('form.password_placeholder_min8')}
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password', {
-                      required: 'Password is required',
-                      minLength: { value: 8, message: 'Min 8 characters' },
+                      required: t('errors.password_required'),
+                      minLength: { value: 8, message: t('errors.password_min_8') },
                       pattern: {
                         value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                        message: 'Need uppercase, lowercase & number',
+                        message: t('errors.password_pattern'),
                       },
                       onChange: clearRegistrationErrors,
                     })}
@@ -438,16 +431,16 @@ const Register = () => {
                 </div>
               </Field>
 
-              <Field label="Confirm password" error={errors.password2?.message}>
+              <Field label={t('form.confirm_password')} error={errors.password2?.message}>
                 <div className="relative">
                   <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
-                    placeholder="Repeat password"
+                    placeholder={t('form.repeat_password')}
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     {...register('password2', {
-                      required: 'Please confirm your password',
-                      validate: (v) => v === password || 'Passwords do not match',
+                      required: t('errors.confirm_password_required'),
+                      validate: (v) => v === password || t('errors.passwords_no_match'),
                       onChange: clearRegistrationErrors,
                     })}
                   />
@@ -468,14 +461,14 @@ const Register = () => {
                 id="terms"
                 type="checkbox"
                 className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                {...register('terms', { required: 'You must accept the terms' })}
+                {...register('terms', { required: t('errors.terms_required') })}
               />
               <div>
                 <label htmlFor="terms" className="text-sm text-slate-600 dark:text-slate-300">
-                  I agree to the{' '}
-                  <Link to="/terms" className="font-medium text-blue-600 hover:underline">Terms of Service</Link>
-                  {' '}and{' '}
-                  <Link to="/privacy" className="font-medium text-blue-600 hover:underline">Privacy Policy</Link>
+                  {t('form.terms_agree')}{' '}
+                  <Link to="/terms" className="font-medium text-blue-600 hover:underline">{t('form.terms_of_service')}</Link>
+                  {' '}{t('common.and')}{' '}
+                  <Link to="/privacy" className="font-medium text-blue-600 hover:underline">{t('form.privacy_policy')}</Link>
                 </label>
                 {errors.terms && <p className="mt-0.5 text-xs text-red-600">{errors.terms.message}</p>}
               </div>
@@ -504,12 +497,12 @@ const Register = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account…
+                  {t('auth.creating_account')}
                 </>
               ) : (
                 <>
                   <UserIcon className="h-4 w-4" />
-                  Create {userType === 'business_owner' ? 'Business' : 'Customer'} Account
+                  {userType === 'business_owner' ? t('auth.create_business_account') : t('auth.create_customer_account')}
                 </>
               )}
             </button>

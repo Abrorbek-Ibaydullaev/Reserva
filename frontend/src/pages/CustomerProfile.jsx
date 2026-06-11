@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { userService } from '../services/api';
 import {
@@ -29,6 +30,7 @@ const TextInput = (props) => (
 );
 
 const CustomerProfile = () => {
+  const { t } = useTranslation();
   const { user, checkAuthStatus } = useAuth();
   const fileInputRef = useRef(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -71,7 +73,6 @@ const CustomerProfile = () => {
         });
         if (m.profile_picture) setAvatarPreview(m.profile_picture);
 
-        // Load Telegram status separately so a failure doesn't break the profile
         try {
           const tg = await userService.getTelegramLink();
           if (tg?.data) setTelegram({ link: tg.data.link, connected: tg.data.connected });
@@ -79,21 +80,21 @@ const CustomerProfile = () => {
           console.warn('Telegram link fetch failed:', tgErr?.response?.status, tgErr?.response?.data);
         }
       } catch {
-        toast.error('Failed to load profile.');
+        toast.error(t('customer_profile.failed_load'));
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [t]);
 
   const handleDisconnectTelegram = async () => {
     try {
       setDisconnecting(true);
       await userService.disconnectTelegram();
       setTelegram((prev) => ({ ...prev, connected: false }));
-      toast.success('Telegram disconnected.');
+      toast.success(t('customer_profile.telegram_disconnected_success'));
     } catch {
-      toast.error('Failed to disconnect Telegram.');
+      toast.error(t('customer_profile.failed_disconnect'));
     } finally {
       setDisconnecting(false);
     }
@@ -136,9 +137,9 @@ const CustomerProfile = () => {
 
       await checkAuthStatus();
       setAvatarFile(null);
-      toast.success('Profile updated successfully.');
+      toast.success(t('customer_profile.updated_success'));
     } catch {
-      toast.error('Failed to update profile.');
+      toast.error(t('customer_profile.failed_update'));
     } finally {
       setSaving(false);
     }
@@ -160,8 +161,8 @@ const CustomerProfile = () => {
       {/* Top bar */}
       <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-5">
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Profile</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Manage your personal information and contact details</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('customer_profile.title')}</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('customer_profile.subtitle')}</p>
         </div>
       </div>
 
@@ -199,10 +200,10 @@ const CustomerProfile = () => {
                   />
                 </div>
                 <p className="text-base font-bold text-slate-900 dark:text-white">{displayName}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Customer</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('customer_profile.customer_role')}</p>
                 {avatarFile && (
                   <p className="mt-2 rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-0.5 text-xs text-blue-600 dark:text-blue-300">
-                    New photo selected
+                    {t('customer_profile.new_photo_selected')}
                   </p>
                 )}
               </div>
@@ -215,12 +216,12 @@ const CustomerProfile = () => {
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
                   <PhoneIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
-                  <span>{formData.phone_number || 'Not set'}</span>
+                  <span>{formData.phone_number || t('customer_profile.not_set')}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
                   <MapPinIcon className="h-4 w-4 flex-shrink-0 text-slate-400 dark:text-slate-500" />
                   <span className="truncate">
-                    {[formData.city, formData.country].filter(Boolean).join(', ') || 'Not set'}
+                    {[formData.city, formData.country].filter(Boolean).join(', ') || t('customer_profile.not_set')}
                   </span>
                 </div>
               </div>
@@ -236,8 +237,8 @@ const CustomerProfile = () => {
                   <CalendarDaysIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">My Appointments</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">View upcoming & past</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{t('customer_profile.my_appointments')}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{t('customer_profile.view_upcoming_past')}</p>
                 </div>
               </div>
               <ArrowRightIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -246,16 +247,15 @@ const CustomerProfile = () => {
             {/* Telegram connect card */}
             <div className={`rounded-2xl border px-5 py-4 shadow-sm ${telegram.connected ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}>
               <div className="flex items-center gap-3 mb-3">
-                {/* Telegram logo */}
                 <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${telegram.connected ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-[#e8f4fb] dark:bg-[#1a2e40]'}`}>
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill={telegram.connected ? '#10b981' : '#229ed9'}>
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.24 13.4l-2.948-.924c-.642-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.836.959z"/>
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {telegram.connected ? 'Connected — you\'ll receive booking alerts' : 'Get booking alerts on Telegram'}
+                    {telegram.connected ? t('customer_profile.telegram_connected') : t('customer_profile.telegram_disconnected')}
                   </p>
                 </div>
                 {telegram.connected && (
@@ -270,7 +270,7 @@ const CustomerProfile = () => {
                   disabled={disconnecting}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 py-2 text-xs font-semibold text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-60 transition-colors"
                 >
-                  {disconnecting ? 'Disconnecting…' : 'Disconnect'}
+                  {disconnecting ? t('customer_profile.disconnecting') : t('customer_profile.disconnect_telegram')}
                 </button>
               ) : telegram.link ? (
                 <a
@@ -280,57 +280,57 @@ const CustomerProfile = () => {
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#229ed9] py-2 text-xs font-bold text-white hover:bg-[#1a8bbf] transition-colors"
                 >
                   <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
-                  Connect Telegram
+                  {t('customer_profile.connect_telegram')}
                 </a>
               ) : (
-                <p className="text-center text-xs text-slate-400 dark:text-slate-500">Bot not configured yet</p>
+                <p className="text-center text-xs text-slate-400 dark:text-slate-500">{t('customer_profile.bot_not_configured')}</p>
               )}
             </div>
           </div>
 
           {/* Right — edit form */}
           <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-            <h2 className="mb-5 text-base font-bold text-slate-900 dark:text-white">Personal Information</h2>
+            <h2 className="mb-5 text-base font-bold text-slate-900 dark:text-white">{t('customer_profile.personal_information')}</h2>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label="First name">
-                  <TextInput name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First name" />
+                <Field label={t('form.first_name')}>
+                  <TextInput name="first_name" value={formData.first_name} onChange={handleChange} placeholder={t('form.first_name')} />
                 </Field>
-                <Field label="Last name">
-                  <TextInput name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Last name" />
+                <Field label={t('form.last_name')}>
+                  <TextInput name="last_name" value={formData.last_name} onChange={handleChange} placeholder={t('form.last_name')} />
                 </Field>
               </div>
 
-              <Field label="Email address">
+              <Field label={t('form.email_address')}>
                 <TextInput type="email" name="email" value={formData.email} onChange={handleChange} placeholder="you@email.com" />
               </Field>
 
-              <Field label="Phone number">
+              <Field label={t('form.phone_number')}>
                 <TextInput type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="+998 90 000 00 00" />
               </Field>
 
               <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
-                <h3 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Address</h3>
+                <h3 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-200">{t('customer_profile.address_section')}</h3>
                 <div className="space-y-4">
-                  <Field label="Street address">
-                    <TextInput name="address" value={formData.address} onChange={handleChange} placeholder="Street address" />
+                  <Field label={t('customer_profile.street_address')}>
+                    <TextInput name="address" value={formData.address} onChange={handleChange} placeholder={t('customer_profile.street_address')} />
                   </Field>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Field label="City">
+                    <Field label={t('profile.city')}>
                       <TextInput name="city" value={formData.city} onChange={handleChange} placeholder="Toshkent" />
                     </Field>
-                    <Field label="Region">
-                      <TextInput name="state" value={formData.state} onChange={handleChange} placeholder="Region" />
+                    <Field label={t('customer_profile.region')}>
+                      <TextInput name="state" value={formData.state} onChange={handleChange} placeholder={t('customer_profile.region')} />
                     </Field>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Field label="Country">
+                    <Field label={t('profile.address')}>
                       <TextInput name="country" value={formData.country} onChange={handleChange} placeholder="Uzbekistan" />
                     </Field>
-                    <Field label="Postal code">
+                    <Field label={t('customer_profile.postal_code')}>
                       <TextInput name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="100000" />
                     </Field>
                   </div>
@@ -350,10 +350,10 @@ const CustomerProfile = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Saving…
+                    {t('customer_profile.saving')}
                   </>
                 ) : (
-                  'Save changes'
+                  t('customer_profile.save_changes')
                 )}
               </button>
             </div>

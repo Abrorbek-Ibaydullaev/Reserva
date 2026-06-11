@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Press = () => (
-  <StaticInfoPage
-    title="Press"
-    description="Media resources, company background, and product announcements will be collected here. For now, this page is a placeholder for future press materials."
-  />
-);
+const Press = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.press_title')}
+      description={t('static.press_description')}
+    />
+  );
+};
 
 export default Press;

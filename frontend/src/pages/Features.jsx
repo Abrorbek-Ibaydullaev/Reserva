@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Features = () => (
-  <StaticInfoPage
-    title="Features"
-    description="Explore Reserva features for service discovery, real-time booking, customer reminders, and business scheduling. A detailed feature guide is coming soon."
-  />
-);
+const Features = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.features_title')}
+      description={t('static.features_description')}
+    />
+  );
+};
 
 export default Features;

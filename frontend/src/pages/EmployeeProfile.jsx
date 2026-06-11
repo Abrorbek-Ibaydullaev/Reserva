@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { scheduleService, userService } from '../services/api';
 import {
   BriefcaseIcon,
@@ -21,6 +22,7 @@ const formatHumanDate = (value) => {
 };
 
 const EmployeeProfile = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingDuty, setSavingDuty] = useState(false);
@@ -93,7 +95,7 @@ const EmployeeProfile = () => {
       }
     } catch (error) {
       console.error('Failed to load employee profile:', error);
-      toast.error('Failed to load employee profile.');
+      toast.error(t('employee_profile.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -111,9 +113,9 @@ const EmployeeProfile = () => {
     try {
       await userService.disconnectTelegram();
       setTelegram((prev) => ({ ...prev, connected: false }));
-      toast.success('Telegram disconnected.');
+      toast.success(t('customer_profile.telegram_disconnected_success'));
     } catch {
-      toast.error('Failed to disconnect Telegram.');
+      toast.error(t('customer_profile.failed_disconnect'));
     }
   };
 
@@ -159,10 +161,10 @@ const EmployeeProfile = () => {
         }),
       ]);
 
-      toast.success('Employee profile updated.');
+      toast.success(t('employee_profile.updated_success'));
     } catch (error) {
       console.error('Failed to update employee profile:', error);
-      toast.error('Failed to update employee profile.');
+      toast.error(t('employee_profile.failed_update'));
     } finally {
       setSavingProfile(false);
     }
@@ -189,10 +191,10 @@ const EmployeeProfile = () => {
         is_all_day: false,
         reason: '',
       });
-      toast.success('Personal duty saved.');
+      toast.success(t('employee_profile.duty_saved'));
     } catch (error) {
       console.error('Failed to save personal duty:', error);
-      toast.error('Failed to save personal duty.');
+      toast.error(t('employee_profile.duty_failed'));
     } finally {
       setSavingDuty(false);
     }
@@ -202,10 +204,10 @@ const EmployeeProfile = () => {
     try {
       await scheduleService.deleteMyTimeOff(id);
       setDuties((current) => current.filter((item) => item.id !== id));
-      toast.success('Personal duty removed.');
+      toast.success(t('employee_profile.duty_removed'));
     } catch (error) {
       console.error('Failed to remove personal duty:', error);
-      toast.error('Failed to remove personal duty.');
+      toast.error(t('employee_profile.duty_remove_failed'));
     }
   };
 
@@ -221,9 +223,9 @@ const EmployeeProfile = () => {
     <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Employee Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('employee_profile.title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-slate-400">
-            Upload your profile photo, update your details, and block personal duty in advance.
+            {t('employee_profile.subtitle')}
           </p>
         </div>
 
@@ -238,7 +240,7 @@ const EmployeeProfile = () => {
                 )}
               </div>
               <div>
-                <p className="text-sm uppercase tracking-[0.18em] text-[#4a90b0]">Staff Profile</p>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#4a90b0]">{t('employee_profile.staff_profile')}</p>
                 <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
                   {profileData.first_name} {profileData.last_name}
                 </h2>
@@ -248,53 +250,53 @@ const EmployeeProfile = () => {
 
             <label className="mt-6 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 dark:border-slate-600 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-slate-200">
               <CameraIcon className="h-5 w-5" />
-              Upload profile photo
+              {t('employee_profile.upload_profile_photo')}
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
             </label>
 
             <form onSubmit={saveProfile} className="mt-8 grid gap-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">First name</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('form.first_name')}</label>
                   <input name="first_name" value={profileData.first_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Last name</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('form.last_name')}</label>
                   <input name="last_name" value={profileData.last_name} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Email</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('form.email_address')}</label>
                   <input name="email" value={profileData.email} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Phone number</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('form.phone_number')}</label>
                   <input name="phone_number" value={profileData.phone_number} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Position</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.position')}</label>
                   <input name="position" value={profileData.position} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Break between appointments</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.break_between')}</label>
                   <input type="number" min="0" name="appointment_buffer" value={profileData.appointment_buffer} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Max daily appointments</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.max_daily')}</label>
                   <input type="number" min="1" name="max_daily_appointments" value={profileData.max_daily_appointments} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Bio</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.short_bio')}</label>
                 <textarea name="bio" rows={4} value={profileData.bio} onChange={handleProfileChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
               </div>
 
               <p className="text-sm text-gray-500 dark:text-slate-400">
-                Break between appointments means how many minutes the system should keep free after one booking before the next booking can start.
+                {t('employee_profile.break_description')}
               </p>
 
               <button type="submit" disabled={savingProfile} className="rounded-2xl bg-[#111827] dark:bg-[#4a90b0] px-6 py-3 text-sm font-semibold text-white">
-                {savingProfile ? 'Saving...' : 'Save profile'}
+                {savingProfile ? t('employee_profile.saving') : t('employee_profile.save_profile')}
               </button>
             </form>
           </section>
@@ -303,57 +305,57 @@ const EmployeeProfile = () => {
             <div className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
                 <ClockIcon className="h-5 w-5 text-[#4a90b0]" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Personal Duty / Unavailable Time</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('employee_profile.personal_duty')}</h3>
               </div>
               <p className="mb-4 text-sm text-gray-500 dark:text-slate-400">
-                Use this when you are busy, off-site, or unavailable. Those times will be blocked only for you.
+                {t('employee_profile.personal_duty_desc')}
               </p>
 
               <form onSubmit={addDuty} className="grid gap-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Start date</label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.start_date')}</label>
                     <input type="date" name="start_date" value={dutyForm.start_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" required />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">End date</label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.end_date')}</label>
                     <input type="date" name="end_date" value={dutyForm.end_date} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Start time</label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.start_time')}</label>
                     <input type="time" name="start_time" value={dutyForm.start_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0] disabled:opacity-50" disabled={dutyForm.is_all_day} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">End time</label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.end_time')}</label>
                     <input type="time" name="end_time" value={dutyForm.end_time} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0] disabled:opacity-50" disabled={dutyForm.is_all_day} />
                   </div>
                 </div>
 
                 <label className="inline-flex items-center gap-3 text-sm text-gray-700 dark:text-slate-300">
                   <input type="checkbox" name="is_all_day" checked={dutyForm.is_all_day} onChange={handleDutyChange} className="h-4 w-4 rounded border-gray-300 dark:border-slate-600" />
-                  All day
+                  {t('employee_profile.all_day')}
                 </label>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Reason</label>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('employee_profile.reason')}</label>
                   <textarea name="reason" rows={3} value={dutyForm.reason} onChange={handleDutyChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]" required />
                 </div>
 
                 <button type="submit" disabled={savingDuty} className="rounded-2xl bg-[#ef6b57] px-5 py-3 text-sm font-semibold text-white">
-                  {savingDuty ? 'Saving...' : 'Add personal duty'}
+                  {savingDuty ? t('employee_profile.saving') : t('employee_profile.add_duty')}
                 </button>
               </form>
 
               <div className="mt-6 space-y-3">
                 {sortedDuties.length === 0 ? (
-                  <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-4 text-sm text-gray-500 dark:text-slate-400">No personal duty periods added yet.</div>
+                  <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-4 text-sm text-gray-500 dark:text-slate-400">{t('employee_profile.no_duty')}</div>
                 ) : (
                   sortedDuties.map((item) => (
                     <div key={item.id} className="flex items-center justify-between gap-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4">
                       <div>
                         <p className="font-semibold text-gray-900 dark:text-white">{formatHumanDate(item.start_date)}</p>
                         <p className="mt-1 text-sm text-gray-600 dark:text-slate-300">
-                          {item.is_all_day ? 'All day' : `${String(item.start_time || '').slice(0, 5)} - ${String(item.end_time || '').slice(0, 5)}`}
+                          {item.is_all_day ? t('employee_profile.all_day') : `${String(item.start_time || '').slice(0, 5)} - ${String(item.end_time || '').slice(0, 5)}`}
                         </p>
                         <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">{item.reason}</p>
                       </div>
@@ -376,11 +378,11 @@ const EmployeeProfile = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{t('customer_profile.connect_telegram')}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {telegram.connected
-                        ? 'Connected — you\'ll receive booking alerts and a weekly summary every Sunday'
-                        : 'Connect to get booking alerts and your weekly appointment summary'}
+                        ? t('customer_profile.telegram_connected')
+                        : t('customer_profile.telegram_connecting')}
                     </p>
                   </div>
                 </div>
@@ -390,7 +392,7 @@ const EmployeeProfile = () => {
                     onClick={handleDisconnectTelegram}
                     className="rounded-xl border border-red-200 dark:border-red-800 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
-                    Disconnect
+                    {t('customer_profile.disconnect_telegram')}
                   </button>
                 ) : telegram.link ? (
                   <a
@@ -399,7 +401,7 @@ const EmployeeProfile = () => {
                     rel="noreferrer"
                     className="rounded-xl bg-[#229ed9] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1a8bbf] transition-colors"
                   >
-                    Connect Telegram
+                    {t('customer_profile.connect_telegram')}
                   </a>
                 ) : null}
               </div>

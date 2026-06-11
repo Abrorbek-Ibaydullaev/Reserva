@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { scheduleService } from '../../services/api';
-
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const normalizeList = (response) => response.data?.results || response.data || [];
 
 const EmployeeSchedule = () => {
+  const { t } = useTranslation();
   const [hours, setHours] = useState([]);
   const [savingId, setSavingId] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const dayLabels = [
+    t('common.days.monday'),
+    t('common.days.tuesday'),
+    t('common.days.wednesday'),
+    t('common.days.thursday'),
+    t('common.days.friday'),
+    t('common.days.saturday'),
+    t('common.days.sunday'),
+  ];
 
   useEffect(() => {
     loadHours();
@@ -28,7 +38,7 @@ const EmployeeSchedule = () => {
       );
     } catch (error) {
       console.error('Failed to load schedule:', error);
-      toast.error('Failed to load your schedule.');
+      toast.error(t('employee_schedule.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -48,10 +58,10 @@ const EmployeeSchedule = () => {
         closing_time: hour.is_working ? hour.closing_time : null,
       };
       await scheduleService.updateMyWeeklyHour(hour.id, payload);
-      toast.success(`${dayLabels[hour.day_of_week]} saved.`);
+      toast.success(t('employee_schedule.saved', { day: dayLabels[hour.day_of_week] }));
     } catch (error) {
       console.error('Failed to save schedule:', error);
-      toast.error('Failed to save schedule.');
+      toast.error(t('employee_schedule.failed_save'));
     } finally {
       setSavingId(null);
     }
@@ -60,17 +70,17 @@ const EmployeeSchedule = () => {
   return (
     <div className="min-h-screen bg-[#f5f3ff] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Schedule</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('employee_schedule.title')}</h1>
         <p className="mt-2 text-gray-500 dark:text-slate-400">
-          Set the days and hours you are available to take appointments.
+          {t('employee_schedule.subtitle')}
         </p>
 
         <div className="mt-8 space-y-4">
           {loading ? (
-            <div className="text-gray-500 dark:text-slate-400">Loading schedule...</div>
+            <div className="text-gray-500 dark:text-slate-400">{t('employee_schedule.loading')}</div>
           ) : hours.length === 0 ? (
             <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-8 text-gray-500 dark:text-slate-400">
-              No schedule found. Ask your employer to set up your schedule first.
+              {t('employee_schedule.no_schedule')}
             </div>
           ) : (
             hours.map((hour) => (
@@ -81,7 +91,7 @@ const EmployeeSchedule = () => {
                       {dayLabels[hour.day_of_week]}
                     </h2>
                     <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                      {hour.is_working ? 'Working' : 'Day off'}
+                      {hour.is_working ? t('employee_schedule.working') : t('employee_schedule.day_off')}
                     </p>
                   </div>
 
@@ -93,7 +103,7 @@ const EmployeeSchedule = () => {
                         onChange={(e) => updateLocal(hour.id, { is_working: e.target.checked })}
                         className="h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-violet-600"
                       />
-                      Working
+                      {t('employee_schedule.working')}
                     </label>
                     <input
                       type="time"
@@ -117,7 +127,7 @@ const EmployeeSchedule = () => {
                     disabled={savingId === hour.id}
                     className="rounded-2xl bg-violet-600 px-5 py-3 font-semibold text-white disabled:opacity-60"
                   >
-                    {savingId === hour.id ? 'Saving...' : 'Save'}
+                    {savingId === hour.id ? t('employee_schedule.saving') : t('employee_schedule.save')}
                   </button>
                 </div>
               </div>

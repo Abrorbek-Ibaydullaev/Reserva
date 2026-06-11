@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from .models import Category, Service, ServiceReview, ServiceAddon
 from .serializers import (
     CategorySerializer,
@@ -113,7 +114,7 @@ class ServiceReviewListView(generics.ListCreateAPIView):
         # Check if user already reviewed this service
         if ServiceReview.objects.filter(service=service, customer=self.request.user).exists():
             raise serializers.ValidationError(
-                "You have already reviewed this service.")
+                _("You have already reviewed this service."))
 
         serializer.save(service=service, customer=self.request.user)
 
@@ -131,7 +132,7 @@ class ServiceReviewByIdView(generics.ListCreateAPIView):
         service = get_object_or_404(Service, id=self.kwargs['pk'])
         if ServiceReview.objects.filter(service=service, customer=self.request.user).exists():
             from rest_framework import serializers as drf_serializers
-            raise drf_serializers.ValidationError("You have already reviewed this service.")
+            raise drf_serializers.ValidationError(_("You have already reviewed this service."))
         serializer.save(service=service, customer=self.request.user)
 
 

@@ -3,6 +3,7 @@ import NotificationBell from './NotificationBell';
 import { Link, useLocation } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   HomeIcon,
   BriefcaseIcon,
@@ -10,7 +11,6 @@ import {
   UserGroupIcon,
   ClockIcon,
   Cog6ToothIcon,
-  BellIcon,
   ArrowRightOnRectangleIcon,
   CalendarDaysIcon,
   Bars3Icon,
@@ -20,17 +20,9 @@ import {
   PrinterIcon,
 } from '@heroicons/react/24/outline';
 
-const navItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, exact: true },
-  { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
-  { name: 'Appointments', href: '/dashboard/appointments', icon: CalendarIcon },
-  { name: 'Employees', href: '/dashboard/employees', icon: UserGroupIcon },
-  { name: 'Schedule', href: '/dashboard/schedule', icon: ClockIcon },
-  { name: 'Settings', href: '/dashboard/profile', icon: Cog6ToothIcon },
-];
-
 // ── QR Code Modal ─────────────────────────────────────────────────────────────
 const QRModal = ({ user, onClose }) => {
+  const { t } = useTranslation();
   const bookingUrl = `${window.location.origin}/business/${user?.id}`;
   const businessName =
     user?.profile?.business_name ||
@@ -41,7 +33,6 @@ const QRModal = ({ user, onClose }) => {
     const canvas = document.getElementById('business-qr-canvas');
     if (!canvas) return;
 
-    // Create a larger branded canvas for download
     const size = 600;
     const padding = 40;
     const labelHeight = 90;
@@ -50,23 +41,18 @@ const QRModal = ({ user, onClose }) => {
     out.height = size + padding * 2 + labelHeight;
     const ctx = out.getContext('2d');
 
-    // White background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, out.width, out.height);
-
-    // QR code
     ctx.drawImage(canvas, padding, padding, size, size);
 
-    // Business name
     ctx.fillStyle = '#0f172a';
     ctx.font = 'bold 28px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(businessName, out.width / 2, size + padding + 44);
 
-    // Tagline
     ctx.fillStyle = '#64748b';
     ctx.font = '20px system-ui, sans-serif';
-    ctx.fillText('Scan to book an appointment', out.width / 2, size + padding + 76);
+    ctx.fillText(t('layout.scan_to_book'), out.width / 2, size + padding + 76);
 
     const link = document.createElement('a');
     link.download = `${businessName.replace(/\s+/g, '-')}-QR.png`;
@@ -92,11 +78,11 @@ const QRModal = ({ user, onClose }) => {
       <body>
         <img src="${dataUrl}" />
         <h2>${businessName}</h2>
-        <p>Scan to book an appointment</p>
+        <p>${t('layout.scan_to_book')}</p>
         <br/>
         <button onclick="window.print()" style="margin-top:16px;padding:10px 24px;background:#2563eb;
           color:white;border:none;border-radius:8px;font-size:15px;cursor:pointer;">
-          Print
+          ${t('layout.print')}
         </button>
       </body></html>
     `);
@@ -111,7 +97,7 @@ const QRModal = ({ user, onClose }) => {
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div className="flex items-center gap-2">
             <QrCodeIcon className="h-5 w-5 text-blue-600" />
-            <h2 className="text-base font-bold text-slate-900">Your Booking QR Code</h2>
+            <h2 className="text-base font-bold text-slate-900">{t('layout.your_booking_qr')}</h2>
           </div>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
             <XMarkIcon className="h-5 w-5 text-slate-500" />
@@ -138,7 +124,7 @@ const QRModal = ({ user, onClose }) => {
 
           <div className="mt-4 text-center">
             <p className="text-base font-bold text-slate-900">{businessName}</p>
-            <p className="mt-1 text-xs text-slate-500">Scan to book an appointment</p>
+            <p className="mt-1 text-xs text-slate-500">{t('layout.scan_to_book')}</p>
             <p className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-1.5 text-[11px] text-slate-400 font-mono">
               {bookingUrl}
             </p>
@@ -152,19 +138,19 @@ const QRModal = ({ user, onClose }) => {
             className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
           >
             <ArrowDownTrayIcon className="h-4 w-4" />
-            Download PNG
+            {t('layout.download_png')}
           </button>
           <button
             onClick={handlePrint}
             className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
           >
             <PrinterIcon className="h-4 w-4" />
-            Print
+            {t('layout.print')}
           </button>
         </div>
 
         <p className="pb-5 text-center text-xs text-slate-400">
-          Print and place it at your counter, door, or mirror.
+          {t('layout.qr_print_hint')}
         </p>
       </div>
     </div>
@@ -173,10 +159,20 @@ const QRModal = ({ user, onClose }) => {
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 const BusinessLayout = ({ children }) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showQR, setShowQR] = useState(false);
+
+  const navItems = [
+    { name: t('nav.dashboard'), href: '/dashboard', icon: HomeIcon, exact: true },
+    { name: t('nav.services'), href: '/dashboard/services', icon: BriefcaseIcon },
+    { name: t('nav.appointments'), href: '/dashboard/appointments', icon: CalendarIcon },
+    { name: t('business_employees.title'), href: '/dashboard/employees', icon: UserGroupIcon },
+    { name: t('employee_schedule.title'), href: '/dashboard/schedule', icon: ClockIcon },
+    { name: t('nav.settings'), href: '/dashboard/profile', icon: Cog6ToothIcon },
+  ];
 
   const isActive = (item) =>
     item.exact
@@ -201,7 +197,7 @@ const BusinessLayout = ({ children }) => {
           const active = isActive(item);
           return (
             <Link
-              key={item.name}
+              key={item.href}
               to={item.href}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
@@ -222,7 +218,7 @@ const BusinessLayout = ({ children }) => {
           className="flex w-full items-center gap-3 rounded-xl border border-dashed border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors mt-2"
         >
           <QrCodeIcon className="h-5 w-5 flex-shrink-0" />
-          My QR Code
+          {t('layout.my_qr_code')}
         </button>
       </nav>
 
@@ -242,7 +238,7 @@ const BusinessLayout = ({ children }) => {
             <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
               {user?.first_name} {user?.last_name}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Business Owner</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('layout.business_owner_role')}</p>
           </div>
         </div>
         <button
@@ -250,7 +246,7 @@ const BusinessLayout = ({ children }) => {
           className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
-          Logout
+          {t('layout.logout')}
         </button>
       </div>
     </>
@@ -280,7 +276,7 @@ const BusinessLayout = ({ children }) => {
               <Bars3Icon className="h-5 w-5" />
             </button>
             <p className="text-base font-semibold text-slate-700 dark:text-slate-200">
-              {currentPage?.name || 'Dashboard'}
+              {currentPage?.name || t('nav.dashboard')}
             </p>
           </div>
 
@@ -291,7 +287,7 @@ const BusinessLayout = ({ children }) => {
               className="hidden items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors sm:flex"
             >
               <QrCodeIcon className="h-4 w-4" />
-              QR Code
+              {t('layout.my_qr_code')}
             </button>
             <NotificationBell />
             <div className="hidden items-center gap-2 md:flex">
@@ -308,7 +304,7 @@ const BusinessLayout = ({ children }) => {
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {user?.first_name} {user?.last_name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Administrator</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('layout.administrator_role')}</p>
               </div>
             </div>
           </div>

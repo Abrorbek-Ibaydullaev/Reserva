@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { scheduleService } from '../../services/api';
-
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const normalizeList = (response) => response.data?.results || response.data || [];
 
 const BusinessSchedule = () => {
+  const { t } = useTranslation();
   const [hours, setHours] = useState([]);
   const [savingId, setSavingId] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const dayLabels = [
+    t('common.days.monday'),
+    t('common.days.tuesday'),
+    t('common.days.wednesday'),
+    t('common.days.thursday'),
+    t('common.days.friday'),
+    t('common.days.saturday'),
+    t('common.days.sunday'),
+  ];
 
   useEffect(() => {
     loadHours();
@@ -28,7 +38,7 @@ const BusinessSchedule = () => {
       );
     } catch (error) {
       console.error('Failed to load business hours:', error);
-      toast.error('Failed to load business hours.');
+      toast.error(t('business_schedule.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -49,10 +59,10 @@ const BusinessSchedule = () => {
         closing_time: hour.is_open && !hour.is_24_hours ? hour.closing_time : null,
       };
       await scheduleService.updateBusinessHours(hour.id, payload);
-      toast.success(`${dayLabels[hour.day_of_week]} updated.`);
+      toast.success(t('business_schedule.updated', { day: dayLabels[hour.day_of_week] }));
     } catch (error) {
       console.error('Failed to update business hours:', error);
-      toast.error('Failed to update business hours.');
+      toast.error(t('business_schedule.failed_update'));
     } finally {
       setSavingId(null);
     }
@@ -61,14 +71,14 @@ const BusinessSchedule = () => {
   return (
     <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Business Hours</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('business_schedule.title')}</h1>
         <p className="mt-2 text-gray-500 dark:text-slate-400">
-          These are the public business hours shown on your business page and used as the main booking window. Staff schedules are separate.
+          {t('business_schedule.subtitle')}
         </p>
 
         <div className="mt-8 space-y-4">
           {loading ? (
-            <div className="text-gray-500 dark:text-slate-400">Loading schedule...</div>
+            <div className="text-gray-500 dark:text-slate-400">{t('business_schedule.loading')}</div>
           ) : (
             hours.map((hour) => (
               <div key={hour.id} className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
@@ -78,7 +88,9 @@ const BusinessSchedule = () => {
                       {dayLabels[hour.day_of_week]}
                     </h2>
                     <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                      {hour.is_open ? (hour.is_24_hours ? 'Open 24 hours' : 'Custom hours') : 'Closed'}
+                      {hour.is_open
+                        ? (hour.is_24_hours ? t('business_schedule.open_24_hours') : t('business_schedule.custom_hours'))
+                        : t('business_schedule.closed')}
                     </p>
                   </div>
 
@@ -90,7 +102,7 @@ const BusinessSchedule = () => {
                         onChange={(event) => updateLocalHour(hour.id, { is_open: event.target.checked })}
                         className="h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-[#4a90b0]"
                       />
-                      Open
+                      {t('business_schedule.open')}
                     </label>
                     <label className="inline-flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-slate-300">
                       <input
@@ -100,7 +112,7 @@ const BusinessSchedule = () => {
                         onChange={(event) => updateLocalHour(hour.id, { is_24_hours: event.target.checked })}
                         className="h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-[#4a90b0]"
                       />
-                      24 hours
+                      {t('business_schedule.open_24')}
                     </label>
                     <input
                       type="time"
@@ -124,7 +136,7 @@ const BusinessSchedule = () => {
                     disabled={savingId === hour.id}
                     className="rounded-2xl bg-[#4a90b0] px-5 py-3 font-semibold text-white disabled:opacity-60"
                   >
-                    {savingId === hour.id ? 'Saving...' : 'Save'}
+                    {savingId === hour.id ? t('business_schedule.saving') : t('business_schedule.save')}
                   </button>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/api';
 import {
   CalendarDaysIcon,
@@ -9,21 +10,16 @@ import {
 } from '@heroicons/react/24/outline';
 
 const OTP_LENGTH = 6;
-const COUNTDOWN_SECONDS = 60; // 1 minute
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
+const COUNTDOWN_SECONDS = 60;
 
 function formatCountdown(seconds) {
-  const m = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, '0');
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
-// ─── Step 1: Email form ──────────────────────────────────────────────────────
-
 function EmailStep({ onSuccess }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,9 +32,7 @@ function EmailStep({ onSuccess }) {
       await authService.forgotPassword(email.trim().toLowerCase());
       onSuccess(email.trim().toLowerCase());
     } catch {
-      // The backend always returns 200, so an error here means a network
-      // or unexpected server fault — not that the email doesn't exist.
-      setError('Unable to send a code right now. Please try again.');
+      setError(t('auth.unable_to_send_code'));
     } finally {
       setLoading(false);
     }
@@ -47,16 +41,16 @@ function EmailStep({ onSuccess }) {
   return (
     <>
       <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-        Reset your password
+        {t('auth.reset_password')}
       </h1>
       <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-        Enter your account email and we will send a 6-digit reset code.
+        {t('auth.reset_subtitle')}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-            Email address
+            {t('form.email_address')}
           </span>
           <div className="relative">
             <EnvelopeIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -67,7 +61,7 @@ function EmailStep({ onSuccess }) {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(''); }}
               className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              placeholder="you@example.com"
+              placeholder={t('auth.email_placeholder')}
             />
           </div>
         </label>
@@ -89,11 +83,11 @@ function EmailStep({ onSuccess }) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Sending…
+              {t('auth.sending')}
             </>
           ) : (
             <>
-              Send reset code
+              {t('auth.otp_send_reset_code')}
               <ArrowRightIcon className="h-4 w-4" />
             </>
           )}
@@ -103,10 +97,9 @@ function EmailStep({ onSuccess }) {
   );
 }
 
-// ─── Step 2: OTP verification ────────────────────────────────────────────────
-
 function OTPStep({ email, onResend }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(''));
   const [error, setError] = useState('');
@@ -115,14 +108,12 @@ function OTPStep({ email, onResend }) {
   const [resending, setResending] = useState(false);
   const inputRefs = useRef([]);
 
-  // Countdown timer
   useEffect(() => {
     if (countdown <= 0) return;
     const id = setInterval(() => setCountdown((c) => c - 1), 1000);
     return () => clearInterval(id);
   }, [countdown]);
 
-  // Auto-focus first input on mount
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
@@ -139,20 +130,18 @@ function OTPStep({ email, onResend }) {
       } catch (err) {
         const msg =
           err.response?.data?.error ||
-          'Invalid code. Please check your email and try again.';
+          t('auth.otp_invalid');
         setError(msg);
-        // Clear inputs so the user can re-enter
         setDigits(Array(OTP_LENGTH).fill(''));
         inputRefs.current[0]?.focus();
       } finally {
         setLoading(false);
       }
     },
-    [email, navigate]
+    [email, navigate, t]
   );
 
   const handleDigitChange = (index, value) => {
-    // Accept only a single digit
     const digit = value.replace(/\D/g, '').slice(-1);
     const next = [...digits];
     next[index] = digit;
@@ -160,11 +149,9 @@ function OTPStep({ email, onResend }) {
     setError('');
 
     if (digit) {
-      // Move to next box
       if (index < OTP_LENGTH - 1) {
         inputRefs.current[index + 1]?.focus();
       }
-      // Auto-submit when all filled
       const complete = next.join('');
       if (complete.length === OTP_LENGTH && next.every(Boolean)) {
         submitOTP(complete);
@@ -224,7 +211,7 @@ function OTPStep({ email, onResend }) {
       onResend?.();
       inputRefs.current[0]?.focus();
     } catch {
-      setError('Unable to resend the code. Please try again.');
+      setError(t('auth.unable_to_resend'));
     } finally {
       setResending(false);
     }
@@ -235,12 +222,10 @@ function OTPStep({ email, onResend }) {
   return (
     <>
       <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-        Enter your reset code
+        {t('auth.enter_otp')}
       </h1>
       <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-        We sent a 6-digit code to{' '}
-        <span className="font-semibold text-slate-700 dark:text-slate-300">{email}</span>.
-        Enter it below.
+        {t('auth.otp_sent', { email: <span className="font-semibold text-slate-700 dark:text-slate-300">{email}</span> })}
       </p>
 
       <form onSubmit={handleManualSubmit} className="mt-6 space-y-6">
@@ -274,19 +259,10 @@ function OTPStep({ email, onResend }) {
         <div className="text-center text-sm">
           {countdown > 0 ? (
             <span className="text-slate-500 dark:text-slate-400">
-              Code expires in{' '}
-              <span
-                className={
-                  countdown <= 60
-                    ? 'font-semibold text-red-500'
-                    : 'font-semibold text-slate-700 dark:text-slate-300'
-                }
-              >
-                {formatCountdown(countdown)}
-              </span>
+              {t('auth.otp_code_expires_in', { time: formatCountdown(countdown) })}
             </span>
           ) : (
-            <span className="font-semibold text-red-500">Code expired.</span>
+            <span className="font-semibold text-red-500">{t('auth.otp_expired')}</span>
           )}
         </div>
 
@@ -307,11 +283,11 @@ function OTPStep({ email, onResend }) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Verifying…
+              {t('auth.otp_verifying')}
             </>
           ) : (
             <>
-              Verify code
+              {t('auth.otp_verify')}
               <ArrowRightIcon className="h-4 w-4" />
             </>
           )}
@@ -320,7 +296,7 @@ function OTPStep({ email, onResend }) {
         {/* Resend */}
         <div className="text-center">
           <span className="text-sm text-slate-500 dark:text-slate-400">
-            Didn't receive a code?{' '}
+            {t('auth.otp_didnt_receive')}{' '}
           </span>
           <button
             type="button"
@@ -334,12 +310,12 @@ function OTPStep({ email, onResend }) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Resending…
+                {t('auth.otp_resending')}
               </>
             ) : (
               <>
                 <ArrowPathIcon className="h-3.5 w-3.5" />
-                Resend code
+                {t('auth.otp_resend')}
               </>
             )}
           </button>
@@ -349,10 +325,9 @@ function OTPStep({ email, onResend }) {
   );
 }
 
-// ─── Page root ───────────────────────────────────────────────────────────────
-
 const ForgotPassword = () => {
-  const [step, setStep] = useState(1); // 1 = email, 2 = otp
+  const { t } = useTranslation();
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
 
   const handleEmailSuccess = (submittedEmail) => {
@@ -377,7 +352,7 @@ const ForgotPassword = () => {
             to="/login"
             className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline"
           >
-            &larr; Back to sign in
+            &larr; {t('auth.back_to_sign_in')}
           </Link>
         )}
         {step === 2 && (
@@ -386,7 +361,7 @@ const ForgotPassword = () => {
             onClick={() => setStep(1)}
             className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline"
           >
-            &larr; Change email
+            &larr; {t('auth.change_email')}
           </button>
         )}
 

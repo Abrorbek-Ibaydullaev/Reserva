@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 from datetime import timedelta
 import secrets
 from django.db.models import Avg, Count
@@ -56,7 +57,7 @@ def _flatten_serializer_errors(errors):
                 messages.append(msg)
             else:
                 messages.append(f"{field}: {msg}")
-    return ' | '.join(messages) if messages else 'Registration failed. Please check your details.'
+    return ' | '.join(messages) if messages else _('Registration failed. Please check your details.')
 
 
 CITY_ALIASES = {
@@ -79,7 +80,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         remote_ip = request.META.get('REMOTE_ADDR')
         if not verify_recaptcha(token, remote_ip):
             return Response(
-                {'detail': 'reCAPTCHA verification failed. Please check the box and try again.'},
+                {'detail': _('reCAPTCHA verification failed. Please check the box and try again.')},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -102,7 +103,7 @@ class UserRegistrationView(generics.CreateAPIView):
         email = User.objects.normalize_email(request.data.get('email', '')).strip()
         if email and User.objects.filter(email__iexact=email).exists():
             return Response(
-                {'detail': 'An account with this email already exists. Please sign in instead.'},
+                {'detail': _('An account with this email already exists. Please sign in instead.')},
                 status=status.HTTP_409_CONFLICT,
             )
 
@@ -158,12 +159,12 @@ class ChangePasswordView(generics.UpdateAPIView):
 
         user = self.get_object()
         if not user.check_password(serializer.data.get("old_password")):
-            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"old_password": [_("Wrong password.")]}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(serializer.data.get("new_password"))
         user.save()
 
-        return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+        return Response({"message": _("Password updated successfully.")}, status=status.HTTP_200_OK)
 
 
 class ForgotPasswordView(APIView):
@@ -192,7 +193,7 @@ class ForgotPasswordView(APIView):
                 # Email sending removed — this view is superseded by OTPForgotPasswordView.
 
         return Response(
-            {'detail': 'If this email exists, a reset link has been sent.'},
+            {'detail': _('If this email exists, a reset link has been sent.')},
             status=status.HTTP_200_OK,
         )
 
@@ -208,7 +209,7 @@ class ResetPasswordView(APIView):
 
         if not reset_token or not reset_token.is_valid:
             return Response(
-                {'detail': 'Invalid or expired reset token.'},
+                {'detail': _('Invalid or expired reset token.')},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -226,7 +227,7 @@ class ResetPasswordView(APIView):
             used_at__isnull=True,
         ).exclude(pk=reset_token.pk).update(used_at=timezone.now())
 
-        return Response({'detail': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+        return Response({'detail': _('Password reset successfully.')}, status=status.HTTP_200_OK)
 
 
 class NotificationListView(generics.ListAPIView):
@@ -250,7 +251,7 @@ class MarkNotificationAsReadView(generics.UpdateAPIView):
         notification = self.get_object()
         notification.is_read = True
         notification.save()
-        return Response({"message": "Notification marked as read."}, status=status.HTTP_200_OK)
+        return Response({"message": _("Notification marked as read.")}, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
@@ -263,7 +264,7 @@ class MarkAllNotificationsAsReadView(APIView):
     def post(self, request):
         Notification.objects.filter(
             user=request.user, is_read=False).update(is_read=True)
-        return Response({"message": "All notifications marked as read."}, status=status.HTTP_200_OK)
+        return Response({"message": _("All notifications marked as read.")}, status=status.HTTP_200_OK)
 
     def patch(self, request):
         return self.post(request)
@@ -274,9 +275,9 @@ class ClearAllNotificationsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request):
-        deleted_count, _ = Notification.objects.filter(user=request.user).delete()
+        deleted_count = Notification.objects.filter(user=request.user).delete()[0]
         return Response(
-            {"message": "All notifications cleared.", "deleted": deleted_count},
+            {"message": _("All notifications cleared."), "deleted": deleted_count},
             status=status.HTTP_200_OK,
         )
 
@@ -357,4 +358,4 @@ class TelegramLinkView(APIView):
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
         profile.telegram_chat_id = None
         profile.save(update_fields=['telegram_chat_id'])
-        return Response({'detail': 'Telegram disconnected.'})
+        return Response({'detail': _('Telegram disconnected.')})

@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Community = () => (
-  <StaticInfoPage
-    title="Community"
-    description="Reserva community resources will support customers, service professionals, and local business owners. Future updates will include events, learning materials, and ways to connect."
-  />
-);
+const Community = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.community_title')}
+      description={t('static.community_description')}
+    />
+  );
+};
 
 export default Community;

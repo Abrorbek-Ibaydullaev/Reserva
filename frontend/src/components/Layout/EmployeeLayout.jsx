@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NotificationBell from './NotificationBell';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   HomeIcon,
   CalendarIcon,
@@ -9,21 +10,21 @@ import {
   ArrowRightOnRectangleIcon,
   CalendarDaysIcon,
   Bars3Icon,
-  BellIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
 
-const navItems = [
-  { name: 'Dashboard', href: '/employee/dashboard', icon: HomeIcon },
-  { name: 'My Appointments', href: '/employee/appointments', icon: CalendarIcon },
-  { name: 'Schedule', href: '/employee/schedule', icon: ClockIcon },
-  { name: 'Profile', href: '/employee/profile', icon: UserCircleIcon },
-];
-
 const EmployeeLayout = ({ children }) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const navItems = [
+    { name: t('nav.dashboard'), href: '/employee/dashboard', icon: HomeIcon },
+    { name: t('nav.my_appointments'), href: '/employee/appointments', icon: CalendarIcon },
+    { name: t('employee_schedule.title'), href: '/employee/schedule', icon: ClockIcon },
+    { name: t('nav.profile'), href: '/employee/profile', icon: UserCircleIcon },
+  ];
 
   const isActive = (item) => location.pathname === item.href;
   const currentPage = navItems.find(isActive);
@@ -42,7 +43,7 @@ const EmployeeLayout = ({ children }) => {
           const active = isActive(item);
           return (
             <Link
-              key={item.name}
+              key={item.href}
               to={item.href}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
@@ -73,7 +74,7 @@ const EmployeeLayout = ({ children }) => {
             <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
               {user?.first_name} {user?.last_name}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Employee</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('layout.employee_role')}</p>
           </div>
         </div>
         <button
@@ -81,7 +82,7 @@ const EmployeeLayout = ({ children }) => {
           className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
-          Logout
+          {t('layout.logout')}
         </button>
       </div>
     </>
@@ -114,7 +115,7 @@ const EmployeeLayout = ({ children }) => {
               <Bars3Icon className="h-5 w-5" />
             </button>
             <p className="text-base font-semibold text-slate-700 dark:text-slate-200">
-              {currentPage?.name || 'Employee Portal'}
+              {currentPage?.name || t('layout.employee_portal')}
             </p>
           </div>
 
@@ -134,7 +135,7 @@ const EmployeeLayout = ({ children }) => {
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {user?.first_name} {user?.last_name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Employee</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('layout.employee_role')}</p>
               </div>
             </div>
           </div>

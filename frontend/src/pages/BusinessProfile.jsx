@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { userService } from '../services/api';
 import {
@@ -34,6 +35,7 @@ const getErrorMessage = (error, fallback) => {
 };
 
 const BusinessProfile = () => {
+  const { t } = useTranslation();
   const { checkAuthStatus } = useAuth();
   const [formData, setFormData] = useState({
     first_name: '',
@@ -131,7 +133,7 @@ const BusinessProfile = () => {
       });
     } catch (error) {
       console.error('Failed to load business profile:', error);
-      toast.error('Failed to load business profile.');
+      toast.error(t('business_profile.failed_load'));
       setLoading(false);
     }
   };
@@ -140,9 +142,9 @@ const BusinessProfile = () => {
     try {
       await userService.disconnectTelegram();
       setTelegram((prev) => ({ ...prev, connected: false }));
-      toast.success('Telegram disconnected.');
+      toast.success(t('customer_profile.telegram_disconnected_success'));
     } catch {
-      toast.error('Failed to disconnect Telegram.');
+      toast.error(t('customer_profile.failed_disconnect'));
     }
   };
 
@@ -185,10 +187,10 @@ const BusinessProfile = () => {
     try {
       await userService.deleteGalleryImage(id);
       setGalleryImages((current) => current.filter((item) => item.id !== id));
-      toast.success('Photo removed.');
+      toast.success(t('business_profile.updated_success'));
     } catch (error) {
       console.error('Failed to delete gallery image:', error);
-      toast.error('Failed to delete photo.');
+      toast.error(t('business_profile.failed_update'));
     }
   };
 
@@ -305,15 +307,13 @@ const BusinessProfile = () => {
       setSelectedPortfolioFiles(failedPortfolioFiles);
 
       if (failedGalleryUploadCount > 0) {
-        toast.warn(
-          `Business profile saved, but ${failedGalleryUploadCount} of ${galleryUploadCount} gallery photos failed. The failed photos are still pending so you can try again.`
-        );
+        toast.warn(t('business_profile.gallery_failed_partial', { failed: failedGalleryUploadCount, total: galleryUploadCount }));
       } else {
-        toast.success('Business profile updated.');
+        toast.success(t('business_profile.updated_success'));
       }
     } catch (error) {
       console.error('Failed to update business profile:', error?.response?.data || error);
-      toast.error(getErrorMessage(error, 'Failed to update business profile.'));
+      toast.error(getErrorMessage(error, t('business_profile.failed_update')));
     } finally {
       setSaving(false);
     }
@@ -368,16 +368,16 @@ const BusinessProfile = () => {
         ))}
       </div>
     ) : (
-      <p className="mt-4 text-sm text-gray-500 dark:text-slate-400">No photos uploaded yet.</p>
+      <p className="mt-4 text-sm text-gray-500 dark:text-slate-400">{t('business_profile.no_photos')}</p>
     );
 
   return (
     <div className="min-h-screen bg-[#f5f7f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Business Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('business_profile.title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-slate-400">
-            Update the photo, contact details, and business info shown on your public booking page.
+            {t('business_profile.subtitle')}
           </p>
         </div>
 
@@ -399,21 +399,21 @@ const BusinessProfile = () => {
 
             <label className="mt-4 inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-gray-300 dark:border-slate-600 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">
               <CameraIcon className="h-5 w-5" />
-              Upload main photo
+              {t('business_profile.upload_main_photo')}
               <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
             </label>
 
             <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Upload space photos</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('business_profile.upload_space_photos')}</p>
                   <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                    Add interior, exterior, waiting room, salon, studio, or location photos.
+                    {t('business_profile.space_photos_desc')}
                   </p>
                 </div>
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#4a90b0] px-4 py-2 text-sm font-semibold text-white">
                   <CameraIcon className="h-4 w-4" />
-                  Add photos
+                  {t('business_profile.add_photos')}
                   <input
                     type="file"
                     accept="image/*"
@@ -426,7 +426,7 @@ const BusinessProfile = () => {
               </div>
               {!galleryEnabled ? (
                 <p className="mt-4 text-sm text-amber-700">
-                  Gallery uploads are not available yet on the backend. The main profile still works.
+                  {t('business_profile.gallery_unavailable')}
                 </p>
               ) : null}
               {renderPendingFiles(selectedSpaceFiles, 'space')}
@@ -436,14 +436,14 @@ const BusinessProfile = () => {
             <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Upload portfolio photos</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('business_profile.upload_portfolio_photos')}</p>
                   <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                    Add finished customer results, nails, brows, lashes, haircuts, tattoos, and other work samples.
+                    {t('business_profile.portfolio_photos_desc')}
                   </p>
                 </div>
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#111827] px-4 py-2 text-sm font-semibold text-white">
                   <CameraIcon className="h-4 w-4" />
-                  Add photos
+                  {t('business_profile.add_photos')}
                   <input
                     type="file"
                     accept="image/*"
@@ -456,7 +456,7 @@ const BusinessProfile = () => {
               </div>
               {!galleryEnabled ? (
                 <p className="mt-4 text-sm text-amber-700">
-                  Gallery uploads are not available yet on the backend. After migrations, this section will work.
+                  {t('business_profile.gallery_unavailable')}
                 </p>
               ) : null}
               {renderPendingFiles(selectedPortfolioFiles, 'portfolio')}
@@ -467,40 +467,40 @@ const BusinessProfile = () => {
               <div className="flex items-start gap-3">
                 <BuildingStorefrontIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">Business name</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{formData.business_name || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">{t('profile.business_name')}</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{formData.business_name || t('business_profile.not_added')}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPinIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">Address</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">{t('profile.address')}</p>
                   <p className="text-base text-gray-900 dark:text-slate-200">
                     {[formData.business_address, formData.postal_code, formData.city, formData.state]
                       .filter(Boolean)
-                      .join(', ') || 'Not added'}
+                      .join(', ') || t('business_profile.not_added')}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <PhoneIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">Business phone</p>
-                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_phone || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">{t('business_profile.business_phone')}</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_phone || t('business_profile.not_added')}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <EnvelopeIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">Business email</p>
-                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_email || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">{t('business_profile.business_email')}</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_email || t('business_profile.not_added')}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <GlobeAltIcon className="mt-1 h-5 w-5 text-[#4a90b0]" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">Website</p>
-                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_website || 'Not added'}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">{t('business_profile.business_website')}</p>
+                  <p className="text-base text-gray-900 dark:text-slate-200">{formData.business_website || t('business_profile.not_added')}</p>
                 </div>
               </div>
             </div>
@@ -512,38 +512,38 @@ const BusinessProfile = () => {
               <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
                 <span className="text-xl">📍</span>
                 <div>
-                  <p className="text-sm font-semibold text-amber-800">City not set</p>
-                  <p className="text-xs text-amber-700 mt-0.5">Customers searching by city won't find you. Fill in your city below.</p>
+                  <p className="text-sm font-semibold text-amber-800">{t('business_profile.city_not_set')}</p>
+                  <p className="text-xs text-amber-700 mt-0.5">{t('business_profile.city_not_set_desc')}</p>
                 </div>
               </div>
             )}
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business name</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('profile.business_name')}</label>
                 <input name="business_name" value={formData.business_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Owner first name</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.owner_first_name')}</label>
                 <input name="first_name" value={formData.first_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Owner last name</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.owner_last_name')}</label>
                 <input name="last_name" value={formData.last_name} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business address</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.business_address')}</label>
                 <input name="business_address" value={formData.business_address} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Postal code</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.postal_code')}</label>
                 <input name="postal_code" value={formData.postal_code} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">City / Province</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.city_province')}</label>
                 <input name="city" value={formData.city} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Latitude</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.latitude')}</label>
                 <input
                   name="latitude"
                   value={formData.latitude}
@@ -553,7 +553,7 @@ const BusinessProfile = () => {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Longitude</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.longitude')}</label>
                 <input
                   name="longitude"
                   value={formData.longitude}
@@ -563,38 +563,38 @@ const BusinessProfile = () => {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business phone</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.business_phone')}</label>
                 <input name="business_phone" value={formData.business_phone} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business email</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.business_email')}</label>
                 <input name="business_email" value={formData.business_email} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Instagram URL</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.instagram_url')}</label>
                 <input name="instagram" value={formData.instagram} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Facebook URL</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.facebook_url')}</label>
                 <input name="facebook" value={formData.facebook} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Business website</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.business_website')}</label>
                 <input name="business_website" value={formData.business_website} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">About us</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.about_us')}</label>
                 <textarea name="business_description" rows={4} value={formData.business_description} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">Short bio</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-900 dark:text-slate-200">{t('business_profile.short_bio')}</label>
                 <textarea name="bio" rows={3} value={formData.bio} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3" />
               </div>
             </div>
 
             <div className="mt-8 flex justify-end">
               <button type="submit" disabled={saving} className="rounded-2xl bg-[#4a90b0] px-6 py-3 font-semibold text-white disabled:opacity-60">
-                {saving ? 'Saving...' : 'Save business profile'}
+                {saving ? t('business_profile.saving') : t('business_profile.save_business_profile')}
               </button>
             </div>
           </form>
@@ -610,11 +610,11 @@ const BusinessProfile = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">Telegram Notifications</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{t('customer_profile.connect_telegram')}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {telegram.connected
-                    ? 'Connected — you\'ll receive booking alerts and weekly reports'
-                    : 'Connect to get booking alerts and weekly performance reports every Sunday'}
+                    ? t('customer_profile.telegram_connected_weekly')
+                    : t('customer_profile.telegram_weekly_reports')}
                 </p>
               </div>
             </div>
@@ -624,7 +624,7 @@ const BusinessProfile = () => {
                 onClick={handleDisconnectTelegram}
                 className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
               >
-                Disconnect
+                {t('customer_profile.disconnect_telegram')}
               </button>
             ) : telegram.link ? (
               <a
@@ -633,7 +633,7 @@ const BusinessProfile = () => {
                 rel="noreferrer"
                 className="rounded-xl bg-[#229ed9] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1a8bbf] transition-colors"
               >
-                Connect Telegram
+                {t('customer_profile.connect_telegram')}
               </a>
             ) : null}
           </div>

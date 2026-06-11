@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -41,8 +42,6 @@ const STATUS_STYLE = {
   no_show:     'bg-slate-100 text-slate-600',
 };
 
-const TABS = ['Upcoming', 'Past', 'Cancelled'];
-
 // ── Star picker ───────────────────────────────────────────────────────────────
 const StarPicker = ({ value, onChange }) => (
   <div className="flex gap-1">
@@ -63,28 +62,31 @@ const StarPicker = ({ value, onChange }) => (
 
 // ── Review modal ──────────────────────────────────────────────────────────────
 const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const ratingLabels = ['', t('booking.rating_poor'), t('booking.rating_fair'), t('booking.rating_good'), t('booking.rating_very_good'), t('booking.rating_excellent')];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (rating === 0) { toast.error('Please select a star rating.'); return; }
-    if (!comment.trim()) { toast.error('Please write a comment.'); return; }
+    if (rating === 0) { toast.error(t('booking.select_star')); return; }
+    if (!comment.trim()) { toast.error(t('booking.write_comment')); return; }
     try {
       setSubmitting(true);
       await serviceService.addReview(a.service_details.id, { rating, comment });
-      toast.success('Review submitted — thank you!');
+      toast.success(t('booking.review_submitted'));
       onSubmitted(a.service_details.id);
       onClose();
     } catch (err) {
       const msg = err.response?.data;
       if (typeof msg === 'string' && msg.toLowerCase().includes('already')) {
-        toast.info('You have already reviewed this service.');
+        toast.info(t('booking.already_reviewed'));
         onSubmitted(a.service_details.id);
         onClose();
       } else {
-        toast.error('Failed to submit review.');
+        toast.error(t('booking.failed_submit_review'));
       }
     } finally {
       setSubmitting(false);
@@ -96,7 +98,7 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-base font-bold text-slate-900">Rate your experience</h2>
+          <h2 className="text-base font-bold text-slate-900">{t('booking.rate_experience')}</h2>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
             <XMarkIcon className="h-5 w-5 text-slate-500" />
           </button>
@@ -104,23 +106,23 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
             <p className="mb-1 text-sm font-semibold text-slate-700">{a.service_details?.name}</p>
-            <p className="text-xs text-slate-400">How would you rate this service?</p>
+            <p className="text-xs text-slate-400">{t('booking.how_would_you_rate')}</p>
           </div>
 
           <div className="flex flex-col items-center gap-2 rounded-2xl bg-slate-50 py-5">
             <StarPicker value={rating} onChange={setRating} />
             <p className="text-sm font-medium text-slate-600">
-              {rating === 0 ? 'Tap to rate' : ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][rating]}
+              {rating === 0 ? t('booking.tap_to_rate') : ratingLabels[rating]}
             </p>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700">Your review</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t('booking.your_review')}</label>
             <textarea
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Share your experience with this service…"
+              placeholder={t('booking.review_placeholder')}
               className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
@@ -130,7 +132,7 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
             disabled={submitting}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
           >
-            {submitting ? 'Submitting…' : 'Submit review'}
+            {submitting ? t('booking.submitting') : t('booking.submit_review')}
           </button>
         </form>
       </div>
@@ -140,6 +142,7 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
 
 // ── Detail modal ─────────────────────────────────────────────────────────────
 const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onReview, isEmployee, isBusinessOwner, cancellingId, statusBusyId, reviewedIds }) => {
+  const { t } = useTranslation();
   if (!a) return null;
   const now = new Date();
   const canCancel =
@@ -164,7 +167,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
       <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-base font-bold text-slate-900">Appointment details</h2>
+          <h2 className="text-base font-bold text-slate-900">{t('booking.appointment_details')}</h2>
           <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
             <XMarkIcon className="h-5 w-5 text-slate-500" />
           </button>
@@ -188,21 +191,21 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
-                <CalendarDaysIcon className="h-4 w-4" /> Date
+                <CalendarDaysIcon className="h-4 w-4" /> {t('booking.date')}
               </div>
               <p className="break-words text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
             </div>
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
-                <ClockIcon className="h-4 w-4" /> Time
+                <ClockIcon className="h-4 w-4" /> {t('booking.time')}
               </div>
               <p className="text-sm font-semibold text-slate-900">
-                {fmtTime(a.start_time)} · {a.duration} min
+                {fmtTime(a.start_time)} · {a.duration} {t('common.min')}
               </p>
             </div>
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
-                <CurrencyDollarIcon className="h-4 w-4" /> Amount
+                <CurrencyDollarIcon className="h-4 w-4" /> {t('booking.amount')}
               </div>
               <p className="text-sm font-semibold text-slate-900">
                 ${Number(a.total_amount || 0).toFixed(2)}
@@ -210,7 +213,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
             </div>
             <div className="rounded-2xl bg-slate-50 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
-                <BriefcaseIcon className="h-4 w-4" /> Ref
+                <BriefcaseIcon className="h-4 w-4" /> {t('booking.ref')}
               </div>
               <p className="text-xs font-semibold text-slate-700 truncate">#{a.appointment_number}</p>
             </div>
@@ -221,21 +224,21 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
             {(isBusinessOwner || isEmployee) && (
               <div className="flex items-center gap-2 text-sm">
                 <UserCircleIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">Customer:</span>
+                <span className="text-slate-500">{t('booking.customer')}</span>
                 <span className="font-medium text-slate-900">{custName}</span>
               </div>
             )}
             {!isEmployee && !isBusinessOwner && (
               <div className="flex items-center gap-2 text-sm">
                 <BriefcaseIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">Business:</span>
+                <span className="text-slate-500">{t('booking.business')}</span>
                 <span className="font-medium text-slate-900">{bName}</span>
               </div>
             )}
             {empName && (
               <div className="flex items-center gap-2 text-sm">
                 <UserCircleIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">Staff:</span>
+                <span className="text-slate-500">{t('booking.staff')}</span>
                 <span className="font-medium text-slate-900">{empName}</span>
               </div>
             )}
@@ -243,7 +246,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
 
           {a.customer_notes && (
             <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">
-              <p className="font-semibold mb-1">Note</p>
+              <p className="font-semibold mb-1">{t('booking.note')}</p>
               <p>{a.customer_notes}</p>
             </div>
           )}
@@ -257,7 +260,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
                   disabled={statusBusyId === a.id}
                   className="flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
                 >
-                  Confirm
+                  {t('booking.confirm')}
                 </button>
               )}
               <button
@@ -265,14 +268,14 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
                 disabled={statusBusyId === a.id}
                 className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
               >
-                Complete
+                {t('booking.complete')}
               </button>
               <button
                 onClick={() => onCancel(a.id)}
                 disabled={cancellingId === a.id}
                 className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 disabled:opacity-60"
               >
-                Cancel
+                {t('booking.cancel')}
               </button>
             </div>
           )}
@@ -284,7 +287,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
             >
               <XCircleIcon className="h-5 w-5" />
-              {cancellingId === a.id ? 'Cancelling…' : 'Cancel appointment'}
+              {cancellingId === a.id ? t('booking.cancelling') : t('booking.cancel')}
             </button>
           )}
 
@@ -293,7 +296,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
             reviewedIds.has(a.service_details.id) ? (
               <div className="flex items-center justify-center gap-2 rounded-xl bg-emerald-50 py-2.5 text-sm font-semibold text-emerald-700">
                 <StarIcon className="h-4 w-4 text-amber-400" />
-                Review submitted — thank you!
+                {t('booking.review_submitted')}
               </div>
             ) : (
               <button
@@ -301,7 +304,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
               >
                 <StarIcon className="h-4 w-4" />
-                Leave a review
+                {t('booking.leave_review')}
               </button>
             )
           )}
@@ -360,13 +363,17 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 const MyAppointments = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const isBusinessOwner = user?.user_type === 'business_owner';
   const isEmployee = user?.user_type === 'employee';
 
+  const TABS = [t('booking.upcoming'), t('booking.past'), t('booking.cancelled')];
+  const TAB_KEYS = ['Upcoming', 'Past', 'Cancelled'];
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('Upcoming');
+  const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null);
   const [reviewedIds, setReviewedIds] = useState(new Set());
@@ -380,7 +387,7 @@ const MyAppointments = () => {
       const r = await appointmentService.getAllAppointments();
       setAppointments(r.data.results || r.data || []);
     } catch {
-      toast.error('Failed to load appointments.');
+      toast.error(t('booking.failed_to_load'));
     } finally {
       setLoading(false);
     }
@@ -398,12 +405,12 @@ const MyAppointments = () => {
     try {
       setCancellingId(cancelTargetId);
       await appointmentService.cancelAppointment(cancelTargetId, reason);
-      toast.success('Appointment cancelled successfully');
+      toast.success(t('booking.cancelled_success'));
       setCancelTargetId(null);
       setSelected(null);
       await load();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to cancel appointment.');
+      toast.error(err.response?.data?.error || t('booking.failed_to_cancel'));
     } finally {
       setCancellingId(null);
     }
@@ -413,11 +420,11 @@ const MyAppointments = () => {
     try {
       setStatusBusyId(id);
       await appointmentService.updateAppointmentStatus(id, { status });
-      toast.success(`Marked as ${status}.`);
+      toast.success(t('booking.marked_as', { status }));
       setSelected(null);
       await load();
     } catch {
-      toast.error('Failed to update status.');
+      toast.error(t('booking.failed_update_status'));
     } finally {
       setStatusBusyId(null);
     }
@@ -425,18 +432,25 @@ const MyAppointments = () => {
 
   const now = new Date();
 
-  const buckets = {
-    Upcoming: appointments.filter(
+  const buckets = [
+    appointments.filter(
       (a) => ['pending', 'confirmed', 'rescheduled'].includes(a.status) && apptStart(a) > now
     ).sort((a, b) => apptStart(a) - apptStart(b)),
-    Past: appointments.filter(
+    appointments.filter(
       (a) => a.status === 'completed' || (apptStart(a) <= now && !['cancelled', 'no_show'].includes(a.status))
     ).sort((a, b) => apptStart(b) - apptStart(a)),
-    Cancelled: appointments.filter((a) => ['cancelled', 'no_show'].includes(a.status))
+    appointments.filter((a) => ['cancelled', 'no_show'].includes(a.status))
       .sort((a, b) => apptStart(b) - apptStart(a)),
-  };
+  ];
 
-  const pageTitle = isBusinessOwner ? 'Service Bookings' : isEmployee ? 'My Schedule' : 'My Appointments';
+  const emptyLabels = [t('booking.no_upcoming'), t('booking.no_past'), t('booking.no_cancelled')];
+
+  const pageTitle = isBusinessOwner ? t('booking.service_bookings') : isEmployee ? t('booking.my_schedule') : t('booking.your_appointments');
+  const pageSubtitle = isBusinessOwner
+    ? t('booking.customer_bookings')
+    : isEmployee
+    ? t('booking.appointments_assigned')
+    : t('booking.your_appointments');
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
@@ -444,27 +458,21 @@ const MyAppointments = () => {
       <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-6">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{pageTitle}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {isBusinessOwner
-              ? 'Customer bookings for your services'
-              : isEmployee
-              ? 'Appointments assigned to you'
-              : 'Your upcoming and past appointments'}
-          </p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{pageSubtitle}</p>
 
           {/* Tabs */}
           <div className="mt-5 flex gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
-            {TABS.map((t) => (
+            {TABS.map((tabLabel, idx) => (
               <button
-                key={t}
-                onClick={() => setTab(t)}
+                key={TAB_KEYS[idx]}
+                onClick={() => setActiveTabIdx(idx)}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${
-                  tab === t ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                  activeTabIdx === idx ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
               >
-                {t}
-                <span className={`rounded-full px-1.5 py-0.5 text-xs ${tab === t ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-500'}`}>
-                  {buckets[t].length}
+                {tabLabel}
+                <span className={`rounded-full px-1.5 py-0.5 text-xs ${activeTabIdx === idx ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-500'}`}>
+                  {buckets[idx].length}
                 </span>
               </button>
             ))}
@@ -478,26 +486,26 @@ const MyAppointments = () => {
           <div className="flex justify-center py-20">
             <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-blue-600" />
           </div>
-        ) : buckets[tab].length === 0 ? (
+        ) : buckets[activeTabIdx].length === 0 ? (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-10 text-center">
             <p className="text-3xl mb-3">
-              {tab === 'Upcoming' ? '📅' : tab === 'Past' ? '🗂️' : '❌'}
+              {activeTabIdx === 0 ? '📅' : activeTabIdx === 1 ? '🗂️' : '❌'}
             </p>
             <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-              No {tab.toLowerCase()} appointments
+              {emptyLabels[activeTabIdx]}
             </h2>
-            {tab === 'Upcoming' && !isBusinessOwner && !isEmployee && (
+            {activeTabIdx === 0 && !isBusinessOwner && !isEmployee && (
               <Link
                 to="/services"
                 className="mt-4 inline-flex rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
-                Browse services
+                {t('booking.browse_services')}
               </Link>
             )}
           </div>
         ) : (
           <div className="space-y-3">
-            {buckets[tab].map((a) => (
+            {buckets[activeTabIdx].map((a) => (
               <ApptCard
                 key={a.id}
                 appointment={a}

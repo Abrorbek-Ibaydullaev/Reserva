@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -106,8 +107,8 @@ class AppointmentListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if self.request.user.user_type != 'customer':
             raise ValidationError({
-                'error': 'Booking not allowed',
-                'details': 'Only customers can create appointments.',
+                'error': _('Booking not allowed'),
+                'details': _('Only customers can create appointments.'),
             })
 
         service = serializer.validated_data['service']
@@ -123,8 +124,8 @@ class AppointmentListView(generics.ListCreateAPIView):
         appointment_start = timezone.make_aware(start_datetime, timezone.get_current_timezone())
         if appointment_start <= timezone.localtime():
             raise ValidationError({
-                'error': 'Time slot is not available',
-                'details': 'Selected time has already passed.',
+                'error': _('Time slot is not available'),
+                'details': _('Selected time has already passed.'),
             })
 
         day_of_week = date.weekday()
@@ -136,28 +137,28 @@ class AppointmentListView(generics.ListCreateAPIView):
             )
         except BusinessHours.DoesNotExist as exc:
             raise ValidationError({
-                'error': 'Time slot is not available',
-                'details': 'Business hours are not set for this day',
+                'error': _('Time slot is not available'),
+                'details': _('Business hours are not set for this day'),
             }) from exc
 
         if not business_hours.is_open:
             raise ValidationError({
-                'error': 'Time slot is not available',
-                'details': 'Business is closed on this day',
+                'error': _('Time slot is not available'),
+                'details': _('Business is closed on this day'),
             })
 
         if not business_hours.is_24_hours:
             if start_time < business_hours.opening_time or end_time > business_hours.closing_time:
                 raise ValidationError({
-                    'error': 'Time slot is not available',
-                    'details': 'Selected time is outside business hours',
+                    'error': _('Time slot is not available'),
+                    'details': _('Selected time is outside business hours'),
                 })
 
         if employee:
             if not employee_matches_slot(employee, date, start_time, end_time):
                 raise ValidationError({
-                    'error': 'Time slot is not available',
-                    'details': 'Selected employee is not working at that time.',
+                    'error': _('Time slot is not available'),
+                    'details': _('Selected employee is not working at that time.'),
                 })
 
             employee_has_conflict = Appointment.objects.filter(
@@ -170,8 +171,8 @@ class AppointmentListView(generics.ListCreateAPIView):
 
             if employee_has_conflict:
                 raise ValidationError({
-                    'error': 'Time slot is not available',
-                    'details': 'Selected employee is not available at that time',
+                    'error': _('Time slot is not available'),
+                    'details': _('Selected employee is not available at that time'),
                 })
 
             employee_time_off = EmployeeTimeOff.objects.filter(
@@ -183,8 +184,8 @@ class AppointmentListView(generics.ListCreateAPIView):
 
             if has_time_off_overlap(employee_time_off, start_time, end_time):
                 raise ValidationError({
-                    'error': 'Time slot is not available',
-                    'details': 'Selected employee is on time off',
+                    'error': _('Time slot is not available'),
+                    'details': _('Selected employee is on time off'),
                 })
         else:
             eligible_employees = Employee.objects.filter(
@@ -226,8 +227,8 @@ class AppointmentListView(generics.ListCreateAPIView):
 
                 if not has_available_employee:
                     raise ValidationError({
-                        'error': 'Time slot is not available',
-                        'details': 'No staff member is available at that time.',
+                        'error': _('Time slot is not available'),
+                        'details': _('No staff member is available at that time.'),
                     })
 
         if resource:
@@ -241,8 +242,8 @@ class AppointmentListView(generics.ListCreateAPIView):
 
             if resource_has_conflict:
                 raise ValidationError({
-                    'error': 'Time slot is not available',
-                    'details': 'Required resource is already booked',
+                    'error': _('Time slot is not available'),
+                    'details': _('Required resource is already booked'),
                 })
 
         appointment = serializer.save()
@@ -268,7 +269,7 @@ class BusinessDashboardStatsView(APIView):
     def get(self, request):
         if request.user.user_type != 'business_owner':
             return Response(
-                {'detail': 'Only business owners can access dashboard statistics.'},
+                {'detail': _('Only business owners can access dashboard statistics.')},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -735,20 +736,20 @@ class CancelAppointmentView(APIView):
 
         if user.user_type == 'customer':
             if appointment.customer != user:
-                return Response({'error': 'You cannot cancel this appointment.'},
+                return Response({'error': _('You cannot cancel this appointment.')},
                                 status=status.HTTP_403_FORBIDDEN)
         elif user.user_type in ['business_owner', 'employee', 'admin']:
             owns_appointment = appointment.business_owner == user
             assigned_employee = appointment.employee and appointment.employee.user == user
             if not owns_appointment and not assigned_employee and user.user_type != 'admin':
-                return Response({'error': 'You cannot cancel this appointment.'},
+                return Response({'error': _('You cannot cancel this appointment.')},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'error': 'You cannot cancel this appointment.'},
+            return Response({'error': _('You cannot cancel this appointment.')},
                             status=status.HTTP_403_FORBIDDEN)
 
         if appointment.status not in ['pending', 'confirmed', 'rescheduled']:
-            return Response({'error': 'Only active appointments can be cancelled.'},
+            return Response({'error': _('Only active appointments can be cancelled.')},
                             status=status.HTTP_400_BAD_REQUEST)
 
         reason_text = (request.data.get('reason') or '').strip()
@@ -877,7 +878,7 @@ class RescheduleAppointmentView(generics.UpdateAPIView):
             return Response(AppointmentSerializer(appointment).data, status=status.HTTP_200_OK)
         else:
             return Response({
-                'error': 'New time slot is not available',
+                'error': _('New time slot is not available'),
                 'details': availability_response.data.get('message', 'Unknown error')
             }, status=status.HTTP_400_BAD_REQUEST)
 

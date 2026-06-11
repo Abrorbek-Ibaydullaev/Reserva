@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState('');
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-bold text-slate-900">Cancel appointment</h2>
+          <h2 className="text-lg font-bold text-slate-900">{t('cancel_modal.title')}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -57,19 +59,19 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
 
         <div className="mt-5 space-y-4">
           <p className="text-sm leading-6 text-slate-600">
-            Are you sure you want to cancel this appointment? This action cannot be undone.
+            {t('cancel_modal.are_you_sure', 'Are you sure you want to cancel this appointment? This action cannot be undone.')}
           </p>
 
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">
-              Reason for cancellation (optional)
+              {t('cancel_modal.reason_label')}
             </span>
             <textarea
               rows={3}
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               disabled={isLoading}
-              placeholder="e.g. schedule conflict, change of plans..."
+              placeholder={t('cancel_modal.reason_placeholder')}
               className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:opacity-70"
             />
           </label>
@@ -82,7 +84,7 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
             disabled={isLoading}
             className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
-            Keep appointment
+            {t('cancel_modal.keep_appointment')}
           </button>
           <button
             type="submit"
@@ -95,10 +97,10 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Cancelling
+                {t('booking.cancelling')}
               </>
             ) : (
-              'Yes, cancel it'
+              t('cancel_modal.confirm_cancel')
             )}
           </button>
         </div>

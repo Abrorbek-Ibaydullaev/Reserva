@@ -38,7 +38,7 @@
 //       setFilteredBusinesses(businessesData);
 //     } catch (err) {
 //       console.error('Error fetching businesses:', err);
-//       setError('Failed to load businesses. Please try again later.');
+//       setError(t('business_list.failed_load'));
 //     } finally {
 //       setLoading(false);
 //     }
@@ -96,7 +96,7 @@
 //             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
 //             <input
 //               type="text"
-//               placeholder="Search businesses..."
+//               placeholder={t('services_page.search_placeholder')}
 //               value={filters.search}
 //               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
 //               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -176,6 +176,7 @@
 // export default BusinessList;
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import BusinessCard from './BusinessCard';
 import { userService } from '../../services/api';
 import {
@@ -185,6 +186,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const BusinessList = () => {
+  const { t } = useTranslation();
   const [businesses, setBusinesses] = useState([]);
   const [filteredBusinesses, setFilteredBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -215,7 +217,7 @@ const BusinessList = () => {
       setFilteredBusinesses(businessesData);
     } catch (err) {
       console.error('Error fetching businesses:', err);
-      setError('Failed to load businesses. Please try again later.');
+      setError(t('business_list.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -257,7 +259,7 @@ const BusinessList = () => {
           onClick={fetchBusinesses}
           className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
-          Try Again
+          {t('services_page.try_again')}
         </button>
       </div>
     );
@@ -273,7 +275,7 @@ const BusinessList = () => {
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search businesses..."
+              placeholder={t('services_page.search_placeholder')}
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -286,7 +288,7 @@ const BusinessList = () => {
             className="flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
             <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2" />
-            Filters
+            {t('business_list.filters')}
           </button>
 
           {/* Clear Filters */}
@@ -296,7 +298,7 @@ const BusinessList = () => {
               className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
               <XMarkIcon className="h-5 w-5 mr-1" />
-              Clear
+              {t('services_page.clear_filters')}
             </button>
           )}
         </div>
@@ -308,11 +310,11 @@ const BusinessList = () => {
               {/* Add more filters here if needed */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
+                  {t('business_list.location')}
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter location"
+                  placeholder={t('business_list.enter_location')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
@@ -324,19 +326,19 @@ const BusinessList = () => {
       {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-gray-600 dark:text-gray-400">
-          Showing {filteredBusinesses.length} business{filteredBusinesses.length !== 1 ? 'es' : ''}
+          {t('business_list.showing_count', { count: filteredBusinesses.length })}
         </p>
       </div>
 
       {/* Business Grid */}
       {filteredBusinesses.length === 0 ? (
         <div className="text-center py-12">
-          <div className="text-gray-500 dark:text-gray-400 mb-4">No businesses found matching your criteria.</div>
+          <div className="text-gray-500 dark:text-gray-400 mb-4">{t('services_page.no_results_desc')}</div>
           <button
             onClick={clearFilters}
             className="px-4 py-2 text-primary-600 hover:text-primary-800"
           >
-            Clear filters
+            {t('services_page.clear_filters')}
           </button>
         </div>
       ) : (

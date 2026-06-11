@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from datetime import datetime, timedelta, date, time
 from django.db.models import Q
 from .models import BusinessHours, Employee, EmployeeWeeklyHours, EmployeeSchedule, EmployeeTimeOff, Resource
@@ -323,19 +324,19 @@ class CheckAvailabilityView(APIView):
                 if not business_hours.is_open:
                     return Response({
                         'available': False,
-                        'message': 'Business is closed on this day'
+                        'message': _('Business is closed on this day')
                     }, status=status.HTTP_200_OK)
 
                 if not business_hours.is_24_hours:
                     if start_time < business_hours.opening_time or end_time > business_hours.closing_time:
                         return Response({
                             'available': False,
-                            'message': 'Outside business hours'
+                            'message': _('Outside business hours')
                         }, status=status.HTTP_200_OK)
             except BusinessHours.DoesNotExist:
                 return Response({
                     'available': False,
-                    'message': 'Business hours not set for this day'
+                    'message': _('Business hours not set for this day')
                 }, status=status.HTTP_200_OK)
 
             # Check employee availability if specified
@@ -346,7 +347,7 @@ class CheckAvailabilityView(APIView):
                 if not employee_matches_slot(employee, date, start_time, end_time):
                     return Response({
                         'available': False,
-                        'message': 'Employee not available at this time'
+                        'message': _('Employee not available at this time')
                     }, status=status.HTTP_200_OK)
 
                 # Check employee time off
@@ -360,7 +361,7 @@ class CheckAvailabilityView(APIView):
                 if has_time_off_overlap(time_off_entries, start_time, end_time):
                     return Response({
                         'available': False,
-                        'message': 'Employee is on time off'
+                        'message': _('Employee is on time off')
                     }, status=status.HTTP_200_OK)
 
                 # Check employee appointments
@@ -375,7 +376,7 @@ class CheckAvailabilityView(APIView):
                 if conflicting_appointments:
                     return Response({
                         'available': False,
-                        'message': 'Employee has conflicting appointment'
+                        'message': _('Employee has conflicting appointment')
                     }, status=status.HTTP_200_OK)
 
             # Check resource availability if specified
@@ -394,12 +395,12 @@ class CheckAvailabilityView(APIView):
                 if conflicting_appointments:
                     return Response({
                         'available': False,
-                        'message': 'Resource is already booked'
+                        'message': _('Resource is already booked')
                     }, status=status.HTTP_200_OK)
 
             return Response({
                 'available': True,
-                'message': 'Time slot is available'
+                'message': _('Time slot is available')
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -415,14 +416,14 @@ class AvailableTimeSlotsView(APIView):
         employee_id = request.query_params.get('employee_id')
 
         if not service_id or not date_str:
-            return Response({'error': 'service_id and date are required'},
+            return Response({'error': _('service_id and date are required')},
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
             service = Service.objects.get(id=service_id)
             date = datetime.strptime(date_str, '%Y-%m-%d').date()
         except (Service.DoesNotExist, ValueError):
-            return Response({'error': 'Invalid service or date format'},
+            return Response({'error': _('Invalid service or date format')},
                             status=status.HTTP_400_BAD_REQUEST)
 
         employee = None

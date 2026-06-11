@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Contact = () => (
-  <StaticInfoPage
-    title="Contact Us"
-    description="Need help with a booking, business profile, or partnership question? This page will soon include direct support channels and response-time expectations for the Reserva team."
-  />
-);
+const Contact = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.contact_title')}
+      description={t('static.contact_description')}
+    />
+  );
+};
 
 export default Contact;

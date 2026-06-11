@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Pricing = () => (
-  <StaticInfoPage
-    title="Pricing"
-    description="Reserva is preparing clear pricing for customers, businesses, and growing teams. This page will outline plan details, included tools, and billing options."
-  />
-);
+const Pricing = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.pricing_title')}
+      description={t('static.pricing_description')}
+    />
+  );
+};
 
 export default Pricing;

@@ -34,6 +34,7 @@ from apps.users.views_pkg.password_reset import (
     OTPVerifyOTPView,
     OTPResetPasswordView,
 )
+from config.views import get_translations
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,6 +49,9 @@ urlpatterns = [
     path('api/auth/forgot-password/', OTPForgotPasswordView.as_view(), name='forgot-password'),
     path('api/auth/verify-otp/', OTPVerifyOTPView.as_view(), name='verify-otp'),
     path('api/auth/reset-password/', OTPResetPasswordView.as_view(), name='reset-password'),
+
+    # Translations (mobile OTA bridge — web uses static /locales/ files)
+    path('api/locales/<str:lang>/', get_translations, name='get-translations'),
 
     # App endpoints
     path('api/notifications/', NotificationListView.as_view(),

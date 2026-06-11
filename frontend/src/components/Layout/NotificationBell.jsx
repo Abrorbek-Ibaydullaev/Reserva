@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { BellIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { userService } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const NotificationBell = () => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -104,7 +106,7 @@ const NotificationBell = () => {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
             <p className="text-sm font-semibold text-slate-900 dark:text-white">
-              Notifications {unread > 0 && <span className="ml-1 rounded-full bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">{unread}</span>}
+              {t('layout.notifications')} {unread > 0 && <span className="ml-1 rounded-full bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">{unread}</span>}
             </p>
             <div className="flex items-center gap-3">
               {unread > 0 && (
@@ -113,7 +115,7 @@ const NotificationBell = () => {
                   className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
                 >
                   <CheckIcon className="h-3.5 w-3.5" />
-                  Mark read
+                  {t('layout.mark_read')}
                 </button>
               )}
               {notifications.length > 0 && (
@@ -122,7 +124,7 @@ const NotificationBell = () => {
                   className="flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
                 >
                   <TrashIcon className="h-3.5 w-3.5" />
-                  Clear all
+                  {t('layout.clear_all')}
                 </button>
               )}
             </div>
@@ -132,7 +134,7 @@ const NotificationBell = () => {
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
-                No notifications yet
+                {t('layout.no_notifications')}
               </div>
             ) : (
               notifications.slice(0, 20).map((n) => (

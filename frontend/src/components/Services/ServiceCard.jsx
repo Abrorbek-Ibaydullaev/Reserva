@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { fixMediaUrl } from '../../services/api';
 import { 
   StarIcon,
@@ -12,6 +13,7 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 const ServiceCard = ({ service }) => {
+  const { t } = useTranslation();
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -48,13 +50,13 @@ const ServiceCard = ({ service }) => {
 
   const formatDuration = (minutes) => {
     if (minutes < 60) {
-      return `${minutes} min`;
+      return `${minutes} ${t('common.min')}`;
     } else {
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
-      return remainingMinutes > 0 
-        ? `${hours}h ${remainingMinutes}m`
-        : `${hours}h`;
+      return remainingMinutes > 0
+        ? `${hours}${t('common.h')} ${remainingMinutes}${t('common.m')}`
+        : `${hours}${t('common.h')}`;
     }
   };
 
@@ -75,11 +77,11 @@ const ServiceCard = ({ service }) => {
         <div className="absolute top-3 right-3">
           {service.is_active ? (
             <span className="px-2.5 py-1 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
-              Available
+              {t('service_card.available')}
             </span>
           ) : (
             <span className="px-2.5 py-1 text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full">
-              Unavailable
+              {t('service_card.unavailable')}
             </span>
           )}
         </div>
@@ -128,7 +130,7 @@ const ServiceCard = ({ service }) => {
             </div>
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <MapPinIcon className="h-4 w-4 mr-1" />
-              <span>Online</span>
+              <span>{t('service_card.online')}</span>
             </div>
           </div>
         </div>
@@ -144,7 +146,7 @@ const ServiceCard = ({ service }) => {
             </span>
           </div>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            ({service.review_count || 0} reviews)
+            ({service.review_count || 0} {t('service_card.reviews')})
           </span>
         </div>
 
@@ -155,14 +157,14 @@ const ServiceCard = ({ service }) => {
             className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
-            Book Now
+            {t('service_card.book_now')}
           </Link>
           <Link
             to={`/services/${service.id}`}
             className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
           >
             <InformationCircleIcon className="h-4 w-4 mr-2" />
-            Details
+            {t('service_card.details')}
           </Link>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -45,6 +46,7 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
 );
 
 const EmployeeDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ const EmployeeDashboard = () => {
     appointmentService
       .getAllAppointments()
       .then((r) => setAppointments(r.data.results || r.data || []))
-      .catch(() => toast.error('Failed to load appointments.'))
+      .catch(() => toast.error(t('employee_dashboard.failed_load')))
       .finally(() => setLoading(false));
 
   useEffect(() => { loadAppts(); }, []);
@@ -63,10 +65,10 @@ const EmployeeDashboard = () => {
     try {
       setBusyId(id);
       await appointmentService.updateAppointmentStatus(id, { status });
-      toast.success(`Marked as ${status}.`);
+      toast.success(t('booking.marked_as', { status }));
       await loadAppts();
     } catch {
-      toast.error('Failed to update.');
+      toast.error(t('employee_dashboard.failed_update'));
     } finally {
       setBusyId(null);
     }
@@ -90,6 +92,11 @@ const EmployeeDashboard = () => {
   const completed = appointments.filter((a) => a.status === 'completed').length;
   const pending = appointments.filter((a) => a.status === 'pending').length;
 
+  const hour = now.getHours();
+  const greetingKey = hour < 12 ? 'employee_dashboard.good_morning'
+    : hour < 17 ? 'employee_dashboard.good_afternoon'
+    : 'employee_dashboard.good_evening';
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -103,39 +110,40 @@ const EmployeeDashboard = () => {
       {/* Greeting */}
       <div>
         <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-          Good {now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening'},{' '}
-          {user?.first_name} 👋
+          {t(greetingKey, { name: user?.first_name })}
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
           {format(now, 'EEEE, MMMM d, yyyy')} ·{' '}
-          {todayAppts.length} appointment{todayAppts.length !== 1 ? 's' : ''} today
+          {todayAppts.length === 1
+            ? t('employee_dashboard.appointments_today', { count: todayAppts.length })
+            : t('employee_dashboard.appointments_today_plural', { count: todayAppts.length })}
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Today" value={todayAppts.length} icon={CalendarDaysIcon} color="bg-violet-50 text-violet-600" />
-        <StatCard label="Upcoming" value={upcoming.length} icon={ClockIcon} color="bg-blue-50 text-blue-600" />
-        <StatCard label="Completed" value={completed} icon={CheckCircleIcon} color="bg-emerald-50 text-emerald-600" />
-        <StatCard label="Awaiting approval" value={pending} icon={UserCircleIcon} color="bg-amber-50 text-amber-600" />
+        <StatCard label={t('employee_dashboard.today')} value={todayAppts.length} icon={CalendarDaysIcon} color="bg-violet-50 text-violet-600" />
+        <StatCard label={t('employee_dashboard.upcoming')} value={upcoming.length} icon={ClockIcon} color="bg-blue-50 text-blue-600" />
+        <StatCard label={t('employee_dashboard.completed')} value={completed} icon={CheckCircleIcon} color="bg-emerald-50 text-emerald-600" />
+        <StatCard label={t('employee_dashboard.awaiting_approval')} value={pending} icon={UserCircleIcon} color="bg-amber-50 text-amber-600" />
       </div>
 
       {/* Today's schedule */}
       <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900 dark:text-white">Today's Schedule</h2>
+          <h2 className="font-semibold text-slate-900 dark:text-white">{t('employee_dashboard.todays_schedule')}</h2>
           <Link
             to="/employee/appointments"
             className="flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline"
           >
-            See all <ChevronRightIcon className="h-3.5 w-3.5" />
+            {t('employee_dashboard.see_all')} <ChevronRightIcon className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {todayAppts.length === 0 ? (
           <div className="rounded-xl bg-slate-50 dark:bg-slate-700 p-8 text-center">
             <p className="mb-2 text-2xl">🗓️</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">No appointments scheduled for today.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('employee_dashboard.no_appointments_today')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -158,7 +166,7 @@ const EmployeeDashboard = () => {
                 >
                   <div className="w-16 flex-shrink-0 text-center">
                     <p className="text-sm font-bold text-slate-900 dark:text-white">{fmtTime(a.start_time)}</p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">{a.duration}min</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">{a.duration}{t('common.min')}</p>
                   </div>
 
                   <div className="h-10 w-px flex-shrink-0 bg-slate-200 dark:bg-slate-600" />
@@ -189,7 +197,7 @@ const EmployeeDashboard = () => {
                             disabled={busyId === a.id}
                             className="rounded-lg bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-60"
                           >
-                            Confirm
+                            {t('employee_dashboard.confirm')}
                           </button>
                         )}
                         <button
@@ -197,7 +205,7 @@ const EmployeeDashboard = () => {
                           disabled={busyId === a.id}
                           className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-60"
                         >
-                          Done
+                          {t('employee_dashboard.done')}
                         </button>
                       </div>
                     )}
@@ -212,7 +220,7 @@ const EmployeeDashboard = () => {
       {/* Coming up (non-today upcoming) */}
       {upcoming.filter((a) => a.date !== today).length > 0 && (
         <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-sm">
-          <h2 className="mb-4 font-semibold text-slate-900 dark:text-white">Coming up</h2>
+          <h2 className="mb-4 font-semibold text-slate-900 dark:text-white">{t('employee_dashboard.coming_up')}</h2>
           <div className="space-y-2">
             {upcoming
               .filter((a) => a.date !== today)

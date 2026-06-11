@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from .models import BusinessHours, Employee, EmployeeWeeklyHours, EmployeeSchedule, EmployeeTimeOff, Resource
 from apps.users.serializers import UserSerializer
@@ -38,7 +39,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
             missing_fields = [field for field in required_fields if not attrs.get(field)]
             if missing_fields:
                 raise serializers.ValidationError({
-                    field: 'This field is required.'
+                    field: _('This field is required.')
                     for field in missing_fields
                 })
 

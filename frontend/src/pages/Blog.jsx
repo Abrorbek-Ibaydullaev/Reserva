@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Blog = () => (
-  <StaticInfoPage
-    title="Blog"
-    description="Reserva stories, product updates, and booking best practices will be shared here. Check back for articles written for both customers and service providers."
-  />
-);
+const Blog = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.blog_title')}
+      description={t('static.blog_description')}
+    />
+  );
+};
 
 export default Blog;

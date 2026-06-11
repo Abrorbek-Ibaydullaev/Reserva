@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { fixMediaUrl } from '../../services/api';
 
 const BusinessCard = ({ business }) => {
+  const { t } = useTranslation();
   const services = business.services || [];
   // Use pre-aggregated fields from BusinessSerializer; fall back to per-service computation
   const rating = business.avg_rating != null
@@ -89,7 +91,7 @@ const BusinessCard = ({ business }) => {
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{s.name}</p>
                   <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
                     <ClockIcon className="h-3 w-3" />
-                    {s.duration} min
+                    {s.duration} {t('common.min')}
                   </div>
                 </div>
                 <span className="ml-3 flex-shrink-0 text-sm font-bold text-slate-900 dark:text-white">
@@ -99,16 +101,16 @@ const BusinessCard = ({ business }) => {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-400 dark:text-slate-500">No services listed yet</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">{t('business_card.no_services')}</p>
         )}
 
         {/* Footer */}
         <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
           <span className="text-xs text-slate-400 dark:text-slate-500">
-            {services.length} service{services.length !== 1 ? 's' : ''}
+            {t('business_card.services_count', { count: services.length })}
           </span>
           <span className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
-            View & Book <ArrowRightIcon className="h-3.5 w-3.5" />
+            {t('business_card.view_book')} <ArrowRightIcon className="h-3.5 w-3.5" />
           </span>
         </div>
       </div>

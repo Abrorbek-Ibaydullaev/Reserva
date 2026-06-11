@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const About = () => (
-  <StaticInfoPage
-    title="About"
-    description="Reserva helps customers find trusted services and book appointments with less friction. This page will soon share more about our mission, team, and the communities we serve."
-  />
-);
+const About = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.about_title')}
+      description={t('static.about_description')}
+    />
+  );
+};
 
 export default About;

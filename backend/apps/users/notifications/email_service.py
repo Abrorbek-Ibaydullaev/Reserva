@@ -8,6 +8,8 @@ import os
 import threading
 import resend  # 👈 Import the newly installed Resend library
 
+from django.utils.translation import gettext as _
+
 from config.password_reset_config import PASSWORD_RESET_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -32,13 +34,16 @@ def send_password_reset_otp(to_email: str, otp_code: str) -> None:
     )
     expiry_minutes: int = PASSWORD_RESET_CONFIG["OTP_EXPIRY_MINUTES"]
 
-    subject = "Your Reserva password reset code"
+    subject = _("Your Reserva password reset code")
 
     plain_message = (
-        f"Your Reserva password reset code is: {otp_code}\n\n"
-        f"This code expires in {expiry_minutes} minutes.\n\n"
-        "Do not share this code with anyone.\n\n"
-        "If you did not request a password reset, you can safely ignore this email."
+        _("Your Reserva password reset code is: %(otp_code)s") % {"otp_code": otp_code}
+        + "\n\n"
+        + _("This code expires in %(minutes)s minutes.") % {"minutes": expiry_minutes}
+        + "\n\n"
+        + _("Do not share this code with anyone.")
+        + "\n\n"
+        + _("If you did not request a password reset, you can safely ignore this email.")
     )
 
     html_message = f"""<!DOCTYPE html>

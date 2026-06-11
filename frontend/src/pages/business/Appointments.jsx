@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { appointmentService } from '../../services/api';
 import CancelAppointmentModal from '../../components/CancelAppointmentModal';
 
@@ -15,6 +16,7 @@ const statusBadgeClasses = {
 };
 
 const BusinessAppointments = () => {
+  const { t } = useTranslation();
   const [appointments, setAppointments] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,7 @@ const BusinessAppointments = () => {
       setAppointments(normalizeList(response));
     } catch (error) {
       console.error('Failed to load appointments:', error);
-      toast.error('Failed to load appointments.');
+      toast.error(t('business_appointments.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -42,11 +44,11 @@ const BusinessAppointments = () => {
     try {
       setBusyId(appointmentId);
       await appointmentService.updateAppointmentStatus(appointmentId, { status });
-      toast.success(`Appointment marked as ${status}.`);
+      toast.success(t('business_appointments.marked_as', { status }));
       await loadAppointments();
     } catch (error) {
       console.error('Failed to update appointment status:', error);
-      toast.error('Failed to update appointment status.');
+      toast.error(t('business_appointments.failed_update'));
     } finally {
       setBusyId(null);
     }
@@ -62,12 +64,12 @@ const BusinessAppointments = () => {
     try {
       setBusyId(cancelTargetId);
       await appointmentService.cancelAppointment(cancelTargetId, reason);
-      toast.success('Appointment cancelled successfully');
+      toast.success(t('business_appointments.cancelled_success'));
       setCancelTargetId(null);
       await loadAppointments();
     } catch (error) {
       console.error('Failed to cancel appointment:', error);
-      toast.error('Failed to cancel appointment.');
+      toast.error(t('business_appointments.failed_cancel'));
     } finally {
       setBusyId(null);
     }
@@ -84,27 +86,29 @@ const BusinessAppointments = () => {
       <div className="mx-auto max-w-7xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Appointments</h1>
-            <p className="mt-2 text-gray-500 dark:text-slate-400">Manage customer bookings for your services.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('business_appointments.title')}</h1>
+            <p className="mt-2 text-gray-500 dark:text-slate-400">{t('business_appointments.subtitle')}</p>
           </div>
           <select
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
             className="rounded-2xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white px-4 py-3 outline-none focus:border-[#4a90b0]"
           >
-            <option value="all">All appointments</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="all">{t('business_appointments.all_appointments')}</option>
+            <option value="active">{t('business_appointments.active')}</option>
+            <option value="pending">{t('business_appointments.pending')}</option>
+            <option value="confirmed">{t('business_appointments.confirmed')}</option>
+            <option value="completed">{t('business_appointments.completed')}</option>
+            <option value="cancelled">{t('business_appointments.cancelled')}</option>
           </select>
         </div>
 
         {loading ? (
-          <div className="text-gray-500 dark:text-slate-400">Loading appointments...</div>
+          <div className="text-gray-500 dark:text-slate-400">{t('business_appointments.loading')}</div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-8 text-gray-500 dark:text-slate-400">No appointments found.</div>
+          <div className="rounded-2xl bg-gray-50 dark:bg-slate-700 p-8 text-gray-500 dark:text-slate-400">
+            {t('business_appointments.no_appointments')}
+          </div>
         ) : (
           <div className="space-y-4">
             {filteredAppointments.map((appointment) => (
@@ -125,17 +129,17 @@ const BusinessAppointments = () => {
                     </div>
                     <div className="mt-3 grid gap-2 text-sm text-gray-600 dark:text-slate-300 md:grid-cols-2">
                       <p>
-                        Customer: {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
+                        {t('business_appointments.customer_label')} {appointment.customer_details?.first_name} {appointment.customer_details?.last_name}
                       </p>
-                      <p>Email: {appointment.customer_details?.email}</p>
-                      <p>Date: {appointment.date}</p>
-                      <p>Time: {appointment.start_time}</p>
-                      <p>Amount: ${Number(appointment.total_amount || 0).toFixed(2)}</p>
-                      <p>Duration: {appointment.duration} min</p>
+                      <p>{t('business_appointments.email_label')} {appointment.customer_details?.email}</p>
+                      <p>{t('business_appointments.date_label')} {appointment.date}</p>
+                      <p>{t('business_appointments.time_label')} {appointment.start_time}</p>
+                      <p>{t('business_appointments.amount_label')} ${Number(appointment.total_amount || 0).toFixed(2)}</p>
+                      <p>{t('business_appointments.duration_label')} {appointment.duration} {t('common.min')}</p>
                     </div>
                     {appointment.customer_notes ? (
                       <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">
-                        Customer note: {appointment.customer_notes}
+                        {t('business_appointments.customer_note_label')} {appointment.customer_notes}
                       </p>
                     ) : null}
                   </div>
@@ -148,7 +152,7 @@ const BusinessAppointments = () => {
                         disabled={busyId === appointment.id}
                         className="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
                       >
-                        Confirm
+                        {t('business_appointments.confirm')}
                       </button>
                     ) : null}
                     {activeStatuses.includes(appointment.status) ? (
@@ -158,7 +162,7 @@ const BusinessAppointments = () => {
                         disabled={busyId === appointment.id}
                         className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
                       >
-                        Complete
+                        {t('business_appointments.complete')}
                       </button>
                     ) : null}
                     {activeStatuses.includes(appointment.status) ? (
@@ -168,7 +172,7 @@ const BusinessAppointments = () => {
                         disabled={busyId === appointment.id}
                         className="rounded-2xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 disabled:opacity-60"
                       >
-                        Cancel
+                        {t('business_appointments.cancel')}
                       </button>
                     ) : null}
                   </div>

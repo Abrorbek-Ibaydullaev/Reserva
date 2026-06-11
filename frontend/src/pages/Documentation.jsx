@@ -1,11 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StaticInfoPage from './StaticInfoPage';
 
-const Documentation = () => (
-  <StaticInfoPage
-    title="Documentation"
-    description="Guides for setting up a business profile, managing availability, and connecting appointment workflows will live here. We are shaping this into a practical knowledge base."
-  />
-);
+const Documentation = () => {
+  const { t } = useTranslation();
+  return (
+    <StaticInfoPage
+      title={t('static.documentation_title')}
+      description={t('static.documentation_description')}
+    />
+  );
+};
 
 export default Documentation;

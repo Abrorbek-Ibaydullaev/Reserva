@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { userService, fixMediaUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const Settings = () => {
+  const { t } = useTranslation();
   const { checkAuthStatus } = useAuth();
   const [activeSection, setActiveSection] = useState('profile');
   const [profile, setProfile] = useState({
@@ -34,14 +36,14 @@ const Settings = () => {
         });
         setPreview(fixMediaUrl(user.profile_picture) || '');
       } catch {
-        toast.error('Failed to load settings.');
+        toast.error(t('settings.failed_load'));
       } finally {
         setLoading(false);
       }
     };
 
     loadProfile();
-  }, []);
+  }, [t]);
 
   const handleProfileChange = (event) => {
     const { name, value } = event.target;
@@ -71,9 +73,9 @@ const Settings = () => {
 
       await userService.updateMe(payload);
       await checkAuthStatus();
-      toast.success('Profile settings saved.');
+      toast.success(t('settings.profile_saved'));
     } catch {
-      toast.error('Failed to save profile settings.');
+      toast.error(t('settings.failed_save'));
     } finally {
       setSavingProfile(false);
     }
@@ -88,7 +90,7 @@ const Settings = () => {
     event.preventDefault();
 
     if (passwords.new_password !== passwords.confirm_password) {
-      toast.error('New passwords do not match.');
+      toast.error(t('settings.passwords_no_match'));
       return;
     }
 
@@ -103,12 +105,12 @@ const Settings = () => {
         new_password: '',
         confirm_password: '',
       });
-      toast.success('Password changed successfully.');
+      toast.success(t('settings.password_changed'));
     } catch (error) {
       const detail =
         error.response?.data?.old_password?.[0] ||
         error.response?.data?.new_password?.[0] ||
-        'Failed to change password.';
+        t('settings.failed_change_password');
       toast.error(detail);
     } finally {
       setSavingPassword(false);
@@ -123,20 +125,22 @@ const Settings = () => {
     );
   }
 
+  const tabs = [
+    ['profile', t('settings.profile')],
+    ['security', t('settings.security')],
+  ];
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('settings.title')}</h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Manage your profile details and account security.
+          {t('settings.subtitle')}
         </p>
       </div>
 
       <div className="mb-6 inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-        {[
-          ['profile', 'Profile'],
-          ['security', 'Security'],
-        ].map(([key, label]) => (
+        {tabs.map(([key, label]) => (
           <button
             key={key}
             type="button"
@@ -165,49 +169,49 @@ const Settings = () => {
               )}
             </div>
             <label className="inline-flex cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700">
-              Upload photo
+              {t('settings.upload_photo')}
               <input type="file" accept="image/*" onChange={handlePhotoChange} className="sr-only" />
             </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">First name</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.first_name')}</span>
               <input name="first_name" value={profile.first_name} onChange={handleProfileChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Last name</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.last_name')}</span>
               <input name="last_name" value={profile.last_name} onChange={handleProfileChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Phone number</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.phone_number')}</span>
               <input name="phone_number" value={profile.phone_number} onChange={handleProfileChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" placeholder="+998 90 000 00 00" />
             </label>
           </div>
 
           <button type="submit" disabled={savingProfile} className="mt-6 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
-            {savingProfile ? 'Saving...' : 'Save profile'}
+            {savingProfile ? t('settings.saving') : t('settings.save_profile')}
           </button>
         </form>
       ) : (
         <form onSubmit={savePassword} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div className="space-y-4">
             <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Current password</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.current_password')}</span>
               <input type="password" name="current_password" value={passwords.current_password} onChange={handlePasswordChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" required />
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">New password</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.new_password')}</span>
               <input type="password" name="new_password" value={passwords.new_password} onChange={handlePasswordChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" required minLength={8} />
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Confirm new password</span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('settings.confirm_new_password')}</span>
               <input type="password" name="confirm_password" value={passwords.confirm_password} onChange={handlePasswordChange} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900 dark:text-white" required minLength={8} />
             </label>
           </div>
 
           <button type="submit" disabled={savingPassword} className="mt-6 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
-            {savingPassword ? 'Saving...' : 'Change password'}
+            {savingPassword ? t('settings.saving') : t('settings.change_password')}
           </button>
         </form>
       )}

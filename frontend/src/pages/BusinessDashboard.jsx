@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   UserGroupIcon,
   CalendarDaysIcon,
@@ -88,6 +89,7 @@ const Badge = ({ status }) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 const BusinessDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +99,7 @@ const BusinessDashboard = () => {
     appointmentService
       .getBusinessDashboardStats()
       .then((r) => setDashboard(r.data))
-      .catch(() => setError('Failed to load dashboard statistics.'))
+      .catch(() => setError(t('business_dashboard.failed_load')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -113,7 +115,7 @@ const BusinessDashboard = () => {
     return (
       <div className="p-6">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-          {error || 'Dashboard data unavailable.'}
+          {error || t('business_dashboard.unavailable')}
         </div>
       </div>
     );
@@ -140,13 +142,13 @@ const BusinessDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            Hello, {user?.first_name || 'there'} 👋
+            {t('business_dashboard.hello', { name: user?.first_name || '' })}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {format(new Date(), 'EEEE, MMMM d, yyyy')}
             {dashboard.schedule_overview.today_is_open
-              ? ` · Open ${dashboard.schedule_overview.today_opening_time || ''} – ${dashboard.schedule_overview.today_closing_time || ''}`
-              : ' · Closed today'}
+              ? ` · ${t('business_dashboard.open_hours', { open: dashboard.schedule_overview.today_opening_time || '', close: dashboard.schedule_overview.today_closing_time || '' })}`
+              : ` · ${t('business_dashboard.closed_today')}`}
           </p>
         </div>
         <Link
@@ -154,38 +156,38 @@ const BusinessDashboard = () => {
           className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
         >
           <CalendarDaysIcon className="h-4 w-4" />
-          View appointments
+          {t('business_dashboard.view_appointments')}
         </Link>
       </div>
 
       {/* ── Stat cards ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard
-          title="Total Bookings"
+          title={t('business_dashboard.total_bookings')}
           value={overview.total_appointments}
-          sub={`${overview.upcoming_7_days} upcoming this week`}
+          sub={t('business_dashboard.upcoming_this_week', { count: overview.upcoming_7_days })}
           icon={CalendarDaysIcon}
           color="bg-blue-50 text-blue-600"
           trend={overview.appointment_delta_30_days}
         />
         <StatCard
-          title="Employees"
-          value={`${overview.active_employees}/${overview.total_employees}`}
-          sub={`${dashboard.schedule_overview.staff_on_duty_today} on duty today`}
+          title={t('business_dashboard.employees_section')}
+          value={t('business_dashboard.employees_count', { active: overview.active_employees, total: overview.total_employees })}
+          sub={t('business_dashboard.on_duty_today', { count: dashboard.schedule_overview.staff_on_duty_today })}
           icon={UserGroupIcon}
           color="bg-violet-50 text-violet-600"
         />
         <StatCard
-          title="Today's Appointments"
+          title={t('business_dashboard.todays_appointments')}
           value={overview.today_appointments}
-          sub={`${overview.pending_appointments} pending approval`}
+          sub={t('business_dashboard.pending_approval', { count: overview.pending_appointments })}
           icon={CheckCircleIcon}
           color="bg-emerald-50 text-emerald-600"
         />
         <StatCard
-          title="Total Revenue"
+          title={t('business_dashboard.total_revenue')}
           value={fmt(overview.total_revenue)}
-          sub={`${fmt(overview.revenue_30_days)} last 30 days`}
+          sub={t('business_dashboard.last_30_days', { amount: fmt(overview.revenue_30_days) })}
           icon={CurrencyDollarIcon}
           color="bg-amber-50 text-amber-600"
           trend={overview.revenue_delta_30_days}
@@ -198,19 +200,19 @@ const BusinessDashboard = () => {
         {/* Employee list */}
         <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Employees</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('business_dashboard.employees_section')}</h2>
             <Link to="/dashboard/employees" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
-              All <ChevronRightIcon className="h-3 w-3" />
+              {t('business.view_all')} <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
           {top_employees.length === 0 ? (
-            <p className="text-center text-xs text-slate-400 dark:text-slate-500 py-4">No employees yet.</p>
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500 py-4">{t('business_dashboard.no_employees')}</p>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
               <div className="grid grid-cols-3 text-xs text-slate-400 dark:text-slate-500 font-medium px-2 mb-1">
-                <span>Name</span>
-                <span className="text-center">Status</span>
-                <span className="text-right">Done</span>
+                <span>{t('business_dashboard.name')}</span>
+                <span className="text-center">{t('business_dashboard.status')}</span>
+                <span className="text-right">{t('business_dashboard.done')}</span>
               </div>
               {top_employees.map((emp) => (
                 <div key={emp.id} className="grid grid-cols-3 items-center rounded-xl bg-slate-50 dark:bg-slate-700 px-3 py-2">
@@ -220,7 +222,7 @@ const BusinessDashboard = () => {
                   </div>
                   <div className="flex justify-center">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${emp.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400'}`}>
-                      {emp.is_active ? 'Active' : 'Off'}
+                      {emp.is_active ? t('business_dashboard.active') : t('business_dashboard.off')}
                     </span>
                   </div>
                   <p className="text-right text-sm font-bold text-slate-900 dark:text-white">{emp.completed}</p>
@@ -233,8 +235,8 @@ const BusinessDashboard = () => {
         {/* Segmentation / Status donut */}
         <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Appointment Status</h2>
-            <span className="text-xs text-slate-400 dark:text-slate-500">{overview.completion_rate}% complete</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('business_dashboard.appointment_status')}</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t('business_dashboard.complete_rate', { rate: overview.completion_rate })}</span>
           </div>
           <div>
             <div className="h-[130px]">
@@ -271,8 +273,8 @@ const BusinessDashboard = () => {
         {/* Bookings trend */}
         <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Booking Trend</h2>
-            <span className="text-xs text-slate-400 dark:text-slate-500">Last 14 days</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('business_dashboard.booking_trend')}</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t('business_dashboard.last_14_days')}</span>
           </div>
           <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -307,8 +309,8 @@ const BusinessDashboard = () => {
         {/* Busiest days */}
         <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Busiest Days</h2>
-            <span className="text-xs text-slate-400 dark:text-slate-500">{delta(overview.appointment_delta_30_days)} bookings vs last month</span>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('business_dashboard.busiest_days')}</h2>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t('business_dashboard.bookings_vs_last_month', { delta: delta(overview.appointment_delta_30_days) })}</span>
           </div>
           <div className="h-[150px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -326,9 +328,9 @@ const BusinessDashboard = () => {
         {/* Services-wise bookings */}
         <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-sm overflow-hidden">
           <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Services-wise Bookings</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('business_dashboard.services_bookings')}</h2>
             <Link to="/dashboard/services" className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline">
-              Manage <ChevronRightIcon className="h-3 w-3" />
+              {t('business.manage_services')} <ChevronRightIcon className="h-3 w-3" />
             </Link>
           </div>
           <div className="h-[150px]">

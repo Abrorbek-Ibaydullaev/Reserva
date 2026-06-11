@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { userService } from '../services/api';
 import BusinessCard from '../components/Business/BusinessCard';
@@ -26,6 +27,7 @@ const getCategoryIcon = (name) => {
 };
 
 const Services = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,7 @@ const Services = () => {
     userService
       .getBusinesses(cityFilter ? { city: cityFilter } : undefined)
       .then((r) => setBusinesses(r.data.results || r.data || []))
-      .catch(() => setError('Failed to load businesses. Please try again.'))
+      .catch(() => setError(t('services_page.failed_load')))
       .finally(() => setLoading(false));
   }, [cityFilter]);
 
@@ -95,7 +97,7 @@ const Services = () => {
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-8 sm:py-10">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="mb-1 text-2xl font-extrabold text-white sm:text-3xl">
-            {selectedCategory !== 'All' ? selectedCategory : 'Find a service near you'}
+            {selectedCategory !== 'All' ? selectedCategory : t('services_page.find_service')}
           </h1>
           {cityFilter && (
             <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white">
@@ -104,13 +106,13 @@ const Services = () => {
             </div>
           )}
           <p className="mb-6 text-blue-100">
-            Browse trusted professionals and book instantly
+            {t('services_page.subtitle')}
           </p>
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by business, service, or city…"
+              placeholder={t('services_page.search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-2xl border-0 py-3.5 pl-12 pr-12 text-slate-900 shadow-lg outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-blue-300"
@@ -157,8 +159,8 @@ const Services = () => {
           <div className="mb-5 flex items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {filtered.length === 0
-                ? 'No businesses found'
-                : `${filtered.length} business${filtered.length !== 1 ? 'es' : ''} found`}
+                ? t('services_page.no_businesses')
+                : t('services_page.businesses_found', { count: filtered.length })}
               {selectedCategory !== 'All' && ` · ${selectedCategory}`}
               {cityFilter && ` · ${cityFilter}`}
             </p>
@@ -168,7 +170,7 @@ const Services = () => {
                 className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
               >
                 <XMarkIcon className="h-4 w-4" />
-                Clear filters
+                {t('services_page.clear_filters')}
               </button>
             )}
           </div>
@@ -187,7 +189,7 @@ const Services = () => {
               className="mt-3 block mx-auto text-sm font-semibold underline"
               onClick={() => window.location.reload()}
             >
-              Try again
+              {t('services_page.try_again')}
             </button>
           </div>
         )}
@@ -195,15 +197,15 @@ const Services = () => {
         {!loading && !error && filtered.length === 0 && (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
             <p className="mb-3 text-4xl">🔍</p>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">No results found</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('services_page.no_results_title')}</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Try a different search term or category.
+              {t('services_page.no_results_desc')}
             </p>
             <button
               onClick={() => { setSearch(''); setSelectedCategory('All'); }}
               className="mt-4 rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              Show all businesses
+              {t('services_page.show_all')}
             </button>
           </div>
         )}

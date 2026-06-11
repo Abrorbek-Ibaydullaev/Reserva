@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ServiceCard from './ServiceCard';
 import { serviceService } from '../../services/api';
 import { 
@@ -10,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const ServiceList = ({ limit = null }) => {
+  const { t } = useTranslation();
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -44,7 +46,7 @@ const ServiceList = ({ limit = null }) => {
       setFilteredServices(response.data.results || response.data);
     } catch (err) {
       console.error('Error fetching services:', err);
-      setError('Failed to load services. Please try again later.');
+      setError(t('service_list.failed_load'));
     } finally {
       setLoading(false);
     }
@@ -154,11 +156,11 @@ const ServiceList = ({ limit = null }) => {
     return (
       <div className="text-center py-12">
         <p className="text-red-600 mb-4">{error}</p>
-        <button 
+        <button
           onClick={fetchServices}
           className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
-          Try Again
+          {t('services_page.try_again')}
         </button>
       </div>
     );
@@ -177,7 +179,7 @@ const ServiceList = ({ limit = null }) => {
                 type="text"
                 value={filters.search}
                 onChange={handleSearchChange}
-                placeholder="Search services, categories, or providers..."
+                placeholder={t('service_list.search_placeholder')}
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
               />
               {filters.search && (
@@ -198,7 +200,7 @@ const ServiceList = ({ limit = null }) => {
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2" />
-              Filters
+              {t('business_list.filters')}
             </button>
           </div>
         </div>
@@ -210,7 +212,7 @@ const ServiceList = ({ limit = null }) => {
               {/* Category Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  {t('service_list.category')}
                 </label>
                 <select
                   name="category"
@@ -218,7 +220,7 @@ const ServiceList = ({ limit = null }) => {
                   onChange={handleFilterChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                 >
-                  <option value="">All Categories</option>
+                  <option value="">{t('service_list.all_categories')}</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -230,7 +232,7 @@ const ServiceList = ({ limit = null }) => {
               {/* Sort By */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sort By
+                  {t('service_list.sort_by')}
                 </label>
                 <select
                   name="sortBy"
@@ -238,17 +240,17 @@ const ServiceList = ({ limit = null }) => {
                   onChange={handleFilterChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                 >
-                  <option value="popular">Most Popular</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="price_low">Price: Low to High</option>
-                  <option value="price_high">Price: High to Low</option>
+                  <option value="popular">{t('service_list.most_popular')}</option>
+                  <option value="rating">{t('service_list.highest_rated')}</option>
+                  <option value="price_low">{t('service_list.price_low_high')}</option>
+                  <option value="price_high">{t('service_list.price_high_low')}</option>
                 </select>
               </div>
 
               {/* Price Range */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price Range
+                  {t('service_list.price_range')}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -256,17 +258,17 @@ const ServiceList = ({ limit = null }) => {
                     name="minPrice"
                     value={filters.minPrice}
                     onChange={handleFilterChange}
-                    placeholder="Min"
+                    placeholder={t('service_list.min')}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                     min="0"
                   />
-                  <span className="self-center text-gray-500">to</span>
+                  <span className="self-center text-gray-500">{t('service_list.to')}</span>
                   <input
                     type="number"
                     name="maxPrice"
                     value={filters.maxPrice}
                     onChange={handleFilterChange}
-                    placeholder="Max"
+                    placeholder={t('service_list.max')}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                     min="0"
                   />
@@ -280,7 +282,7 @@ const ServiceList = ({ limit = null }) => {
                 onClick={clearFilters}
                 className="text-sm text-primary-600 hover:text-primary-700 font-medium"
               >
-                Clear all filters
+                {t('services_page.clear_filters')}
               </button>
             </div>
           </div>
@@ -290,8 +292,7 @@ const ServiceList = ({ limit = null }) => {
       {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-gray-600">
-          Showing <span className="font-semibold">{filteredServices.length}</span> of{' '}
-          <span className="font-semibold">{services.length}</span> services
+          {t('service_list.showing_of', { shown: filteredServices.length, total: services.length })}
         </p>
       </div>
 
@@ -299,13 +300,13 @@ const ServiceList = ({ limit = null }) => {
       {filteredServices.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
           <FunnelIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No services found</h3>
-          <p className="text-gray-600 mb-4">Try adjusting your filters or search term</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services_page.no_results_title')}</h3>
+          <p className="text-gray-600 mb-4">{t('services_page.no_results_desc')}</p>
           <button
             onClick={clearFilters}
             className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
-            Clear Filters
+            {t('services_page.clear_filters')}
           </button>
         </div>
       ) : (
@@ -319,7 +320,7 @@ const ServiceList = ({ limit = null }) => {
           {limit && filteredServices.length >= limit && (
             <div className="text-center">
               <button className="px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 font-medium transition-colors">
-                View More Services
+                {t('service_list.view_more')}
               </button>
             </div>
           )}

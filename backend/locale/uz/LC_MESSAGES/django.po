@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-11 10:20+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: apps/appointments/views.py:110
+msgid "Booking not allowed"
+msgstr "Band qilishga ruxsat berilmagan"
+
+#: apps/appointments/views.py:111
+msgid "Only customers can create appointments."
+msgstr "Faqat mijozlar uchrashuv yarata oladi."
+
+#: apps/appointments/views.py:127 apps/appointments/views.py:140
+#: apps/appointments/views.py:146 apps/appointments/views.py:153
+#: apps/appointments/views.py:160 apps/appointments/views.py:174
+#: apps/appointments/views.py:187 apps/appointments/views.py:230
+#: apps/appointments/views.py:245
+msgid "Time slot is not available"
+msgstr "Bu vaqt mavjud emas"
+
+#: apps/appointments/views.py:128
+msgid "Selected time has already passed."
+msgstr "Tanlangan vaqt allaqachon o'tib ketgan."
+
+#: apps/appointments/views.py:141
+msgid "Business hours are not set for this day"
+msgstr "Bu kun uchun ish vaqti belgilanmagan"
+
+#: apps/appointments/views.py:147 apps/schedules/views.py:327
+msgid "Business is closed on this day"
+msgstr "Bu kuni muassasa yopiq"
+
+#: apps/appointments/views.py:154
+msgid "Selected time is outside business hours"
+msgstr "Tanlangan vaqt ish vaqtidan tashqarida"
+
+#: apps/appointments/views.py:161
+msgid "Selected employee is not working at that time."
+msgstr "Tanlangan xodim bu vaqtda ishlamaydi."
+
+#: apps/appointments/views.py:175
+msgid "Selected employee is not available at that time"
+msgstr "Tanlangan xodim bu vaqtda band"
+
+#: apps/appointments/views.py:188
+msgid "Selected employee is on time off"
+msgstr "Tanlangan xodim ta'tilda"
+
+#: apps/appointments/views.py:231
+msgid "No staff member is available at that time."
+msgstr "Bu vaqtda hech qaysi xodim bo'sh emas."
+
+#: apps/appointments/views.py:246
+msgid "Required resource is already booked"
+msgstr "Kerakli resurs allaqachon band qilingan"
+
+#: apps/appointments/views.py:272
+msgid "Only business owners can access dashboard statistics."
+msgstr "Statistika faqat biznes egalari uchun mavjud."
+
+#: apps/appointments/views.py:739 apps/appointments/views.py:745
+#: apps/appointments/views.py:748
+msgid "You cannot cancel this appointment."
+msgstr "Siz bu uchrashuvni bekor qila olmaysiz."
+
+#: apps/appointments/views.py:752
+msgid "Only active appointments can be cancelled."
+msgstr "Faqat faol uchrashuvlarni bekor qilish mumkin."
+
+#: apps/appointments/views.py:881
+msgid "New time slot is not available"
+msgstr "Yangi vaqt mavjud emas"
+
+#: apps/schedules/serializers.py:42
+msgid "This field is required."
+msgstr "Bu maydon to'ldirilishi shart."
+
+#: apps/schedules/views.py:334
+msgid "Outside business hours"
+msgstr "Ish vaqtidan tashqarida"
+
+#: apps/schedules/views.py:339
+msgid "Business hours not set for this day"
+msgstr "Bu kun uchun ish vaqti belgilanmagan"
+
+#: apps/schedules/views.py:350
+msgid "Employee not available at this time"
+msgstr "Xodim bu vaqtda band"
+
+#: apps/schedules/views.py:364
+msgid "Employee is on time off"
+msgstr "Xodim ta'tilda"
+
+#: apps/schedules/views.py:379
+msgid "Employee has conflicting appointment"
+msgstr "Xodimda boshqa uchrashuv bor"
+
+#: apps/schedules/views.py:398
+msgid "Resource is already booked"
+msgstr "Resurs allaqachon band"
+
+#: apps/schedules/views.py:403
+msgid "Time slot is available"
+msgstr "Vaqt bo'sh"
+
+#: apps/schedules/views.py:419
+msgid "service_id and date are required"
+msgstr "service_id va sana talab qilinadi"
+
+#: apps/schedules/views.py:426
+msgid "Invalid service or date format"
+msgstr "Xizmat yoki sana formati noto'g'ri"
+
+#: apps/services/views.py:117 apps/services/views.py:135
+msgid "You have already reviewed this service."
+msgstr "Siz bu xizmatga allaqachon sharh qoldirgansiz."
+
+#: apps/users/notifications/email_service.py:37
+msgid "Your Reserva password reset code"
+msgstr "Reserva parolini tiklash kodingiz"
+
+#: apps/users/notifications/email_service.py:40
+#, python-format
+msgid "Your Reserva password reset code is: %(otp_code)s"
+msgstr "Reserva parolini tiklash kodingiz: %(otp_code)s"
+
+#: apps/users/notifications/email_service.py:42
+#, python-format
+msgid "This code expires in %(minutes)s minutes."
+msgstr "Bu kod %(minutes)s daqiqadan so'ng eskiradi."
+
+#: apps/users/notifications/email_service.py:44
+msgid "Do not share this code with anyone."
+msgstr "Bu kodni hech kimga bermang."
+
+#: apps/users/notifications/email_service.py:46
+msgid ""
+"If you did not request a password reset, you can safely ignore this email."
+msgstr "Agar siz parolni tiklashni so'ramagan bo'lsangiz, bu xatni e'tiborsiz qoldirishingiz mumkin."
+
+#: apps/users/serializers.py:54 apps/users/views.py:83
+msgid "reCAPTCHA verification failed. Please check the box and try again."
+msgstr "reCAPTCHA tekshiruvi muvaffaqiyatsiz. Katakchani belgilab, qayta urinib ko'ring."
+
+#: apps/users/serializers.py:58
+msgid "Password fields didn't match."
+msgstr "Parollar mos kelmadi."
+
+#: apps/users/views.py:60
+msgid "Registration failed. Please check your details."
+msgstr "Ro'yxatdan o'tish muvaffaqiyatsiz. Ma'lumotlaringizni tekshiring."
+
+#: apps/users/views.py:106
+msgid "An account with this email already exists. Please sign in instead."
+msgstr "Bu email bilan hisob allaqachon mavjud. Tizimga kiring."
+
+#: apps/users/views.py:162
+msgid "Wrong password."
+msgstr "Noto'g'ri parol."
+
+#: apps/users/views.py:167 apps/users/views_pkg/password_reset.py:117
+msgid "Password updated successfully."
+msgstr "Parol muvaffaqiyatli yangilandi."
+
+#: apps/users/views.py:196
+msgid "If this email exists, a reset link has been sent."
+msgstr "Agar bu email mavjud bo'lsa, tiklash havolasi yuborildi."
+
+#: apps/users/views.py:212
+msgid "Invalid or expired reset token."
+msgstr "Tiklash tokeni noto'g'ri yoki eskirgan."
+
+#: apps/users/views.py:230
+msgid "Password reset successfully."
+msgstr "Parol muvaffaqiyatli tiklandi."
+
+#: apps/users/views.py:254
+msgid "Notification marked as read."
+msgstr "Bildirishnoma o'qilgan deb belgilandi."
+
+#: apps/users/views.py:267
+msgid "All notifications marked as read."
+msgstr "Barcha bildirishnomalar o'qilgan deb belgilandi."
+
+#: apps/users/views.py:280
+msgid "All notifications cleared."
+msgstr "Barcha bildirishnomalar o'chirildi."
+
+#: apps/users/views.py:361
+msgid "Telegram disconnected."
+msgstr "Telegram uzildi."
+
+#: apps/users/views_pkg/password_reset.py:30
+msgid "If that email exists, a reset code was sent."
+msgstr "Agar bu email mavjud bo'lsa, tiklash kodi yuborildi."
+
+#: apps/users/views_pkg/password_reset.py:31
+msgid "Invalid or expired reset link."
+msgstr "Tiklash havolasi noto'g'ri yoki eskirgan."
+
+#: apps/users/views_pkg/password_reset.py:76
+msgid "Code expired. Please request a new one."
+msgstr "Kod eskirdi. Yangisini so'rang."
+
+#: apps/users/views_pkg/password_reset.py:81
+msgid "Too many attempts. Request a new code."
+msgstr "Juda ko'p urinish. Yangi kod so'rang."
+
+#: apps/users/views_pkg/password_reset.py:86
+#: apps/users/views_pkg/password_reset.py:95
+msgid "Invalid code."
+msgstr "Kod noto'g'ri."
+
+#: apps/users/views_pkg/password_reset.py:124
+msgid "Password must be at least 8 characters."
+msgstr "Parol kamida 8 ta belgidan iborat bo'lishi kerak."
+
+#: config/settings/__init__.py:150
+msgid "Uzbek"
+msgstr "O'zbekcha"
+
+#: config/settings/__init__.py:151
+msgid "English"
+msgstr "Inglizcha"
+
+#: config/settings/__init__.py:152
+msgid "Russian"
+msgstr "Ruscha"

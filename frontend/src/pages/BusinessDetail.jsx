@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { appointmentService, scheduleService, userService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -42,7 +43,6 @@ const saveDraft = (draft) => { sessionStorage.setItem(BOOKING_DRAFT_KEY, JSON.st
 const clearDraft = () => { sessionStorage.removeItem(BOOKING_DRAFT_KEY); };
 const normalizeList = (response) => response.data?.results || response.data || [];
 const getToday = () => new Date().toISOString().split('T')[0];
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const displayDayOrder = [0, 1, 2, 3, 4, 5, 6];
 const schemaDayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -82,6 +82,11 @@ const SocialIcon = ({ platform }) => {
 };
 
 const BusinessDetail = () => {
+  const { t } = useTranslation();
+  const dayLabels = [
+    t('common.days.monday'), t('common.days.tuesday'), t('common.days.wednesday'),
+    t('common.days.thursday'), t('common.days.friday'), t('common.days.saturday'), t('common.days.sunday'),
+  ];
   const { businessId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -169,7 +174,7 @@ const BusinessDetail = () => {
       }
     } catch (err) {
       console.error('Error fetching business details:', err);
-      setError('Failed to load business details. Please try again later.');
+      setError(t('business_detail.failed_load'));
     } finally { setLoading(false); }
   };
 
@@ -195,10 +200,10 @@ const BusinessDetail = () => {
   };
   const formatDuration = (mins) => {
     if (!mins) return '';
-    if (mins < 60) return `${mins} min`;
+    if (mins < 60) return `${mins} ${t('common.min')}`;
     const h = Math.floor(mins / 60);
     const m = mins % 60;
-    return m ? `${h}h ${m}m` : `${h}h`;
+    return m ? `${h}${t('common.h')} ${m}${t('common.m')}` : `${h}${t('common.h')}`;
   };
 
   const hasBookingDraftForBusiness = draft && String(draft.businessId) === String(businessId) && (draft.services || []).length > 0;
@@ -318,10 +323,10 @@ const BusinessDetail = () => {
   }, [business, publicBusinessName, profileData, businessAddressLine, groupedOpeningHoursSpecification, businessReviewStats]);
 
   const formatBusinessHours = (hour) => {
-    if (!hour) return 'Contact business for opening hours';
-    if (!hour.is_open) return 'Closed today';
-    if (hour.is_24_hours) return 'Open 24 hours';
-    if (!hour.opening_time || !hour.closing_time) return 'Contact business for opening hours';
+    if (!hour) return t('business_detail.contact_hours');
+    if (!hour.is_open) return t('business_detail.closed_today');
+    if (hour.is_24_hours) return t('business_detail.open_24');
+    if (!hour.opening_time || !hour.closing_time) return t('business_detail.contact_hours');
     const formatTime = (timeValue) => {
       const [hours, minutes] = timeValue.slice(0, 5).split(':').map(Number);
       const suffix = hours >= 12 ? 'PM' : 'AM';
@@ -394,8 +399,8 @@ const BusinessDetail = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 mb-4">{error || 'Business not found'}</div>
-          <Link to="/services" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Back to Businesses</Link>
+          <div className="text-red-600 mb-4">{error || t('business_detail.not_found')}</div>
+          <Link to="/services" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">{t('business_detail.back_to_businesses')}</Link>
         </div>
       </div>
     );
@@ -437,7 +442,7 @@ const BusinessDetail = () => {
           <div className="mt-3 flex items-center gap-2 text-xs md:text-sm">
             <span className="text-amber-400">★</span>
             <span className="font-semibold text-[#1f1f1f]">{businessReviewStats.averageRating.toFixed(1)}</span>
-            <span className="text-slate-400">({businessReviewStats.reviewCount} {businessReviewStats.reviewCount === 1 ? 'review' : 'reviews'})</span>
+            <span className="text-slate-400">({t('business_detail.review_count', { count: businessReviewStats.reviewCount })})</span>
           </div>
         )}
       </div>
@@ -445,7 +450,7 @@ const BusinessDetail = () => {
       {/* Portfolio row */}
       {portfolioGallery.length > 0 && (
         <div className="border-t border-gray-100 dark:border-slate-700 px-6 pb-6">
-          <h2 className="mb-3 mt-4 text-sm font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">Portfolio</h2>
+          <h2 className="mb-3 mt-4 text-sm font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">{t('business_detail.portfolio')}</h2>
           <div className="flex gap-3 overflow-x-auto pb-1">
             {portfolioGallery.slice(0, 12).map((image, index) => (
               <button
@@ -485,7 +490,7 @@ const BusinessDetail = () => {
               className="absolute right-2 top-2 z-[1000] rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#2f95bb] shadow-sm hover:bg-white"
               aria-label={`Open ${publicBusinessName || 'business'} in Yandex Maps`}
             >
-              Open in Yandex Maps
+              {t('business_detail.open_yandex_maps')}
             </a>
           )}
         </div>
@@ -499,7 +504,7 @@ const BusinessDetail = () => {
 
       {/* About Us */}
       <section className="border-t border-gray-100 dark:border-slate-700 px-6 py-6">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">About Us</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">{t('business_detail.about_us')}</h3>
         {aboutText ? (
           <>
             <p className="mt-4 text-sm leading-7 text-[#444] dark:text-slate-300">
@@ -507,7 +512,7 @@ const BusinessDetail = () => {
             </p>
             {aboutText.length > 260 && (
               <button type="button" onClick={() => setExpandedAbout((prev) => !prev)} className="mt-3 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-wide text-[#8a8a8a]">
-                {expandedAbout ? 'Show less' : 'Show more'}
+                {expandedAbout ? t('business_detail.show_less') : t('business_detail.show_more')}
                 <ChevronDownIcon className={`h-4 w-4 transition-transform ${expandedAbout ? 'rotate-180' : ''}`} />
               </button>
             )}
@@ -517,7 +522,7 @@ const BusinessDetail = () => {
 
       {/* Staffers */}
       <section className="border-t border-gray-100 dark:border-slate-700 px-6 py-6">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">Staffers</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">{t('business_detail.staffers')}</h3>
         <div className="mt-4 flex gap-6 overflow-x-auto pb-2">
           {businessEmployees.length > 0 ? businessEmployees.map((employee) => {
             const firstName = employee.user_details?.first_name || employee.user_details?.email || 'Staff';
@@ -539,17 +544,17 @@ const BusinessDetail = () => {
 
       {/* Business Hours */}
       <section className="border-t border-gray-100 dark:border-slate-700 px-6 py-6">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">Business Hours</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">{t('business_detail.business_hours')}</h3>
         {businessHours.length > 0 ? (
           <>
             {!showFullWeek ? (
               <>
                 <div className="mt-4 flex items-center justify-between gap-6">
-                  <span className="text-base text-[#444] dark:text-slate-300">Today</span>
+                  <span className="text-base text-[#444] dark:text-slate-300">{t('common.today')}</span>
                   <span className="text-base font-semibold text-[#444] dark:text-slate-200">{formatBusinessHours(todayHours)}</span>
                 </div>
                 <button type="button" onClick={() => setShowFullWeek(true)} className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#2f95bb]">
-                  Show full week <ChevronDownIcon className="h-4 w-4" />
+                  {t('business_detail.show_full_week')} <ChevronDownIcon className="h-4 w-4" />
                 </button>
               </>
             ) : (
@@ -592,7 +597,7 @@ const BusinessDetail = () => {
 
       {/* Business Details */}
       <section className="border-t border-gray-100 dark:border-slate-700 px-6 py-6">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">Business Details</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-[#3d3d3d] dark:text-slate-300">{t('business_detail.business_details')}</h3>
         <p className="mt-4 text-base leading-7 text-[#202020] dark:text-slate-200">{profileData.business_name || publicBusinessName || ' '}</p>
         <div className="mt-4 space-y-3">
           {profileData.business_phone || business?.phone_number ? (
@@ -624,7 +629,7 @@ const BusinessDetail = () => {
           <div className="flex items-center justify-between">
             <Link to="/services" className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
               <ArrowLeftIcon className="h-5 w-5 mr-2" />
-              Back to Businesses
+              {t('business_detail.back_to_businesses')}
             </Link>
             {hasBookingDraftForBusiness ? (
               <button type="button" onClick={() => setShowDiscardModal(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-900">
@@ -645,16 +650,16 @@ const BusinessDetail = () => {
           {/* Services */}
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <h3 className="shrink-0 text-2xl font-bold leading-none text-gray-900 dark:text-white sm:text-[2rem]">
-              {hasBookingDraftForBusiness ? 'Select services' : 'Popular Services'}
+              {hasBookingDraftForBusiness ? t('business_detail.select_services') : t('business_detail.popular_services')}
             </h3>
             <div className="flex min-w-0 flex-1 basis-full items-center rounded-2xl border border-gray-200 dark:border-slate-600 bg-[#f5f5f5] dark:bg-slate-800 px-3 py-2 sm:basis-auto">
               <svg className="h-5 w-5 shrink-0 text-gray-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.35-5.15a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              <input className="ml-2 min-w-0 flex-1 bg-transparent py-1 text-sm text-slate-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-slate-500" placeholder="Search for service" value={filters.search} onChange={(e) => setFilters({ search: e.target.value })} />
+              <input className="ml-2 min-w-0 flex-1 bg-transparent py-1 text-sm text-slate-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-slate-500" placeholder={t('business_detail.search_service')} value={filters.search} onChange={(e) => setFilters({ search: e.target.value })} />
             </div>
           </div>
 
           {filteredServices.length === 0 ? (
-            <div className="text-center py-6 text-gray-500 dark:text-slate-400">No services found.</div>
+            <div className="text-center py-6 text-gray-500 dark:text-slate-400">{t('business_detail.no_services_found')}</div>
           ) : (
             <div className="overflow-hidden rounded-[24px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
               {filteredServices.map((service) => (
@@ -675,7 +680,7 @@ const BusinessDetail = () => {
                   <div className="col-span-2 flex justify-end sm:col-span-1">
                     {isBusinessOwner ? (
                       <Link to="/appointments" className="min-w-[92px] rounded-xl border border-[#4a90b0] px-4 py-2 text-center text-sm font-semibold text-[#4a90b0] transition-colors hover:bg-[#eef6fa] sm:min-w-[140px]">
-                        {isOwnBusiness ? 'View bookings' : 'Owner account'}
+                        {isOwnBusiness ? t('business_detail.view_bookings') : t('business_detail.owner_account')}
                       </Link>
                     ) : (
                       <button
@@ -685,7 +690,7 @@ const BusinessDetail = () => {
                           draftServiceIds.has(service.id) ? 'border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-600' : 'bg-[#4a90b0] text-white hover:bg-[#3d7691]'
                         }`}
                       >
-                        {draftServiceIds.has(service.id) ? 'Added' : 'Book'}
+                        {draftServiceIds.has(service.id) ? t('business_detail.added') : t('business_detail.book')}
                       </button>
                     )}
                   </div>
@@ -698,7 +703,7 @@ const BusinessDetail = () => {
           {!hasBookingDraftForBusiness && businessReviewStats.reviewCount > 0 && (
             <div className="mt-8 overflow-hidden rounded-[24px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
               <div className="flex items-center gap-3 border-b border-gray-100 dark:border-slate-700 px-6 py-5">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Reviews</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('business_detail.reviews')}</h2>
                 <div className="flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-900/20 px-3 py-1">
                   <StarIconSolid className="h-4 w-4 text-amber-400" />
                   <span className="text-sm font-bold text-gray-900 dark:text-white">{businessReviewStats.averageRating.toFixed(1)}</span>
@@ -743,7 +748,7 @@ const BusinessDetail = () => {
         <div className="order-1 xl:order-2 space-y-6">
           {hasBookingDraftForBusiness ? (
             <div className="rounded-[24px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Your order</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('business_detail.your_order')}</h2>
               <div className="mt-6 space-y-3">
                 {(draft.services || []).map((item) => (
                   <div key={item.id} className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
@@ -766,7 +771,7 @@ const BusinessDetail = () => {
 
                 <div className="rounded-[24px] bg-[#f2f2f1] dark:bg-slate-700 p-4">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Available staff</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('business_detail.available_staff')}</h3>
                     <div className="flex gap-3">
                       <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200"><ChevronLeftIcon className="h-4 w-4" /></button>
                       <button type="button" className="rounded-2xl border border-gray-300 dark:border-slate-500 p-2.5 text-gray-900 dark:text-slate-200"><ChevronRightIcon className="h-4 w-4" /></button>
@@ -777,8 +782,7 @@ const BusinessDetail = () => {
                       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#4a90b0] bg-white dark:bg-slate-600 text-gray-500 dark:text-slate-300">
                         <UserGroupIcon className="h-7 w-7" />
                       </div>
-                      <p className="mt-2 text-sm text-gray-800 dark:text-slate-300">No</p>
-                      <p className="text-sm text-gray-800 dark:text-slate-300">preference</p>
+                      <p className="mt-2 text-sm text-gray-800 dark:text-slate-300">{t('business_detail.no_preference')}</p>
                     </div>
                     {orderEmployees.map((employee) => {
                       const label = staffPreviewSlots[employee.id];
@@ -786,7 +790,7 @@ const BusinessDetail = () => {
                       return (
                         <div key={employee.id} className="min-w-[74px] text-center">
                           <div className="mb-1 h-6 text-[11px] font-semibold uppercase tracking-wide text-[#f28a32]">
-                            {staffLoading ? '' : label ? `From ${formatPreviewTime(label)}` : ''}
+                            {staffLoading ? '' : label ? t('business_detail.from_time', { time: formatPreviewTime(label) }) : ''}
                           </div>
                           <div className="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#e9ecef] dark:bg-slate-600 text-xs font-semibold text-gray-700 dark:text-slate-200">
                             {employee.user_details?.profile_picture ? (
@@ -803,12 +807,12 @@ const BusinessDetail = () => {
               </div>
               <div className="mt-8 border-t border-gray-200 dark:border-slate-700 pt-5">
                 <div className="flex items-center justify-between text-xl font-semibold text-gray-900 dark:text-white">
-                  <span>Total</span>
+                  <span>{t('business_detail.total')}</span>
                   <span>{formatPrice(totalDraftAmount)}</span>
                 </div>
               </div>
               <button type="button" onClick={() => navigate(`/book/${draft.activeServiceId}`)} className="mt-6 w-full rounded-2xl bg-[#4a90b0] px-5 py-3 text-base font-semibold text-white">
-                Continue
+                {t('business_detail.continue')}
               </button>
             </div>
           ) : null}
@@ -833,10 +837,10 @@ const BusinessDetail = () => {
                 </button>
                 <div className="flex items-center justify-center gap-3">
                   <button type="button" onClick={() => { setActiveGallerySection('space'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'space' ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]' : 'bg-[#f1f1f1] text-[#1f1f1f]'}`}>
-                    The space ({spaceGallery.length})
+                    {t('business_detail.the_space')} ({spaceGallery.length})
                   </button>
                   <button type="button" onClick={() => { setActiveGallerySection('portfolio'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'portfolio' ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]' : 'bg-[#f1f1f1] text-[#1f1f1f]'}`}>
-                    Portfolio ({portfolioGallery.length})
+                    {t('business_detail.portfolio')} ({portfolioGallery.length})
                   </button>
                 </div>
                 <div />
@@ -874,12 +878,12 @@ const BusinessDetail = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Login to book</h2>
-            <p className="mt-2 text-gray-500 text-sm">You need an account to reserve this service.</p>
+            <h2 className="text-2xl font-bold text-gray-900">{t('business_detail.login_to_book')}</h2>
+            <p className="mt-2 text-gray-500 text-sm">{t('business_detail.login_desc')}</p>
             <div className="mt-7 space-y-3">
-              <button type="button" onClick={() => navigate('/login', { state: { from: { pathname: `/business/${businessId}` } } })} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white hover:bg-[#2788aa] transition">Log in</button>
-              <button type="button" onClick={() => navigate('/register')} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 transition">Create account</button>
-              <button type="button" onClick={() => setShowLoginModal(false)} className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition">Maybe later</button>
+              <button type="button" onClick={() => navigate('/login', { state: { from: { pathname: `/business/${businessId}` } } })} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white hover:bg-[#2788aa] transition">{t('auth.sign_in')}</button>
+              <button type="button" onClick={() => navigate('/register')} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 transition">{t('auth.create_account')}</button>
+              <button type="button" onClick={() => setShowLoginModal(false)} className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition">{t('business_detail.maybe_later')}</button>
             </div>
           </div>
         </div>
@@ -892,11 +896,11 @@ const BusinessDetail = () => {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
               <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">Discard booking?</h2>
-            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">Are you sure you want to abort the booking process? Unsaved changes will be lost.</p>
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">{t('business_detail.discard_booking')}</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">{t('business_detail.discard_confirm')}</p>
             <div className="mt-6 space-y-3">
-              <button type="button" onClick={handleDiscardDraft} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg">Yes, discard</button>
-              <button type="button" onClick={() => setShowDiscardModal(false)} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg">Continue booking</button>
+              <button type="button" onClick={handleDiscardDraft} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg">{t('business_detail.yes_discard')}</button>
+              <button type="button" onClick={() => setShowDiscardModal(false)} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg">{t('business_detail.continue_booking')}</button>
             </div>
           </div>
         </div>

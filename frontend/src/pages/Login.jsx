@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import {
   EnvelopeIcon,
@@ -12,12 +13,13 @@ import {
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY ;
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -36,7 +38,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     if (hasRecaptcha && !recaptchaToken) {
-      setFormError('Please complete the reCAPTCHA check before signing in.');
+      setFormError(t('auth.recaptcha_required'));
       return;
     }
 
@@ -59,10 +61,9 @@ const Login = () => {
             : null;
         setSubmitError(
           result.status === 401
-            ? 'Incorrect email or password. Please try again.'
-            : backendDetail || 'Something went wrong. Please try again.'
+            ? t('auth.incorrect_credentials')
+            : backendDetail || t('auth.something_went_wrong')
         );
-        // Reset reCAPTCHA so the user can try again
         recaptchaRef.current?.reset();
         setRecaptchaToken(null);
       }
@@ -73,8 +74,8 @@ const Login = () => {
           : null;
       setSubmitError(
         error.response?.status === 401
-          ? 'Incorrect email or password. Please try again.'
-          : backendDetail || 'Something went wrong. Please try again.'
+          ? t('auth.incorrect_credentials')
+          : backendDetail || t('auth.something_went_wrong')
       );
       recaptchaRef.current?.reset();
       setRecaptchaToken(null);
@@ -96,27 +97,27 @@ const Login = () => {
 
         <div>
           <h1 className="text-4xl font-extrabold leading-tight">
-            Welcome back to<br />Reserva
+            {t('auth.welcome_back')}
           </h1>
           <p className="mt-4 text-blue-100">
-            Sign in to manage your appointments, bookings, and business — all in one place.
+            {t('auth.welcome_back_subtitle')}
           </p>
 
           <div className="mt-10 space-y-4">
             {[
-              { emoji: '📅', text: 'See all your upcoming appointments' },
-              { emoji: '🔔', text: 'Get notified about new bookings' },
-              { emoji: '📊', text: 'Track your business performance' },
+              { emoji: '📅', key: 'feature_appointments' },
+              { emoji: '🔔', key: 'feature_notifications' },
+              { emoji: '📊', key: 'feature_analytics' },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-3">
+              <div key={item.key} className="flex items-center gap-3">
                 <span className="text-xl">{item.emoji}</span>
-                <span className="text-sm text-blue-50">{item.text}</span>
+                <span className="text-sm text-blue-50">{t(`auth.${item.key}`)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-blue-200">© {new Date().getFullYear()} Reserva. All rights reserved.</p>
+        <p className="text-xs text-blue-200">{t('auth.copyright', { year: new Date().getFullYear() })}</p>
       </div>
 
       {/* Right panel */}
@@ -131,14 +132,14 @@ const Login = () => {
           </Link>
 
           <Link to="/" className="mb-5 inline-flex text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:underline">
-            &larr; Back to home
+            &larr; {t('auth.back_to_home')}
           </Link>
 
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Sign in to your account</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('auth.sign_in_to_account')}</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Don't have an account?{' '}
+            {t('auth.no_account')}{' '}
             <Link to="/register" className="font-semibold text-blue-600 hover:underline">
-              Create one free
+              {t('auth.create_one_free')}
             </Link>
           </p>
 
@@ -152,18 +153,18 @@ const Login = () => {
             {/* Email */}
             <div>
               <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                Email address
+                {t('form.email_address')}
               </label>
               <div className="relative">
                 <EnvelopeIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
                   autoComplete="email"
-                  placeholder="you@example.com"
+                  placeholder={t('auth.email_placeholder')}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   {...register('email', {
-                    required: 'Email is required',
-                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+                    required: t('errors.email_required'),
+                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t('errors.invalid_email') },
                     onChange: clearSubmitErrors,
                   })}
                 />
@@ -174,18 +175,18 @@ const Login = () => {
             {/* Password */}
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{t('form.password')}</label>
               </div>
               <div className="relative">
                 <LockClosedIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  placeholder="Your password"
+                  placeholder={t('auth.password_placeholder')}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   {...register('password', {
-                    required: 'Password is required',
-                    minLength: { value: 6, message: 'Min 6 characters' },
+                    required: t('errors.password_required'),
+                    minLength: { value: 6, message: t('errors.password_min_6') },
                     onChange: clearSubmitErrors,
                   })}
                 />
@@ -199,7 +200,7 @@ const Login = () => {
               </div>
               <div className="mt-2 text-right">
                 <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
-                  Forgot password?
+                  {t('auth.forgot_password')}
                 </Link>
               </div>
               {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
@@ -229,11 +230,11 @@ const Login = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Signing in…
+                  {t('auth.signing_in')}
                 </>
               ) : (
                 <>
-                  Sign in
+                  {t('auth.sign_in')}
                   <ArrowRightIcon className="h-4 w-4" />
                 </>
               )}
