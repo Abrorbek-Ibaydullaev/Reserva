@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { userService, serviceService, fixMediaUrl } from '../services/api';
 import Footer from '../components/Layout/Footer';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { categoryKey } from '../../../shared/categories.js';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -1242,7 +1243,7 @@ const Home = () => {
                       <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#1a2e2b] text-white transition-all duration-200 group-hover:bg-[#243d3a] group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-emerald-900/30">
                         <span className="h-9 w-9 [&>svg]:h-full [&>svg]:w-full">{getCatSvg(cat.name)}</span>
                       </div>
-                      <span className="w-[80px] text-center text-[11px] font-bold leading-tight text-white">{cat.name}</span>
+                      <span className="w-[80px] text-center text-[11px] font-bold leading-tight text-white">{t(categoryKey(cat.name), { defaultValue: cat.name })}</span>
                     </button>
                   ))}
                 </div>
@@ -1281,7 +1282,7 @@ const Home = () => {
             {grouped.map(([cat, list]) => (
               <div key={cat} className="mx-auto mb-10 max-w-6xl overflow-hidden px-4 sm:px-8">
                 <div className="mb-5 flex items-end justify-between">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('home.near_you', { category: cat })}</h2>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('home.near_you', { category: t(categoryKey(cat), { defaultValue: cat }) })}</h2>
                   <button
                     onClick={() => handleCatClick(cat)}
                     className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"

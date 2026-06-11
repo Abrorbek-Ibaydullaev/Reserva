@@ -873,5 +873,27 @@
     "view_bookings": "Bandlovlarni ko'rish",
     "yes_discard": "Ha, bekor qilish",
     "your_order": "Buyurtmangiz"
+  },
+  "categories": {
+    "hair_salon": "Sartaroshxona",
+    "nails": "Manikyur",
+    "massage": "Massaj",
+    "fitness": "Fitnes",
+    "yoga": "Yoga",
+    "health_wellness": "Salomatlik",
+    "dental": "Stomatologiya",
+    "therapy": "Terapiya",
+    "education": "Ta'lim",
+    "music_lessons": "Musiqa darslari",
+    "photography": "Fotografiya",
+    "home_cleaning": "Uy tozalash",
+    "plumbing": "Santexnika",
+    "electrical": "Elektrik",
+    "consulting": "Konsalting",
+    "legal_services": "Yuridik xizmatlar",
+    "accounting": "Buxgalteriya",
+    "beauty_makeup": "Go'zallik va makiyaj",
+    "pet_grooming": "Hayvonlar parvarishi",
+    "car_detailing": "Avto detiling"
   }
 }

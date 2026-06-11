@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { userService } from '../services/api';
 import BusinessCard from '../components/Business/BusinessCard';
+import { categoryKey } from '../../../shared/categories.js';
 
 const CATEGORY_ICONS = {
   'Barber': '✂️',
@@ -97,7 +98,7 @@ const Services = () => {
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-8 sm:py-10">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="mb-1 text-2xl font-extrabold text-white sm:text-3xl">
-            {selectedCategory !== 'All' ? selectedCategory : t('services_page.find_service')}
+            {selectedCategory !== 'All' ? t(categoryKey(selectedCategory), { defaultValue: selectedCategory }) : t('services_page.find_service')}
           </h1>
           {cityFilter && (
             <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white">
@@ -146,7 +147,7 @@ const Services = () => {
                 {cat !== 'All' && (
                   <span className="text-base leading-none">{getCategoryIcon(cat)}</span>
                 )}
-                {cat}
+                {cat === 'All' ? t('common.all') : t(categoryKey(cat), { defaultValue: cat })}
               </button>
             ))}
           </div>
@@ -161,7 +162,7 @@ const Services = () => {
               {filtered.length === 0
                 ? t('services_page.no_businesses')
                 : t('services_page.businesses_found', { count: filtered.length })}
-              {selectedCategory !== 'All' && ` · ${selectedCategory}`}
+              {selectedCategory !== 'All' && ` · ${t(categoryKey(selectedCategory), { defaultValue: selectedCategory })}`}
               {cityFilter && ` · ${cityFilter}`}
             </p>
             {(search || selectedCategory !== 'All') && (

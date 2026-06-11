@@ -873,5 +873,27 @@
     "view_bookings": "View bookings",
     "yes_discard": "Yes, discard",
     "your_order": "Your order"
+  },
+  "categories": {
+    "hair_salon": "Hair Salon",
+    "nails": "Nails",
+    "massage": "Massage",
+    "fitness": "Fitness",
+    "yoga": "Yoga",
+    "health_wellness": "Health & Wellness",
+    "dental": "Dental",
+    "therapy": "Therapy",
+    "education": "Education",
+    "music_lessons": "Music Lessons",
+    "photography": "Photography",
+    "home_cleaning": "Home Cleaning",
+    "plumbing": "Plumbing",
+    "electrical": "Electrical",
+    "consulting": "Consulting",
+    "legal_services": "Legal Services",
+    "accounting": "Accounting",
+    "beauty_makeup": "Beauty & Makeup",
+    "pet_grooming": "Pet Grooming",
+    "car_detailing": "Car Detailing"
   }
 }

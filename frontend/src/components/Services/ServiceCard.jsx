@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fixMediaUrl } from '../../services/api';
+import { categoryKey } from '../../../../shared/categories.js';
 import { 
   StarIcon,
   ClockIcon,
@@ -90,7 +91,7 @@ const ServiceCard = ({ service }) => {
         {service.category_name && (
           <div className="absolute top-3 left-3">
             <span className="px-2.5 py-1 text-xs font-medium bg-white/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full">
-              {service.category_name}
+              {t(categoryKey(service.category_name), { defaultValue: service.category_name })}
             </span>
           </div>
         )}

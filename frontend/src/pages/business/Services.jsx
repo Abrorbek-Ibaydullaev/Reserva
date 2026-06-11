@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { categoryKey } from '../../../../shared/categories.js';
 import { PencilSquareIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { serviceService } from '../../services/api';
 
@@ -238,7 +239,7 @@ const BusinessServices = () => {
                       <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-slate-300">
                         <span>${Number(service.price || 0).toFixed(2)}</span>
                         <span>{service.duration} {t('common.min')}</span>
-                        <span>{service.category_name || t('business_services.uncategorized')}</span>
+                        <span>{service.category_name ? t(categoryKey(service.category_name), { defaultValue: service.category_name }) : t('business_services.uncategorized')}</span>
                       </div>
                     </div>
                     <div className="flex gap-2">

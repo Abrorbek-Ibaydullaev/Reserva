@@ -879,5 +879,27 @@
     "view_bookings": "Мои брони",
     "yes_discard": "Да, отменить",
     "your_order": "Ваш заказ"
+  },
+  "categories": {
+    "hair_salon": "Парикмахерская",
+    "nails": "Ногти",
+    "massage": "Массаж",
+    "fitness": "Фитнес",
+    "yoga": "Йога",
+    "health_wellness": "Здоровье",
+    "dental": "Стоматология",
+    "therapy": "Психотерапия",
+    "education": "Образование",
+    "music_lessons": "Уроки музыки",
+    "photography": "Фотография",
+    "home_cleaning": "Уборка дома",
+    "plumbing": "Сантехника",
+    "electrical": "Электрика",
+    "consulting": "Консалтинг",
+    "legal_services": "Юридические услуги",
+    "accounting": "Бухгалтерия",
+    "beauty_makeup": "Красота и макияж",
+    "pet_grooming": "Груминг",
+    "car_detailing": "Детейлинг авто"
   }
 }

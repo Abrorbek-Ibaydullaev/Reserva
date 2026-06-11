@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { categoryKey } from '../../../shared/categories.js';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -179,7 +180,7 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
             <div>
               <p className="text-xl font-bold text-slate-900">{a.service_details?.name}</p>
               {a.service_details?.category_name && (
-                <p className="text-sm text-slate-500">{a.service_details.category_name}</p>
+                <p className="text-sm text-slate-500">{t(categoryKey(a.service_details.category_name), { defaultValue: a.service_details.category_name })}</p>
               )}
             </div>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
