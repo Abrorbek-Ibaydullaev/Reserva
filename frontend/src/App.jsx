@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -50,6 +50,9 @@ import BusinessSchedule from './pages/business/Schedule';
 import EmployeeSchedule from './pages/employee/Schedule';
 import NotFound from './pages/NotFound';
 
+// Standalone SOC roadmap — lazy-loaded, fully isolated from the booking app
+const SocRoadmap = lazy(() => import('./soc/SocRoadmap'));
+
 
 function App() {
   return (
@@ -96,6 +99,16 @@ function App() {
 
             {/* ── Home – standalone layout (own nav + hero) ── */}
             <Route path="/" element={<Home />} />
+
+            {/* ── SOC roadmap – standalone app, no Reserva layout ── */}
+            <Route
+              path="/soc"
+              element={
+                <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">Loading…</div>}>
+                  <SocRoadmap />
+                </Suspense>
+              }
+            />
 
             {/* ── Auth pages – no layout wrapper ── */}
             <Route
