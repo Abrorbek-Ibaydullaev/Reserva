@@ -101,7 +101,12 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-center space-x-3 min-w-0">
               <EnvelopeIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
-              <span className="truncate text-gray-400 dark:text-gray-300">support@reserva.uz</span>
+              <a
+                href="mailto:support@reserva.services"
+                className="truncate text-gray-400 dark:text-gray-300 hover:text-primary-400 transition-colors"
+              >
+                support@reserva.services
+              </a>
             </div>
             <div className="flex items-center space-x-3 min-w-0">
               <PhoneIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
