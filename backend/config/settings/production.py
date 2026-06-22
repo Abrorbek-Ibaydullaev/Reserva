@@ -65,7 +65,6 @@ INSTALLED_APPS = [
     'apps.telegram_bot',
     'apps.schedules',
     'apps.appointments',
-    'apps.webhooks',
 ]
 
 MIDDLEWARE = [

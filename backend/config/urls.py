@@ -66,9 +66,6 @@ urlpatterns = [
     path('api/services/', include('apps.services.urls')),
     path('api/schedules/', include('apps.schedules.urls')),
     path('api/appointments/', include('apps.appointments.urls')),
-
-    # Cross-cutting webhooks (called by external services, not logged-in users)
-    path('api/webhooks/', include('apps.webhooks.urls')),
 ]
 
 # 🛠️ Fix: Explicitly serve media from your Railway Volume in both Dev and Prod
