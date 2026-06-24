@@ -73,6 +73,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'apps.core.middleware.SubdomainAdminMiddleware',  # route admin.* subdomain to /admin/
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'config.middleware.LanguageMiddleware',

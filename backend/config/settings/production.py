@@ -33,6 +33,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'api.reserva.services',
+    'admin.reserva.services',
     'reserva-production.up.railway.app',  # fallback during DNS transition
 ] + [
     host.strip()
@@ -70,6 +71,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'apps.core.middleware.SubdomainAdminMiddleware',  # route admin.* subdomain to /admin/
     'whitenoise.middleware.WhiteNoiseMiddleware',   # serves static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
