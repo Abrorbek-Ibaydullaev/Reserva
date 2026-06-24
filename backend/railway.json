@@ -1,0 +1,10 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "pip install -r requirements.txt && SECRET_KEY=build-only-dummy-key DJANGO_SETTINGS_MODULE=config.settings.production python manage.py collectstatic --noinput"
+  },
+  "deploy": {
+    "preDeployCommand": ["DJANGO_SETTINGS_MODULE=config.settings.production python manage.py collectstatic --noinput"],
+    "startCommand": "DJANGO_SETTINGS_MODULE=config.settings.production gunicorn config.wsgi --workers 2 --bind 0.0.0.0:$PORT --timeout 60"
+  }
+}
