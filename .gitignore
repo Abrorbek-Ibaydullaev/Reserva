@@ -9,6 +9,7 @@ db.sqlite3
 .env
 # media/ — tracked so demo images deploy with the code
 static_root/
+backend/staticfiles/
 
 # --- Node / React ---
 node_modules/

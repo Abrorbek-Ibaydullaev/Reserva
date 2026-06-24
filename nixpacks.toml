@@ -1,0 +1,25 @@
+# nixpacks.toml — Railway build configuration for Reserva backend
+#
+# Railway uses Nixpacks to build the container image.  Without this file
+# Nixpacks may auto-generate a start command that skips the Procfile `web:`
+# line, meaning collectstatic never runs and WhiteNoise has no files to serve.
+#
+# This file does two things:
+#   1. Runs `collectstatic` at IMAGE BUILD TIME so the static assets are baked
+#      into the image.  A dummy SECRET_KEY is provided only for the build step;
+#      the real key is injected at runtime via Railway environment variables.
+#   2. Pins the start command to exactly what the Procfile `web:` line says, so
+#      gunicorn is always launched via the same path regardless of Nixpacks'
+#      auto-detection heuristics.
+
+[phases.setup]
+nixPkgs = ["python312", "gcc"]
+
+[phases.build]
+cmds = [
+  "pip install -r backend/requirements.txt",
+  "cd backend && SECRET_KEY=dummy-build-time-key DJANGO_SETTINGS_MODULE=config.settings.production python3.12 manage.py collectstatic --noinput",
+]
+
+[start]
+cmd = "cd backend && DJANGO_SETTINGS_MODULE=config.settings.production python3.12 manage.py collectstatic --noinput && DJANGO_SETTINGS_MODULE=config.settings.production gunicorn config.wsgi --workers 2 --bind 0.0.0.0:$PORT --timeout 60"
