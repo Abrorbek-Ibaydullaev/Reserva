@@ -198,7 +198,7 @@ STORAGES = {
         'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
 
@@ -289,6 +289,7 @@ CSRF_TRUSTED_ORIGINS = [
     _normalize_origin('https://reserva.services'),
     _normalize_origin('https://www.reserva.services'),
     _normalize_origin('https://api.reserva.services'),
+    _normalize_origin('https://admin.reserva.services'),  # admin subdomain login form POST
     _normalize_origin('https://reserva-production.up.railway.app'),  # fallback during DNS transition
     _normalize_origin('https://reserva-plum.vercel.app'),  # fallback during DNS transition
 ]
