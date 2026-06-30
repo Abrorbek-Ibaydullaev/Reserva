@@ -635,7 +635,10 @@
     "selected_staff": "Selected staff",
     "from_time": "From {{time}}",
     "unavailable": "Unavailable",
-    "change": "Change"
+    "change": "Change",
+    "available_slots": "Available slots:",
+    "minutes_short": "min",
+    "at_time": "at"
   },
   "business_appointments": {
     "title": "Appointments",

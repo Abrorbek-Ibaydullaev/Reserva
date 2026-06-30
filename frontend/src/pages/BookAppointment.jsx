@@ -26,6 +26,7 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
+import { enUS, ru, uz } from 'date-fns/locale';
 import { appointmentService, scheduleService, serviceService, userService } from '../services/api';
 
 const getToday = () => format(startOfToday(), 'yyyy-MM-dd');
@@ -63,9 +64,9 @@ const formatSlotTime = (timeValue) => {
   return `${hours}:${minutes}`;
 };
 
-const formatDuration = (minutes) => {
+const formatDuration = (minutes, unit = 'min') => {
   if (!minutes) return '';
-  return `${minutes}min`;
+  return `${minutes} ${unit}`;
 };
 
 const getDayBucket = (timeValue) => {
@@ -94,7 +95,11 @@ const getAvailabilityTone = (count) => {
 };
 
 const BookAppointment = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dfLocale = useMemo(() => {
+    const lang = (i18n.language || 'en').split('-')[0];
+    return { ru, uz, en: enUS }[lang] || enUS;
+  }, [i18n.language]);
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const dateInputRef = useRef(null);
@@ -208,22 +213,27 @@ const BookAppointment = () => {
     return eachDayOfInterval({ start, end });
   }, [calendarMonth]);
 
+  const weekdayLabels = useMemo(() => {
+    const weekStart = startOfWeek(new Date(), { weekStartsOn: 0 });
+    return Array.from({ length: 7 }, (_, i) => format(addDays(weekStart, i), 'EEE', { locale: dfLocale }));
+  }, [dfLocale]);
+
   const monthLabel = useMemo(() => {
     const first = visibleDays[0];
     const last = visibleDays[visibleDays.length - 1];
-    const firstLabel = format(first, 'MMM.');
-    const lastLabel = format(last, 'MMM. yyyy');
+    const firstLabel = format(first, 'MMM.', { locale: dfLocale });
+    const lastLabel = format(last, 'MMM. yyyy', { locale: dfLocale });
 
     if (format(first, 'MMM yyyy') === format(last, 'MMM yyyy')) {
-      return format(first, 'MMM. yyyy');
+      return format(first, 'MMM. yyyy', { locale: dfLocale });
     }
 
     return `${firstLabel} - ${lastLabel}`;
-  }, [visibleDays]);
+  }, [visibleDays, dfLocale]);
 
   const selectedDateObject = useMemo(() => parseISO(selectedDate), [selectedDate]);
   const todayDate = useMemo(() => startOfToday(), []);
-  const headerLabel = calendarOpen ? format(calendarMonth, 'MMMM yyyy') : monthLabel;
+  const headerLabel = calendarOpen ? format(calendarMonth, 'MMMM yyyy', { locale: dfLocale }) : monthLabel;
 
   const filteredEmployees = useMemo(() => {
     if (!service) return [];
@@ -519,7 +529,7 @@ const BookAppointment = () => {
             </div>
             <h2 className="mt-8 text-2xl md:text-3xl font-bold text-gray-900">{t('book_appointment.booking_confirmed')}</h2>
             <p className="mt-4 text-base md:text-lg text-gray-600">
-              {format(parseISO(confirmedBooking.date), 'EEEE, dd MMM yyyy')} at{' '}
+              {format(parseISO(confirmedBooking.date), 'EEEE, dd MMM yyyy', { locale: dfLocale })} {t('book_appointment.at_time')}{' '}
               {formatSlotTime(confirmedBooking.time)}
             </p>
             <button
@@ -651,8 +661,8 @@ const BookAppointment = () => {
               </div>
 
               <div className="mt-6 grid grid-cols-7 gap-y-3">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-base text-gray-500 dark:text-slate-400">
+                {weekdayLabels.map((day, idx) => (
+                  <div key={idx} className="text-center text-base text-gray-500 dark:text-slate-400">
                     {day}
                   </div>
                 ))}
@@ -700,7 +710,7 @@ const BookAppointment = () => {
               </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-slate-400">
-                <span>Available slots:</span>
+                <span>{t('book_appointment.available_slots')}</span>
                 <div className="flex items-center gap-2">
                   <span className="h-1.5 w-6 rounded-full bg-[#7cc089]" />
                   <span>+10</span>
@@ -738,7 +748,7 @@ const BookAppointment = () => {
                         <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
                       </span>
                     </div>
-                    <div className="mt-2 text-sm md:text-base text-gray-800 dark:text-slate-300">{format(day, 'EEE')}</div>
+                    <div className="mt-2 text-sm md:text-base text-gray-800 dark:text-slate-300">{format(day, 'EEE', { locale: dfLocale })}</div>
                   </button>
                 );
               })}
@@ -804,7 +814,7 @@ const BookAppointment = () => {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <p className="text-base md:text-lg text-gray-900 dark:text-white">{draftService.name}</p>
-                      <p className="mt-2 text-sm md:text-base text-gray-500 dark:text-slate-400">{formatDuration(draftService.duration)}</p>
+                      <p className="mt-2 text-sm md:text-base text-gray-500 dark:text-slate-400">{formatDuration(draftService.duration, t('book_appointment.minutes_short'))}</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="text-right">

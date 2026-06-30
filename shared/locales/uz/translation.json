@@ -635,7 +635,10 @@
     "selected_staff": "Tanlangan xodim",
     "from_time": "{{time}} dan",
     "unavailable": "Mavjud emas",
-    "change": "O'zgartirish"
+    "change": "O'zgartirish",
+    "available_slots": "Bo'sh vaqtlar:",
+    "minutes_short": "daq",
+    "at_time": "soat"
   },
   "business_appointments": {
     "title": "Uchrashuvlar",

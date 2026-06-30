@@ -637,7 +637,10 @@
     "selected_staff": "Выбранный сотрудник",
     "from_time": "С {{time}}",
     "unavailable": "Недоступно",
-    "change": "Изменить"
+    "change": "Изменить",
+    "available_slots": "Свободные слоты:",
+    "minutes_short": "мин",
+    "at_time": "в"
   },
   "business_appointments": {
     "title": "Записи",
