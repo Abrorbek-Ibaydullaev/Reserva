@@ -1,3 +1,29 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+
+# Allow public-facing pages
+Allow: /
+Allow: /services
+Allow: /features
+Allow: /pricing
+Allow: /about
+Allow: /blog
+Allow: /contact
+Allow: /help
+Allow: /security
+Allow: /login
+Allow: /register
+Allow: /business/
+
+# Disallow private / dashboard routes
+Disallow: /dashboard/
+Disallow: /employee/
+Disallow: /profile
+Disallow: /settings
+Disallow: /appointments
+Disallow: /book/
+Disallow: /api/
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://reserva.services/sitemap.xml

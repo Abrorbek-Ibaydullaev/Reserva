@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { categoryKey } from '../../../shared/categories.js';
+import SEO from '../components/SEO';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -454,7 +455,9 @@ const MyAppointments = () => {
     : t('booking.your_appointments');
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
+    <>
+      <SEO title="My Appointments" noindex />
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Header */}
       <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-6">
         <div className="mx-auto max-w-3xl">
@@ -553,6 +556,7 @@ const MyAppointments = () => {
         isLoading={Boolean(cancellingId)}
       />
     </div>
+    </>
   );
 };
 

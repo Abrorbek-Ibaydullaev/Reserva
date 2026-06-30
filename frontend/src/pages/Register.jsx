@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
@@ -253,7 +254,13 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
+    <>
+      <SEO
+        title="Create an Account"
+        description="Join Reserva today. Create a free account to book appointments, or register your business to start accepting online bookings in Uzbekistan."
+        path="/register"
+      />
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
         <Link to="/" className="flex items-center gap-3">
@@ -510,6 +517,7 @@ const Register = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

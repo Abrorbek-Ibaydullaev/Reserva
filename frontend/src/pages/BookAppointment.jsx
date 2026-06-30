@@ -594,7 +594,7 @@ const BookAppointment = () => {
 
       <div className="mx-auto grid max-w-[1280px] items-start gap-8 xl:grid-cols-[1.35fr_0.85fr]">
         <section>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{t('book_appointment.select_date_time')}</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{t('book_appointment.select_date_time')}</h1>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">

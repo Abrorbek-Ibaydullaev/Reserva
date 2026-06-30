@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { userService, serviceService, fixMediaUrl } from '../services/api';
 import Footer from '../components/Layout/Footer';
@@ -916,7 +917,7 @@ const Home = () => {
           to="/register"
           className={
             dark
-              ? 'rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
+              ? 'hidden sm:inline-flex rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
               : 'rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
           }
         >
@@ -927,7 +928,13 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa] dark:bg-[#0f1118]">
+    <>
+      <SEO
+        title="Reserva — Online Booking for Service Businesses in Uzbekistan"
+        description="Book salons, barbershops, spas, fitness studios, and more in Uzbekistan. Find the best service businesses near you and book an appointment instantly with Reserva."
+        path="/"
+      />
+      <div className="min-h-screen overflow-x-hidden bg-[#f7f8fa] dark:bg-[#0f1118]">
 
       {/* ── STICKY BAR ─────────────────────────────────────────────────── */}
       {sticky && (
@@ -1333,6 +1340,7 @@ const Home = () => {
         />
       )}
     </div>
+    </>
   );
 };
 

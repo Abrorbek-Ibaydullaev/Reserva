@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import SEO from '../components/SEO';
 import {
   EnvelopeIcon,
   LockClosedIcon,
@@ -85,7 +86,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
+    <>
+      <SEO
+        title="Log In"
+        description="Sign in to your Reserva account to manage bookings, appointments, and your service business profile."
+        path="/login"
+      />
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Left panel */}
       <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 to-blue-500 p-12 text-white lg:flex lg:w-[42%]">
         <Link to="/" className="flex items-center gap-3">
@@ -243,6 +250,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

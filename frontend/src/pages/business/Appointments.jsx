@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import SEO from '../../components/SEO';
 import { appointmentService } from '../../services/api';
 import CancelAppointmentModal from '../../components/CancelAppointmentModal';
 
@@ -82,7 +83,9 @@ const BusinessAppointments = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
+    <>
+      <SEO title="Manage Appointments" noindex />
+      <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-7xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -189,6 +192,7 @@ const BusinessAppointments = () => {
         isLoading={Boolean(busyId)}
       />
     </div>
+    </>
   );
 };
 

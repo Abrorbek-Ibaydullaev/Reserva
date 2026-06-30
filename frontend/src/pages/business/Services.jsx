@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import SEO from '../../components/SEO';
 import { categoryKey } from '../../../../shared/categories.js';
 import { PencilSquareIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { serviceService } from '../../services/api';
@@ -111,7 +112,9 @@ const BusinessServices = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
+    <>
+      <SEO title="Manage Services" noindex />
+      <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -268,6 +271,7 @@ const BusinessServices = () => {
         </section>
       </div>
     </div>
+    </>
   );
 };
 

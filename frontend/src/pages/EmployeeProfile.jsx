@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import SEO from '../components/SEO';
 import { scheduleService, userService } from '../services/api';
 import {
   BriefcaseIcon,
@@ -220,7 +221,9 @@ const EmployeeProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
+    <>
+      <SEO title="Employee Profile" noindex />
+      <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('employee_profile.title')}</h1>
@@ -410,6 +413,7 @@ const EmployeeProfile = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

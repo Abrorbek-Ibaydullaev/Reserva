@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import SEO from '../../components/SEO';
 import { scheduleService } from '../../services/api';
 
 const normalizeList = (response) => response.data?.results || response.data || [];
@@ -69,7 +70,9 @@ const BusinessSchedule = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
+    <>
+      <SEO title="Business Schedule" noindex />
+      <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('business_schedule.title')}</h1>
         <p className="mt-2 text-gray-500 dark:text-slate-400">
@@ -145,6 +148,7 @@ const BusinessSchedule = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

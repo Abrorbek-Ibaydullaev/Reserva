@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { userService } from '../services/api';
 import BusinessCard from '../components/Business/BusinessCard';
 import { categoryKey } from '../../../shared/categories.js';
+import SEO from '../components/SEO';
 
 const CATEGORY_ICONS = {
   'Barber': '✂️',
@@ -93,7 +94,13 @@ const Services = () => {
   }, [businesses, search, selectedCategory, cityFilter]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#0f1118]">
+    <>
+      <SEO
+        title="Browse Services"
+        description="Find and book local salons, barbershops, spas, fitness studios, dental clinics, and more near you across Uzbekistan."
+        path="/services"
+      />
+      <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#0f1118]">
       {/* Hero / Search bar */}
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-8 sm:py-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -220,6 +227,7 @@ const Services = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

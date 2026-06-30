@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import SEO from '../components/SEO';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -106,7 +107,9 @@ const EmployeeDashboard = () => {
   }
 
   return (
-    <div className="space-y-5 p-5">
+    <>
+      <SEO title="Employee Dashboard" noindex />
+      <div className="space-y-5 p-5">
       {/* Greeting */}
       <div>
         <h1 className="text-xl font-bold text-slate-900 dark:text-white">
@@ -257,6 +260,7 @@ const EmployeeDashboard = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

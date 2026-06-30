@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 import { appointmentService, scheduleService, userService, serviceService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
@@ -617,7 +618,20 @@ const BusinessDetail = () => {
     </div>
   ) : null;
 
+  const seoTitle = publicBusinessName
+    ? `${publicBusinessName} — Book an Appointment`
+    : 'Business Profile';
+  const seoDescription = publicBusinessName
+    ? `Book an appointment at ${publicBusinessName} on Reserva. View services, availability, and more.`
+    : 'View this business profile and book an appointment on Reserva.';
+
   return (
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        path={`/business/${businessId}`}
+      />
     <div className="min-h-screen overflow-x-hidden bg-gray-100 dark:bg-[#0f1118]">
       {localBusinessSchema ? (
         <script type="application/ld+json">{JSON.stringify(localBusinessSchema)}</script>
@@ -906,6 +920,7 @@ const BusinessDetail = () => {
         </div>
       ) : null}
     </div>
+    </>
   );
 };
 

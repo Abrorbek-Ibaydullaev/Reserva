@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import SEO from '../components/SEO';
 import {
   UserGroupIcon,
   CalendarDaysIcon,
@@ -136,16 +137,18 @@ const BusinessDashboard = () => {
   }));
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-5">
+    <>
+      <SEO title="Dashboard" noindex />
+      <div className="flex flex-col gap-4 p-4 sm:p-5">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
             {t('business_dashboard.hello', { name: user?.first_name || '' })}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            {format(new Date(), 'EEEE, MMMM d, yyyy')}
+          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+            {format(new Date(), 'EEE, MMM d')}
             {dashboard.schedule_overview.today_is_open
               ? ` · ${t('business_dashboard.open_hours', { open: dashboard.schedule_overview.today_opening_time || '', close: dashboard.schedule_overview.today_closing_time || '' })}`
               : ` · ${t('business_dashboard.closed_today')}`}
@@ -153,10 +156,10 @@ const BusinessDashboard = () => {
         </div>
         <Link
           to="/dashboard/appointments"
-          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2 sm:px-4 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
         >
-          <CalendarDaysIcon className="h-4 w-4" />
-          {t('business_dashboard.view_appointments')}
+          <CalendarDaysIcon className="h-4 w-4 flex-shrink-0" />
+          <span className="hidden sm:inline">{t('business_dashboard.view_appointments')}</span>
         </Link>
       </div>
 
@@ -348,6 +351,7 @@ const BusinessDashboard = () => {
       </div>
 
     </div>
+    </>
   );
 };
 

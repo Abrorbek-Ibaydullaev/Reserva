@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { userService } from '../services/api';
 import {
@@ -372,7 +373,9 @@ const BusinessProfile = () => {
     );
 
   return (
-    <div className="min-h-screen bg-[#f5f7f8] dark:bg-[#0f1118] p-4 md:p-6">
+    <>
+      <SEO title="Business Profile" noindex />
+      <div className="min-h-screen bg-[#f5f7f8] dark:bg-[#0f1118] p-4 md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('business_profile.title')}</h1>
@@ -405,13 +408,13 @@ const BusinessProfile = () => {
 
             <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('business_profile.upload_space_photos')}</p>
                   <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                     {t('business_profile.space_photos_desc')}
                   </p>
                 </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#4a90b0] px-4 py-2 text-sm font-semibold text-white">
+                <label className="inline-flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-[#4a90b0] px-4 py-2 text-sm font-semibold text-white">
                   <CameraIcon className="h-4 w-4" />
                   {t('business_profile.add_photos')}
                   <input
@@ -435,13 +438,13 @@ const BusinessProfile = () => {
 
             <div className="mt-6 rounded-3xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 p-4">
               <div className="flex items-center justify-between gap-4">
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('business_profile.upload_portfolio_photos')}</p>
                   <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                     {t('business_profile.portfolio_photos_desc')}
                   </p>
                 </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#111827] px-4 py-2 text-sm font-semibold text-white">
+                <label className="inline-flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-[#111827] px-4 py-2 text-sm font-semibold text-white">
                   <CameraIcon className="h-4 w-4" />
                   {t('business_profile.add_photos')}
                   <input
@@ -640,6 +643,7 @@ const BusinessProfile = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -157,7 +158,9 @@ const CustomerProfile = () => {
   const initials = [formData.first_name[0], formData.last_name[0]].filter(Boolean).join('').toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
+    <>
+      <SEO title="My Profile" noindex />
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0f1118]">
       {/* Top bar */}
       <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-5">
         <div className="mx-auto max-w-4xl">
@@ -361,6 +364,7 @@ const CustomerProfile = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -36,9 +36,9 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 dark:bg-gray-800 text-white border-t border-gray-200 dark:border-gray-700">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8">
           {/* Logo and Description */}
-          <div className="col-span-1 lg:col-span-2">
+          <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <CalendarIcon className="h-8 w-8 text-primary-400" />
               <span className="text-2xl font-bold">Reserva</span>
@@ -98,7 +98,7 @@ const Footer = () => {
 
         {/* Contact Info */}
         <div className="mt-8 pt-8 border-t border-gray-800 dark:border-gray-600">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div className="flex items-center space-x-3 min-w-0">
               <EnvelopeIcon className="h-5 w-5 flex-shrink-0 text-primary-400" />
               <a
