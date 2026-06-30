@@ -515,20 +515,20 @@ const BookAppointment = () => {
   return (
     <div className="min-h-screen bg-[#fbfbfa] dark:bg-[#0f1118] overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
       {showConfirmation && confirmedBooking ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-4">
-          <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 bg-white p-6 text-center shadow-xl sm:p-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 dark:bg-black/70 p-4">
+          <div className="relative w-full max-w-xl rounded-[28px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center shadow-xl sm:p-8">
             <button
               type="button"
               onClick={handleClose}
-              className="absolute right-6 top-6 text-gray-500"
+              className="absolute right-6 top-6 text-gray-500 dark:text-slate-400"
             >
               <XMarkIcon className="h-8 w-8" />
             </button>
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
-              <CheckIcon className="h-10 w-10 text-emerald-600" strokeWidth={2.5} />
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30">
+              <CheckIcon className="h-10 w-10 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
             </div>
-            <h2 className="mt-8 text-2xl md:text-3xl font-bold text-gray-900">{t('book_appointment.booking_confirmed')}</h2>
-            <p className="mt-4 text-base md:text-lg text-gray-600">
+            <h2 className="mt-8 text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('book_appointment.booking_confirmed')}</h2>
+            <p className="mt-4 text-base md:text-lg text-gray-600 dark:text-slate-300">
               {format(parseISO(confirmedBooking.date), 'EEEE, dd MMM yyyy', { locale: dfLocale })} {t('book_appointment.at_time')}{' '}
               {formatSlotTime(confirmedBooking.time)}
             </p>
@@ -545,12 +545,12 @@ const BookAppointment = () => {
 
       {showDiscardModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
-          <div className="w-full max-w-sm rounded-[24px] bg-white p-5 shadow-xl sm:max-w-2xl sm:p-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
+          <div className="w-full max-w-sm rounded-[24px] bg-white dark:bg-slate-800 p-5 shadow-xl sm:max-w-2xl sm:p-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-300 sm:h-24 sm:w-24">
               <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">{t('book_appointment.discard_booking')}</h2>
-            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 dark:text-white sm:mt-6 sm:text-3xl">{t('book_appointment.discard_booking')}</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 dark:text-slate-300 sm:mt-4 sm:text-lg">
               {t('book_appointment.discard_confirm')}
             </p>
             <div className="mt-6 space-y-3">
@@ -564,7 +564,7 @@ const BookAppointment = () => {
               <button
                 type="button"
                 onClick={() => setShowDiscardModal(false)}
-                className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg"
+                className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 px-6 py-3 text-base font-semibold text-gray-900 dark:text-slate-200 sm:py-4 sm:text-lg"
               >
                 {t('book_appointment.continue_booking')}
               </button>

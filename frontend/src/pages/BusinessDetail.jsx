@@ -413,7 +413,7 @@ const BusinessDetail = () => {
   const businessHeroSection = !hasBookingDraftForBusiness ? (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
       {/* 2×2 photo grid */}
-      <div className="grid grid-cols-2 gap-2 bg-white p-2">
+      <div className="grid grid-cols-2 gap-2 bg-white dark:bg-slate-800 p-2">
         {spaceGallery.length > 0 ? (
           spaceGallery.slice(0, 4).map((image, index) => {
             const isOddLast = spaceGallery.slice(0,4).length % 2 === 1 && index === spaceGallery.slice(0,4).length - 1;
@@ -422,14 +422,14 @@ const BusinessDetail = () => {
                 key={`${image}-${index}-space`}
                 type="button"
                 onClick={() => openGalleryAt(index, 'space')}
-                className={`group relative overflow-hidden rounded-lg bg-gray-100 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
+                className={`group relative overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-700 ${isOddLast ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
               >
                 <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
               </button>
             );
           })
         ) : (
-          <div className="col-span-2 aspect-[2/1] rounded-lg bg-gray-100" />
+          <div className="col-span-2 aspect-[2/1] rounded-lg bg-gray-100 dark:bg-slate-700" />
         )}
       </div>
 
@@ -442,7 +442,7 @@ const BusinessDetail = () => {
         {businessReviewStats.reviewCount > 0 && (
           <div className="mt-3 flex items-center gap-2 text-xs md:text-sm">
             <span className="text-amber-400">★</span>
-            <span className="font-semibold text-[#1f1f1f]">{businessReviewStats.averageRating.toFixed(1)}</span>
+            <span className="font-semibold text-[#1f1f1f] dark:text-white">{businessReviewStats.averageRating.toFixed(1)}</span>
             <span className="text-slate-400">({t('business_detail.review_count', { count: businessReviewStats.reviewCount })})</span>
           </div>
         )}
@@ -458,7 +458,7 @@ const BusinessDetail = () => {
                 key={`${image}-${index}-portfolio`}
                 type="button"
                 onClick={() => openGalleryAt(index, 'portfolio')}
-                className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"
+                className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-700"
               >
                 <img src={image} alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" onError={(e) => { e.target.closest('button').style.display = 'none'; }} />
               </button>
@@ -842,29 +842,29 @@ const BusinessDetail = () => {
 
       {/* Gallery lightbox */}
       {activeGalleryIndex !== null ? (
-        <div className="fixed inset-0 z-[1001] bg-white" onClick={closeGallery}>
+        <div className="fixed inset-0 z-[1001] bg-white dark:bg-[#0f1118]" onClick={closeGallery}>
           <div className="flex h-full flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
+            <div className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-4 sm:px-6">
               <div className="mx-auto grid w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4">
-                <button type="button" onClick={closeGallery} className="inline-flex items-center gap-2 text-gray-900">
+                <button type="button" onClick={closeGallery} className="inline-flex items-center gap-2 text-gray-900 dark:text-white">
                   <ArrowLeftIcon className="h-6 w-6" />
                 </button>
                 <div className="flex items-center justify-center gap-3">
-                  <button type="button" onClick={() => { setActiveGallerySection('space'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'space' ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]' : 'bg-[#f1f1f1] text-[#1f1f1f]'}`}>
+                  <button type="button" onClick={() => { setActiveGallerySection('space'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'space' ? 'border border-[#4a90b0] bg-[#eef7fb] dark:bg-[#1e3a4a] text-[#1f1f1f] dark:text-white' : 'bg-[#f1f1f1] dark:bg-slate-700 text-[#1f1f1f] dark:text-slate-200'}`}>
                     {t('business_detail.the_space')} ({spaceGallery.length})
                   </button>
-                  <button type="button" onClick={() => { setActiveGallerySection('portfolio'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'portfolio' ? 'border border-[#4a90b0] bg-[#eef7fb] text-[#1f1f1f]' : 'bg-[#f1f1f1] text-[#1f1f1f]'}`}>
+                  <button type="button" onClick={() => { setActiveGallerySection('portfolio'); setActiveGalleryIndex(0); }} className={`rounded-lg px-4 py-2 text-sm font-medium ${activeGallerySection === 'portfolio' ? 'border border-[#4a90b0] bg-[#eef7fb] dark:bg-[#1e3a4a] text-[#1f1f1f] dark:text-white' : 'bg-[#f1f1f1] dark:bg-slate-700 text-[#1f1f1f] dark:text-slate-200'}`}>
                     {t('business_detail.portfolio')} ({portfolioGallery.length})
                   </button>
                 </div>
                 <div />
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto bg-[#fafafa] px-4 py-6 sm:px-6">
+            <div className="flex-1 overflow-y-auto bg-[#fafafa] dark:bg-[#0f1118] px-4 py-6 sm:px-6">
               {activeGallerySection === 'portfolio' ? (
                 <div className="mx-auto max-w-7xl [column-count:2] md:[column-count:3] [column-gap:8px]">
                   {orderedGalleryImages.map((image, index) => (
-                    <div key={`${image}-${index}-portfolio`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white shadow-sm">
+                    <div key={`${image}-${index}-portfolio`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white dark:bg-slate-800 shadow-sm">
                       <img src={image} alt={`${publicBusinessName || 'Business'} portfolio ${index + 1}`} className="h-auto w-full object-cover" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
                     </div>
                   ))}
@@ -872,7 +872,7 @@ const BusinessDetail = () => {
               ) : (
                 <div className="mx-auto max-w-7xl [column-count:2] md:[column-count:3] [column-gap:8px]">
                   {orderedGalleryImages.map((image, index) => (
-                    <div key={`${image}-${index}-space`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white shadow-sm">
+                    <div key={`${image}-${index}-space`} className="mb-2 break-inside-avoid overflow-hidden rounded-[24px] bg-white dark:bg-slate-800 shadow-sm">
                       <img src={image} alt={`${publicBusinessName || 'Business'} space ${index + 1}`} className="h-auto w-full object-cover" onError={(e) => { e.target.closest('div').style.display = 'none'; }} />
                     </div>
                   ))}
