@@ -726,7 +726,7 @@ const BookAppointment = () => {
               </div>
             </div>
           ) : (
-            <div className="mt-8 flex gap-4 overflow-x-auto pb-3">
+            <div className="mt-8 grid grid-cols-7 gap-1 sm:flex sm:gap-4 sm:overflow-x-auto pb-3">
               {visibleDays.map((day) => {
                 const active = isSameDay(day, selectedDateObject);
                 return (
@@ -734,10 +734,10 @@ const BookAppointment = () => {
                     key={format(day, 'yyyy-MM-dd')}
                     type="button"
                     onClick={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
-                    className="min-w-[76px] text-center"
+                    className="text-center sm:min-w-[76px]"
                   >
                     <div
-                      className={`mx-auto flex h-11 w-11 md:h-14 md:w-14 lg:h-16 lg:w-16 items-center justify-center rounded-full border text-sm md:text-base lg:text-xl font-medium transition ${
+                      className={`mx-auto flex h-10 w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 items-center justify-center rounded-full border text-sm sm:text-base lg:text-xl font-medium transition ${
                         active
                           ? 'border-[#4a90b0] bg-[#4a90b0] text-white'
                           : 'border-gray-200 dark:border-slate-600 bg-[#f2f2f1] dark:bg-slate-700 text-gray-900 dark:text-slate-200'
@@ -745,10 +745,10 @@ const BookAppointment = () => {
                     >
                       <span className="relative">
                         {format(day, 'd')}
-                        <span className={`absolute -bottom-2 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
+                        <span className={`absolute -bottom-2 left-1/2 h-1.5 w-6 sm:w-8 -translate-x-1/2 rounded-full ${active ? 'bg-[#d9eff8]' : 'bg-[#7cae95]'}`} />
                       </span>
                     </div>
-                    <div className="mt-2 text-sm md:text-base text-gray-800 dark:text-slate-300">{format(day, 'EEE', { locale: dfLocale })}</div>
+                    <div className="mt-2 text-xs sm:text-base text-gray-800 dark:text-slate-300">{format(day, 'EEE', { locale: dfLocale })}</div>
                   </button>
                 );
               })}
@@ -764,7 +764,7 @@ const BookAppointment = () => {
                   <p className="mb-4 text-center text-sm text-gray-500 dark:text-slate-400">
                     {bucketLabel} ({groupedSlots[bucket].length})
                   </p>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-1 sm:gap-3">
                     {groupedSlots[bucket].length > 0 ? (
                       groupedSlots[bucket].map((slot) => {
                         const active = selectedTime === slot.start_time;
@@ -773,7 +773,7 @@ const BookAppointment = () => {
                             key={`${slot.date}-${slot.start_time}`}
                             type="button"
                             onClick={() => setSelectedTime(slot.start_time)}
-                            className={`w-full rounded-full px-4 py-3 text-sm md:text-base font-semibold transition ${
+                            className={`w-full rounded-full px-2 py-2.5 sm:px-4 sm:py-3 text-sm md:text-base font-semibold transition ${
                               active
                                 ? 'border-2 border-[#4a90b0] bg-[#dcedf6] dark:bg-[#1e3a4a] text-gray-900 dark:text-white'
                                 : 'bg-[#efefee] dark:bg-slate-700 text-gray-900 dark:text-slate-200'
@@ -784,7 +784,7 @@ const BookAppointment = () => {
                         );
                       })
                     ) : (
-                      <div className="rounded-[24px] bg-[#f5f5f4] dark:bg-slate-700/50 px-6 py-8 text-center text-sm text-gray-400 dark:text-slate-500">
+                      <div className="col-span-3 sm:col-span-1 rounded-[24px] bg-[#f5f5f4] dark:bg-slate-700/50 px-6 py-8 text-center text-sm text-gray-400 dark:text-slate-500">
                         {t('book_appointment.no_slots')}
                       </div>
                     )}
