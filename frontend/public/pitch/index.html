@@ -1,0 +1,727 @@
+<!-- Reserva Pitch Deck — Road to Battlefield 2026 — reserva.services -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reserva — Pitch Deck · Road to Battlefield 2026</title>
+  <meta name="description" content="Reserva — The Online Booking Platform for Service Businesses in Central Asia. Seed pitch deck." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --navy: #0D1B3E;
+      --navy-2: #122452;
+      --teal: #0A7E8C;
+      --teal-light: #7fd4dd;
+      --gold: #F59E0B;
+      --white: #FFFFFF;
+      --bg-light: #F4F8FA;
+      --ink: #1b2233;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--ink);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Deck shell ---------- */
+    #deck { position: relative; width: 100vw; height: 100vh; }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4.5vh 6vw 9vh;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(24px) scale(0.99);
+      transition: opacity .55s ease, transform .55s ease, visibility .55s;
+      overflow: hidden;
+    }
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      z-index: 2;
+    }
+
+    .slide.dark  { background: var(--navy); color: var(--white); }
+    .slide.darker{ background: radial-gradient(1200px 600px at 80% -10%, #16306b 0%, var(--navy) 55%); color: var(--white); }
+    .slide.light { background: var(--bg-light); color: var(--ink); }
+
+    .slide-inner { width: 100%; max-width: 1180px; margin: 0 auto; }
+
+    /* ---------- Staggered entrance ---------- */
+    .reveal { opacity: 0; transform: translateY(22px); }
+    .slide.active .reveal {
+      animation: rise .65s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+    .slide.active .reveal:nth-child(1){ animation-delay:.12s }
+    .d1{ animation-delay:.10s !important } .d2{ animation-delay:.20s !important }
+    .d3{ animation-delay:.30s !important } .d4{ animation-delay:.40s !important }
+    .d5{ animation-delay:.50s !important } .d6{ animation-delay:.60s !important }
+    .d7{ animation-delay:.70s !important } .d8{ animation-delay:.80s !important }
+
+    /* ---------- Typography helpers ---------- */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .55rem;
+      font-size: .82rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--teal);
+    }
+    .slide.dark .eyebrow, .slide.darker .eyebrow { color: var(--teal-light); }
+    h1.title { font-size: clamp(2.4rem, 5.2vw, 4.2rem); font-weight: 900; line-height: 1.04; letter-spacing: -.02em; }
+    h2.heading { font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 800; line-height: 1.08; letter-spacing: -.015em; }
+    .lead { font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.55; opacity: .85; }
+    .gold { color: var(--gold); }
+    .teal { color: var(--teal); }
+    .muted { opacity: .72; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .5rem 1.1rem; border-radius: 999px;
+      font-weight: 700; font-size: .9rem;
+      background: var(--gold); color: #3a2700;
+      box-shadow: 0 8px 24px rgba(245,158,11,.28);
+    }
+
+    /* ---------- Cover (slide 1) ---------- */
+    .cover-circles span {
+      position: absolute; border-radius: 50%;
+      background: var(--teal); opacity: .14; pointer-events: none;
+    }
+    .cover-circles .c1 { width: 620px; height: 620px; top: -260px; right: -160px; opacity: .12; }
+    .cover-circles .c2 { width: 360px; height: 360px; top: -60px;  right: 120px; opacity: .18; }
+    .cover-circles .c3 { width: 180px; height: 180px; top: 220px;  right: -40px; opacity: .22; }
+    .wordmark {
+      font-size: clamp(3.6rem, 9vw, 7rem); font-weight: 900;
+      letter-spacing: -.03em; line-height: 1; color: var(--white);
+      display: inline-flex; align-items: flex-start; gap: .25rem;
+    }
+    .wordmark .dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--gold); margin-top: .6rem; }
+    .footer-bar {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      background: var(--teal); color: #eafafc;
+      display: flex; align-items: center; justify-content: center; gap: 2.2rem;
+      flex-wrap: wrap;
+      padding: .95rem 6vw; font-weight: 600; font-size: .95rem;
+      z-index: 3;
+    }
+    .footer-bar a { color: #fff; text-decoration: none; }
+    .footer-bar a:hover { text-decoration: underline; }
+
+    /* ---------- Cards ---------- */
+    .grid { display: grid; gap: 1.3rem; }
+    .grid-2 { grid-template-columns: repeat(2,1fr); }
+    .grid-3 { grid-template-columns: repeat(3,1fr); }
+    .grid-4 { grid-template-columns: repeat(4,1fr); }
+
+    .card {
+      background: #fff; border-radius: 18px; padding: 1.6rem 1.5rem;
+      box-shadow: 0 10px 34px rgba(13,27,62,.08);
+      border: 1px solid rgba(13,27,62,.06);
+    }
+    .card .ic {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: grid; place-items: center; font-size: 1.35rem;
+      background: rgba(10,126,140,.10); color: var(--teal); margin-bottom: 1rem;
+    }
+    .card h3 { font-size: 1.18rem; font-weight: 800; margin-bottom: .4rem; }
+    .card p { font-size: .96rem; line-height: 1.5; color: #50607a; }
+
+    /* solution cards (dark) */
+    .feature {
+      background: var(--navy-2); border: 1px solid rgba(127,212,221,.16);
+      border-radius: 18px; padding: 1.5rem;
+    }
+    .feature .ic {
+      width: 54px; height: 54px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 1.3rem;
+      background: rgba(10,126,140,.28); color: var(--teal-light); margin-bottom: .95rem;
+    }
+    .feature h3 { color: #fff; font-size: 1.1rem; font-weight: 800; margin-bottom: .35rem; }
+    .feature p { color: var(--teal-light); opacity: .82; font-size: .92rem; line-height: 1.45; }
+
+    /* stat boxes */
+    .stat {
+      border-radius: 18px; padding: 1.7rem 1.4rem; text-align: center; color: #fff;
+    }
+    .stat.teal-bg { background: var(--teal); }
+    .stat.navy-bg { background: var(--navy); border: 1px solid rgba(127,212,221,.25); }
+    .stat .num { font-size: clamp(2.1rem, 4vw, 3rem); font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat .lbl { margin-top: .55rem; font-size: .92rem; opacity: .9; font-weight: 600; }
+
+    .tam-row {
+      display: flex; align-items: center; gap: 1rem;
+      background: #fff; border-radius: 14px; padding: .95rem 1.3rem;
+      border: 1px solid rgba(13,27,62,.07); box-shadow: 0 6px 18px rgba(13,27,62,.05);
+    }
+    .tam-row .tag { font-weight: 900; color: var(--teal); width: 64px; font-size: 1.05rem; }
+    .tam-row .bar { height: 12px; border-radius: 999px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .tam-row .val { margin-left: auto; font-weight: 800; color: var(--navy); font-size: 1.1rem; }
+    .tam-row .desc { color:#50607a; font-size:.86rem; }
+
+    /* steps */
+    .step {
+      position: relative; background:#fff; border-radius:18px; padding:1.6rem 1.3rem;
+      box-shadow:0 10px 30px rgba(13,27,62,.08); border:1px solid rgba(13,27,62,.06); text-align:center;
+    }
+    .step .badge {
+      position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+      width:42px; height:42px; border-radius:50%; background:var(--gold); color:#3a2700;
+      font-weight:900; display:grid; place-items:center; box-shadow:0 8px 18px rgba(245,158,11,.35);
+    }
+    .step .ic { color:var(--teal); font-size:2rem; margin:1.1rem 0 .8rem; }
+    .step h3 { font-size:1.08rem; font-weight:800; margin-bottom:.35rem; }
+    .step p { font-size:.9rem; color:#50607a; line-height:1.45; }
+    .step-arrow { display:grid; place-items:center; color:var(--teal); font-size:1.3rem; }
+
+    /* traction panels */
+    .panel { border-radius:18px; padding:1.7rem; height:100%; }
+    .panel.left { background:#fff; box-shadow:0 10px 30px rgba(13,27,62,.08); border:1px solid rgba(13,27,62,.06); }
+    .milestone { display:flex; gap:.8rem; align-items:flex-start; padding:.55rem 0; }
+    .milestone i { color:#16a34a; margin-top:.15rem; }
+    .milestone span { font-size:1rem; font-weight:600; color:#2b3650; }
+    .tech-box { background:var(--navy-2); border:1px solid rgba(127,212,221,.16); border-radius:14px; padding:1.1rem 1.15rem; }
+    .tech-box h4 { color:var(--teal-light); font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; font-weight:800; margin-bottom:.5rem; }
+    .tech-box p { color:#dfeef0; font-size:.9rem; line-height:1.5; }
+
+    /* pricing */
+    .price {
+      border-radius:20px; padding:1.8rem 1.5rem; color:#fff; display:flex; flex-direction:column; height:100%;
+    }
+    .price.free { background:#3a4666; }
+    .price.pro  { background:var(--teal); transform:scale(1.04); box-shadow:0 20px 50px rgba(10,126,140,.35); position:relative; z-index:2; }
+    .price.biz  { background:linear-gradient(160deg,#f59e0b,#d97706); }
+    .price .plan { font-size:1.15rem; font-weight:800; letter-spacing:.02em; }
+    .price .amt { font-size:2.6rem; font-weight:900; margin:.3rem 0 .1rem; }
+    .price .amt small { font-size:1rem; font-weight:600; opacity:.85; }
+    .price ul { list-style:none; margin-top:1rem; display:flex; flex-direction:column; gap:.6rem; }
+    .price li { display:flex; gap:.6rem; align-items:flex-start; font-size:.95rem; opacity:.96; }
+    .price li i { margin-top:.2rem; opacity:.9; }
+    .price .tagbest { position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--gold); color:#3a2700; font-weight:800; font-size:.72rem; padding:.25rem .8rem; border-radius:999px; letter-spacing:.05em; }
+
+    /* roadmap */
+    .phase { border-radius:16px; padding:1.4rem 1.3rem; color:#fff; height:100%; }
+    .phase.t { background:var(--teal); }
+    .phase.n { background:var(--navy); border:1px solid rgba(127,212,221,.22); }
+    .phase .q { font-weight:900; color:var(--gold); font-size:1.05rem; }
+    .phase h3 { font-size:1.12rem; font-weight:800; margin:.25rem 0 .5rem; }
+    .phase p { font-size:.9rem; line-height:1.45; opacity:.9; }
+    .ask-box {
+      background:var(--teal); border-radius:18px; padding:1.4rem 1.6rem; color:#fff;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .ask-box .ask-ic { width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:1.6rem;color:var(--gold); }
+    .alloc { display:flex; gap:1.6rem; flex-wrap:wrap; margin-left:auto; }
+    .alloc div b { color:var(--gold); font-size:1.45rem; font-weight:900; display:block; }
+    .alloc div span { font-size:.82rem; opacity:.9; }
+
+    /* why us */
+    .founder { display:flex; gap:1.1rem; align-items:center; }
+    .founder .av { width:64px;height:64px;border-radius:16px;background:rgba(10,126,140,.3);display:grid;place-items:center;color:var(--teal-light);font-size:1.7rem; }
+    .adv { display:flex; gap:.9rem; align-items:flex-start; padding:.7rem 0; }
+    .adv i { color:var(--gold); font-size:1.15rem; margin-top:.2rem; }
+    .adv b { color:#fff; font-weight:700; }
+    .adv span { color:var(--teal-light); opacity:.85; }
+
+    .link { color:inherit; text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--gold); }
+
+    /* ---------- Controls ---------- */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, var(--teal), var(--gold));
+      z-index: 50; transition: width .45s ease;
+    }
+    .nav-btn {
+      position: fixed; bottom: 22px; z-index: 50;
+      width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
+      background: rgba(255,255,255,.14); color: #fff; backdrop-filter: blur(6px);
+      font-size: 1rem; display: grid; place-items: center;
+      transition: background .2s, transform .2s; border:1px solid rgba(255,255,255,.18);
+    }
+    .nav-btn:hover { background: var(--gold); color:#3a2700; transform: translateY(-2px); }
+    .slide.light ~ #ctrl .nav-btn { } /* fallback */
+    #prevBtn { right: 84px; }
+    #nextBtn { right: 28px; }
+    #counter {
+      position: fixed; bottom: 30px; left: 28px; z-index: 50;
+      font-weight: 700; font-size: .9rem; letter-spacing:.04em;
+      color: #fff; background: rgba(0,0,0,.28); padding:.35rem .75rem; border-radius:999px; backdrop-filter: blur(6px);
+    }
+    #dots { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 50; display:flex; gap:.5rem; }
+    #dots button { width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.35);padding:0;transition:all .25s; }
+    #dots button.on { background:var(--gold); width:24px; border-radius:6px; }
+    .hint {
+      position: fixed; top: 18px; right: 24px; z-index: 50;
+      font-size: .78rem; color: rgba(255,255,255,.65); font-weight:600;
+      background: rgba(0,0,0,.25); padding:.3rem .7rem; border-radius:999px;
+    }
+
+    /* control color adapts on light slides handled via JS class on body */
+    body.on-light .nav-btn { background: rgba(13,27,62,.10); color: var(--navy); border-color: rgba(13,27,62,.12); }
+    body.on-light .nav-btn:hover { background: var(--gold); color:#3a2700; }
+    body.on-light #counter { background: rgba(13,27,62,.10); color: var(--navy); }
+    body.on-light .hint { background: rgba(13,27,62,.08); color: rgba(13,27,62,.6); }
+    body.on-light #dots button { background: rgba(13,27,62,.22); }
+    body.on-light #dots button.on { background: var(--teal); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1100px) {
+      .grid-3, .grid-4 { grid-template-columns: repeat(2,1fr); }
+      .price.pro { transform:none; }
+    }
+    @media (max-width: 720px) {
+      .slide { padding: 5vh 6vw 11vh; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .step-arrow { display:none; }
+      .alloc { margin-left:0; }
+    }
+
+    /* ---------- Print / PDF ---------- */
+    @media print {
+      html, body { overflow: visible; height:auto; background:#fff; }
+      #progress, .nav-btn, #counter, #dots, .hint { display:none !important; }
+      #deck { height:auto; }
+      .slide {
+        position: relative !important; opacity:1 !important; visibility:visible !important;
+        transform:none !important; page-break-after: always; break-after: page;
+        width:100%; height:100vh; box-shadow:none;
+      }
+      .slide .reveal { opacity:1 !important; transform:none !important; animation:none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress"></div>
+  <div class="hint"><i class="fa-regular fa-keyboard"></i> Use ← → or Space</div>
+
+  <div id="deck">
+
+    <!-- ============ SLIDE 1 · COVER ============ -->
+    <section class="slide darker active" data-theme="dark">
+      <div class="cover-circles">
+        <span class="c1"></span><span class="c2"></span><span class="c3"></span>
+      </div>
+      <div class="slide-inner" style="text-align:left;">
+        <div class="reveal d1 pill" style="margin-bottom:1.8rem;"><i class="fa-solid fa-trophy"></i> Road to Battlefield 2026</div>
+        <div class="reveal d2 wordmark">RESERVA<span class="dot"></span></div>
+        <p class="reveal d3 lead" style="max-width:680px; margin-top:1.4rem; font-size:clamp(1.15rem,2vw,1.6rem); opacity:.95;">
+          The Online Booking Platform for <span class="gold">Service Businesses</span> in Central Asia.
+        </p>
+        <p class="reveal d4 muted" style="margin-top:1rem; max-width:620px;">
+          24/7 self-booking · Telegram reminders · Trilingual UX — built for the 4M+ businesses still running on WhatsApp and phone calls.
+        </p>
+      </div>
+      <div class="footer-bar reveal d5">
+        <span><i class="fa-solid fa-envelope"></i> makhmudjon0505@gmail.com</span>
+        <a href="https://reserva.services" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> reserva.services</a>
+        <span><i class="fa-solid fa-user"></i> Abrorbek Ibaydullaev · Founder</span>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 2 · PROBLEM ============ -->
+    <section class="slide light" data-theme="light">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-triangle-exclamation"></i> The Problem</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 .6rem;">Service businesses run on <span class="teal">chaos</span>.</h2>
+        <p class="reveal d3 lead" style="max-width:760px; margin-bottom:2rem;">
+          4M+ salons, barbershops, tutors and photographers across Central Asia manage every appointment by hand. There is no localized tool built for them.
+        </p>
+        <div class="grid grid-4">
+          <div class="reveal d3 card">
+            <div class="ic"><i class="fa-brands fa-whatsapp"></i></div>
+            <h3>Bookings lost in chat</h3>
+            <p>Appointments live in WhatsApp threads and phone calls — easily forgotten, double-booked, or never confirmed.</p>
+          </div>
+          <div class="reveal d4 card">
+            <div class="ic"><i class="fa-solid fa-store-slash"></i></div>
+            <h3>No digital presence</h3>
+            <p>Customers can't find or book online. The business is invisible outside word-of-mouth.</p>
+          </div>
+          <div class="reveal d5 card">
+            <div class="ic"><i class="fa-solid fa-user-clock"></i></div>
+            <h3>Costly no-shows</h3>
+            <p>No automated reminders means empty chairs, wasted hours and lost daily revenue.</p>
+          </div>
+          <div class="reveal d6 card">
+            <div class="ic"><i class="fa-solid fa-language"></i></div>
+            <h3>No localized tool</h3>
+            <p>Calendly and Booksy don't support Uzbek or the local market. Owners are left with nothing that fits.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 3 · SOLUTION ============ -->
+    <section class="slide dark" data-theme="dark">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-bolt"></i> Our Solution</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 .6rem; color:#fff;">One platform. Booking handled <span class="gold">end-to-end</span>.</h2>
+        <p class="reveal d3 lead" style="max-width:760px; margin-bottom:2rem; color:var(--teal-light);">
+          Reserva gives every business a bookable profile and automates the entire appointment lifecycle.
+        </p>
+        <div class="grid grid-3">
+          <div class="reveal d3 feature">
+            <div class="ic"><i class="fa-solid fa-calendar-check"></i></div>
+            <h3>24/7 Self-Booking</h3>
+            <p>Customers book any time without a call — real-time availability, instant confirmation.</p>
+          </div>
+          <div class="reveal d4 feature">
+            <div class="ic"><i class="fa-solid fa-id-card"></i></div>
+            <h3>Business Profiles</h3>
+            <p>A shareable page with services, prices, hours, gallery and reviews.</p>
+          </div>
+          <div class="reveal d5 feature">
+            <div class="ic"><i class="fa-brands fa-telegram"></i></div>
+            <h3>Auto Reminders</h3>
+            <p>Telegram bot notifications confirm bookings and cut no-shows automatically.</p>
+          </div>
+          <div class="reveal d6 feature">
+            <div class="ic"><i class="fa-solid fa-language"></i></div>
+            <h3>Uzbek · Russian · EN</h3>
+            <p>Fully trilingual UX built for how the region actually speaks and works.</p>
+          </div>
+          <div class="reveal d7 feature">
+            <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Security Built-In</h3>
+            <p>JWT + OTP + RBAC + reCAPTCHA protect every account and transaction.</p>
+          </div>
+          <div class="reveal d8 feature">
+            <div class="ic"><i class="fa-solid fa-chart-line"></i></div>
+            <h3>Analytics</h3>
+            <p>Owners see bookings, trends and customer activity at a glance.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 4 · MARKET ============ -->
+    <section class="slide light" data-theme="light">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-chart-pie"></i> Market Opportunity</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 1.4rem;">A large, underserved, fast-digitizing market.</h2>
+        <div class="grid grid-3" style="margin-bottom:1.6rem;">
+          <div class="reveal d3 stat teal-bg">
+            <div class="num">4M+</div>
+            <div class="lbl">Service businesses across Central Asia</div>
+          </div>
+          <div class="reveal d4 stat navy-bg">
+            <div class="num">$150M</div>
+            <div class="lbl">VC funding into the region · H1 2024</div>
+          </div>
+          <div class="reveal d5 stat teal-bg">
+            <div class="num">36M</div>
+            <div class="lbl">Population of Uzbekistan — beachhead market</div>
+          </div>
+        </div>
+        <div class="grid" style="gap:.75rem;">
+          <div class="reveal d6 tam-row">
+            <span class="tag">TAM</span><span class="desc">Total service-booking market, Central Asia</span>
+            <div class="bar" style="width:42%;"></div><span class="val">$2.5B</span>
+          </div>
+          <div class="reveal d7 tam-row">
+            <span class="tag">SAM</span><span class="desc">Digitizable SMBs, Uzbekistan + neighbors</span>
+            <div class="bar" style="width:24%;"></div><span class="val">$400M</span>
+          </div>
+          <div class="reveal d8 tam-row">
+            <span class="tag">SOM</span><span class="desc">Reachable in first 3 years</span>
+            <div class="bar" style="width:9%;"></div><span class="val">$15M</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 5 · HOW IT WORKS ============ -->
+    <section class="slide dark" data-theme="dark">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-diagram-project"></i> How It Works</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 2.2rem; color:#fff;">From sign-up to a confirmed, reminded booking.</h2>
+        <div style="display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; align-items:center; gap:.6rem;">
+          <div class="reveal d3 step">
+            <div class="badge">1</div>
+            <div class="ic"><i class="fa-solid fa-store"></i></div>
+            <h3>Business Signs Up</h3>
+            <p>Create a profile, add services, prices and working hours in minutes.</p>
+          </div>
+          <div class="reveal d4 step-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+          <div class="reveal d4 step">
+            <div class="badge">2</div>
+            <div class="ic"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3>Customers Discover</h3>
+            <p>Clients find the page and pick an open slot — no phone call needed.</p>
+          </div>
+          <div class="reveal d5 step-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+          <div class="reveal d5 step">
+            <div class="badge">3</div>
+            <div class="ic"><i class="fa-solid fa-circle-check"></i></div>
+            <h3>Automated Confirmation</h3>
+            <p>The booking is instantly confirmed for both sides — no manual back-and-forth.</p>
+          </div>
+          <div class="reveal d6 step-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+          <div class="reveal d6 step">
+            <div class="badge">4</div>
+            <div class="ic"><i class="fa-solid fa-bell"></i></div>
+            <h3>Smart Reminders</h3>
+            <p>Telegram reminders reduce no-shows and keep the schedule full.</p>
+          </div>
+        </div>
+        <div class="reveal d7" style="text-align:center; margin-top:2.4rem;">
+          <a href="https://reserva.services" target="_blank" rel="noopener" class="pill" style="background:transparent;color:var(--gold);border:1.5px solid var(--gold);box-shadow:none;">
+            <i class="fa-solid fa-circle-play"></i> Live at reserva.services
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 6 · TRACTION & TECH ============ -->
+    <section class="slide light" data-theme="light">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-rocket"></i> Traction &amp; Technology</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 1.6rem;">A working MVP — shipped and deployed.</h2>
+        <div class="grid grid-2" style="align-items:stretch;">
+          <div class="reveal d3 panel left">
+            <h4 style="font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;font-size:.82rem;margin-bottom:.8rem;">Product Milestones</h4>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>Live MVP deployed at reserva.services</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>End-to-end booking flow working in production</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>Business profile pages with services &amp; gallery</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>Telegram bot reminders integrated</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>Trilingual UX (Uzbek / Russian / English)</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>JWT + OTP + RBAC authentication shipped</span></div>
+            <div class="milestone"><i class="fa-solid fa-circle-check"></i><span>Analytics dashboard for business owners</span></div>
+          </div>
+          <div class="reveal d4" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-content:stretch;">
+            <div class="tech-box">
+              <h4><i class="fa-solid fa-display"></i> Frontend</h4>
+              <p>React · Vite · i18n · Tailwind CSS</p>
+            </div>
+            <div class="tech-box">
+              <h4><i class="fa-solid fa-server"></i> Backend</h4>
+              <p>Django REST · JWT · OTP · RBAC</p>
+            </div>
+            <div class="tech-box">
+              <h4><i class="fa-solid fa-cloud"></i> Infrastructure</h4>
+              <p>Vercel · Railway · Supabase S3</p>
+            </div>
+            <div class="tech-box">
+              <h4><i class="fa-solid fa-lock"></i> Security</h4>
+              <p>CSPRNG · SHA-256 · reCAPTCHA v2</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 7 · BUSINESS MODEL ============ -->
+    <section class="slide dark" data-theme="dark">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-tags"></i> Business Model</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 1.6rem; color:#fff;">Freemium SaaS with a clear upgrade path.</h2>
+        <div class="grid grid-3" style="align-items:stretch;">
+          <div class="reveal d3 price free">
+            <div class="plan">Free</div>
+            <div class="amt">$0<small>/mo</small></div>
+            <p style="opacity:.85;font-size:.9rem;">Get online and take your first bookings.</p>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Business profile page</li>
+              <li><i class="fa-solid fa-check"></i> Up to 50 bookings / month</li>
+              <li><i class="fa-solid fa-check"></i> Telegram reminders</li>
+              <li><i class="fa-solid fa-check"></i> Trilingual UX</li>
+            </ul>
+          </div>
+          <div class="reveal d4 price pro">
+            <div class="tagbest">MOST POPULAR</div>
+            <div class="plan">Pro</div>
+            <div class="amt">$20<small>/mo</small></div>
+            <p style="opacity:.9;font-size:.9rem;">For growing businesses that need more.</p>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Unlimited bookings</li>
+              <li><i class="fa-solid fa-check"></i> Analytics dashboard</li>
+              <li><i class="fa-solid fa-check"></i> Custom branding</li>
+              <li><i class="fa-solid fa-check"></i> Priority support</li>
+            </ul>
+          </div>
+          <div class="reveal d5 price biz">
+            <div class="plan">Business</div>
+            <div class="amt">$50<small>/mo</small></div>
+            <p style="opacity:.92;font-size:.9rem;">Multi-location teams and franchises.</p>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Everything in Pro</li>
+              <li><i class="fa-solid fa-check"></i> Multiple staff &amp; locations</li>
+              <li><i class="fa-solid fa-check"></i> Role-based team access</li>
+              <li><i class="fa-solid fa-check"></i> API &amp; integrations</li>
+            </ul>
+          </div>
+        </div>
+        <p class="reveal d6" style="text-align:center; margin-top:1.4rem; font-style:italic; color:var(--teal-light); opacity:.85;">
+          Phase 2: a 2.5% transaction fee on in-app payments adds a usage-based revenue stream.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 8 · ROADMAP & THE ASK ============ -->
+    <section class="slide light" data-theme="light">
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-road"></i> Roadmap &amp; The Ask</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 1.5rem;">A clear path from launch to Series A.</h2>
+        <div class="grid grid-4" style="margin-bottom:1.5rem;">
+          <div class="reveal d3 phase t">
+            <div class="q">Q3 2026</div>
+            <h3>Launch</h3>
+            <p>Public launch in Uzbekistan. Onboard first salons, barbershops &amp; tutors.</p>
+          </div>
+          <div class="reveal d4 phase t">
+            <div class="q">Q4 2026</div>
+            <h3>Revenue</h3>
+            <p>Convert to paid tiers. Roll out analytics &amp; Pro features.</p>
+          </div>
+          <div class="reveal d5 phase n">
+            <div class="q">Q1 2027</div>
+            <h3>Scale</h3>
+            <p>Mobile apps, in-app payments, expand to neighboring markets.</p>
+          </div>
+          <div class="reveal d6 phase n">
+            <div class="q">Q2 2027</div>
+            <h3>Series A</h3>
+            <p>Regional leadership across Central Asia, raise growth round.</p>
+          </div>
+        </div>
+        <div class="reveal d7 ask-box">
+          <div class="ask-ic"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div>
+            <div style="font-size:.85rem; opacity:.85; font-weight:600; text-transform:uppercase; letter-spacing:.1em;">The Ask</div>
+            <div style="font-size:2rem; font-weight:900;">$50,000 Seed</div>
+          </div>
+          <div class="alloc">
+            <div><b>40%</b><span>Product &amp; mobile dev</span></div>
+            <div><b>35%</b><span>Sales &amp; marketing · UZ</span></div>
+            <div><b>25%</b><span>Ops &amp; legal</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 9 · WHY NOW. WHY US. ============ -->
+    <section class="slide darker" data-theme="dark">
+      <div class="cover-circles"><span class="c1"></span><span class="c3"></span></div>
+      <div class="slide-inner">
+        <div class="reveal d1 eyebrow"><i class="fa-solid fa-star"></i> Why Now. Why Us.</div>
+        <h2 class="reveal d2 heading" style="margin:.7rem 0 1.6rem; color:#fff;">The market is digitizing — and we already shipped.</h2>
+        <div class="grid grid-2" style="align-items:center; gap:2.4rem;">
+          <div>
+            <div class="reveal d3 founder" style="margin-bottom:1.2rem;">
+              <div class="av"><i class="fa-solid fa-code"></i></div>
+              <div>
+                <div style="color:#fff; font-weight:800; font-size:1.25rem;">Abrorbek Ibaydullaev</div>
+                <div style="color:var(--teal-light); opacity:.85; font-size:.95rem;">Founder · Full-Stack Developer</div>
+              </div>
+            </div>
+            <p class="reveal d4 lead" style="color:#dfeef0;">
+              BSc Computer Science, University of Łódź (2026). 1.5 years in IT Support in Tashkent. Built the entire Reserva MVP solo with Claude Code — from Django REST APIs to the React frontend and Telegram bot.
+            </p>
+          </div>
+          <div>
+            <div class="reveal d4 adv"><i class="fa-solid fa-flag"></i><div><b>Local-first advantage.</b> <span>Trilingual, Telegram-native, built for how Central Asia actually books.</span></div></div>
+            <div class="reveal d5 adv"><i class="fa-solid fa-bolt"></i><div><b>Already live.</b> <span>A working MVP in production — not a concept on a slide.</span></div></div>
+            <div class="reveal d6 adv"><i class="fa-solid fa-gauge-high"></i><div><b>Lean &amp; fast.</b> <span>One founder shipping full-stack with AI — capital-efficient by design.</span></div></div>
+            <div class="reveal d7 adv"><i class="fa-solid fa-earth-asia"></i><div><b>Timing.</b> <span>$150M+ flowing into the region as SMBs go digital for the first time.</span></div></div>
+          </div>
+        </div>
+        <div class="reveal d8" style="text-align:center; margin-top:2.2rem;">
+          <a href="https://reserva.services" target="_blank" rel="noopener" class="pill" style="font-size:1.05rem; padding:.7rem 1.6rem;">
+            <i class="fa-solid fa-paper-plane"></i> Let's build it together — makhmudjon0505@gmail.com
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Controls -->
+  <div id="counter">1 / 9</div>
+  <div id="dots"></div>
+  <button id="prevBtn" class="nav-btn" aria-label="Previous slide"><i class="fa-solid fa-chevron-left"></i></button>
+  <button id="nextBtn" class="nav-btn" aria-label="Next slide"><i class="fa-solid fa-chevron-right"></i></button>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+      let idx = 0;
+
+      const progress = document.getElementById('progress');
+      const counter  = document.getElementById('counter');
+      const dotsWrap = document.getElementById('dots');
+
+      // build dots
+      slides.forEach((_, i) => {
+        const b = document.createElement('button');
+        b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        b.addEventListener('click', () => go(i));
+        dotsWrap.appendChild(b);
+      });
+      const dots = Array.from(dotsWrap.children);
+
+      function render() {
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+        counter.textContent = (idx + 1) + ' / ' + total;
+        progress.style.width = ((idx + 1) / total * 100) + '%';
+        // adapt control colors to slide theme
+        document.body.classList.toggle('on-light', slides[idx].dataset.theme === 'light');
+      }
+
+      function go(n) {
+        idx = Math.max(0, Math.min(total - 1, n));
+        // restart entrance animations
+        const active = slides[idx];
+        active.querySelectorAll('.reveal').forEach(el => {
+          el.style.animation = 'none';
+          void el.offsetWidth; // reflow
+          el.style.animation = '';
+        });
+        render();
+      }
+      const next = () => go(idx + 1);
+      const prev = () => go(idx - 1);
+
+      document.getElementById('nextBtn').addEventListener('click', next);
+      document.getElementById('prevBtn').addEventListener('click', prev);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+      });
+
+      // touch swipe
+      let sx = null;
+      document.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener('touchend', e => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+        sx = null;
+      }, { passive: true });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
