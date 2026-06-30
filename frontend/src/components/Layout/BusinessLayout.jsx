@@ -93,21 +93,21 @@ const QRModal = ({ user, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-slate-800 shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
           <div className="flex items-center gap-2">
             <QrCodeIcon className="h-5 w-5 text-blue-600" />
-            <h2 className="text-base font-bold text-slate-900">{t('layout.your_booking_qr')}</h2>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('layout.your_booking_qr')}</h2>
           </div>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
-            <XMarkIcon className="h-5 w-5 text-slate-500" />
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700">
+            <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
 
         {/* QR + label */}
         <div className="flex flex-col items-center px-6 py-8">
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border-2 border-slate-100 dark:border-slate-600 bg-white p-4 shadow-sm">
             <QRCodeCanvas
               id="business-qr-canvas"
               value={bookingUrl}
@@ -124,16 +124,16 @@ const QRModal = ({ user, onClose }) => {
           </div>
 
           <div className="mt-4 text-center">
-            <p className="text-base font-bold text-slate-900">{businessName}</p>
-            <p className="mt-1 text-xs text-slate-500">{t('layout.scan_to_book')}</p>
-            <p className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-1.5 text-[11px] text-slate-400 font-mono">
+            <p className="text-base font-bold text-slate-900 dark:text-white">{businessName}</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('layout.scan_to_book')}</p>
+            <p className="mt-2 break-all rounded-lg bg-slate-50 dark:bg-slate-700 px-3 py-1.5 text-[11px] text-slate-400 dark:text-slate-400 font-mono">
               {bookingUrl}
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="grid grid-cols-2 gap-3 border-t border-slate-100 px-6 pb-6 pt-4">
+        <div className="grid grid-cols-2 gap-3 border-t border-slate-100 dark:border-slate-700 px-6 pb-6 pt-4">
           <button
             onClick={handleDownload}
             className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
@@ -143,14 +143,14 @@ const QRModal = ({ user, onClose }) => {
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-600 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
             <PrinterIcon className="h-4 w-4" />
             {t('layout.print')}
           </button>
         </div>
 
-        <p className="pb-5 text-center text-xs text-slate-400">
+        <p className="pb-5 text-center text-xs text-slate-400 dark:text-slate-500">
           {t('layout.qr_print_hint')}
         </p>
       </div>

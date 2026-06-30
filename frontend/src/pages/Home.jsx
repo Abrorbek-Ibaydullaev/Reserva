@@ -963,8 +963,8 @@ const Home = () => {
 
                 {/* Search dropdown */}
                 {showSearchDrop && (
-                  <div className="absolute left-0 top-full mt-3 w-full min-w-0 rounded-2xl bg-white shadow-2xl z-[200] sm:min-w-[340px]">
-                    <div className="absolute -top-2 left-8 h-0 w-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white" />
+                  <div className="absolute left-0 top-full mt-3 w-full min-w-0 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl z-[200] sm:min-w-[340px]">
+                    <div className="absolute -top-2 left-8 h-0 w-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-slate-800" />
 
                     <div className="p-4">
                       {/* Live suggestions while typing */}
@@ -975,15 +975,15 @@ const Home = () => {
                               key={i}
                               type="button"
                               onClick={() => selectSearch(item.label)}
-                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 transition"
+                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                             >
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700">
                                 {item.type === 'business'
                                   ? <span className="text-base">🏪</span>
                                   : <MagnifyingGlassIcon className="h-4 w-4 text-slate-500" />}
                               </div>
                               <div className="min-w-0">
-                                <p className="truncate font-medium text-slate-900">{item.label}</p>
+                                <p className="truncate font-medium text-slate-900 dark:text-white">{item.label}</p>
                                 {item.sub && <p className="truncate text-xs text-slate-400">{item.sub}</p>}
                               </div>
                             </button>
@@ -1005,12 +1005,12 @@ const Home = () => {
                               key={term}
                               type="button"
                               onClick={() => selectSearch(term)}
-                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 transition"
+                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                             >
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700">
                                 <MagnifyingGlassIcon className="h-4 w-4 text-slate-500" />
                               </div>
-                              <span className="font-medium text-slate-900">{term}</span>
+                              <span className="font-medium text-slate-900 dark:text-white">{term}</span>
                             </button>
                           ))}
                         </div>
@@ -1044,16 +1044,16 @@ const Home = () => {
 
                 {/* Dropdown */}
                 {showWhereDrop && (
-                  <div className="absolute left-1/2 top-full mt-3 w-80 -translate-x-1/2 rounded-2xl bg-white shadow-2xl z-[200]">
+                  <div className="absolute left-1/2 top-full mt-3 w-80 -translate-x-1/2 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl z-[200]">
                     {/* Triangle arrow */}
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-0 w-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white" />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-0 w-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-slate-800" />
 
                     <div className="p-4">
                       {/* Enable location */}
                       <button
                         type="button"
                         onClick={enableLocation}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#2eadd0] hover:bg-slate-50 transition"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#2eadd0] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                       >
                         <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
@@ -1069,12 +1069,12 @@ const Home = () => {
                               key={city}
                               type="button"
                               onClick={() => selectCity(city)}
-                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-slate-50 transition text-left"
+                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition text-left"
                             >
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700">
                                 <MapPinIcon className="h-5 w-5 text-slate-500" />
                               </div>
-                              <span className="font-medium text-slate-900">{city}</span>
+                              <span className="font-medium text-slate-900 dark:text-white">{city}</span>
                             </button>
                           ))}
                         </div>
@@ -1089,12 +1089,12 @@ const Home = () => {
                               key={city}
                               type="button"
                               onClick={() => selectCity(city)}
-                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-slate-50 transition text-left"
+                              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition text-left"
                             >
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700">
                                 <MapPinIcon className="h-5 w-5 text-slate-500" />
                               </div>
-                              <span className="font-medium text-slate-900">{city}</span>
+                              <span className="font-medium text-slate-900 dark:text-white">{city}</span>
                             </button>
                           ))}
                         </div>

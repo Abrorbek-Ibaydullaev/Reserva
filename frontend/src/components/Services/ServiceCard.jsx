@@ -64,7 +64,7 @@ const ServiceCard = ({ service }) => {
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
       {/* Service Image */}
-      <div className="relative h-48 overflow-hidden bg-gray-100 flex-shrink-0">
+      <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-slate-700 flex-shrink-0">
         <img 
           src={fixMediaUrl(service.thumbnail) || 'https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
           alt={service.name}

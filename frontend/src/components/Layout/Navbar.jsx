@@ -249,7 +249,7 @@ const Navbar = () => {
                 <div aria-hidden="true" className="mx-4 h-10 w-40 rounded-full bg-gray-100 dark:bg-gray-800" />
               </div>
             ) : isAuthenticated ? (
-              <div className="border-t border-gray-200 pb-3 pt-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
                 <div className="flex min-w-0 items-center px-4">
                   {user?.profile_picture ? (
                     <img

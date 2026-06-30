@@ -529,7 +529,7 @@ const BusinessDetail = () => {
             const firstName = employee.user_details?.first_name || employee.user_details?.email || 'Staff';
             return (
               <div key={employee.id} className="min-w-[72px] text-center">
-                <div className="mx-auto h-14 w-14 overflow-hidden rounded-full bg-gray-100">
+                <div className="mx-auto h-14 w-14 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-700">
                   {employee.user_details?.profile_picture ? (
                     <img src={normalizeMediaUrl(employee.user_details.profile_picture)} alt={firstName} className="h-full w-full object-cover" />
                   ) : (
@@ -886,18 +886,18 @@ const BusinessDetail = () => {
       {/* Login modal */}
       {showLoginModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-[24px] bg-white p-6 shadow-xl text-center sm:p-8">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f6fb] text-[#2f95bb] mb-5">
+          <div className="w-full max-w-sm rounded-[24px] bg-white dark:bg-slate-800 p-6 shadow-xl text-center sm:p-8">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f6fb] dark:bg-slate-700 text-[#2f95bb] mb-5">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">{t('business_detail.login_to_book')}</h2>
-            <p className="mt-2 text-gray-500 text-sm">{t('business_detail.login_desc')}</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('business_detail.login_to_book')}</h2>
+            <p className="mt-2 text-gray-500 dark:text-slate-400 text-sm">{t('business_detail.login_desc')}</p>
             <div className="mt-7 space-y-3">
               <button type="button" onClick={() => navigate('/login', { state: { from: { pathname: `/business/${businessId}` } } })} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white hover:bg-[#2788aa] transition">{t('auth.sign_in')}</button>
-              <button type="button" onClick={() => navigate('/register')} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 transition">{t('auth.create_account')}</button>
-              <button type="button" onClick={() => setShowLoginModal(false)} className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition">{t('business_detail.maybe_later')}</button>
+              <button type="button" onClick={() => navigate('/register')} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 px-6 py-3 text-base font-semibold text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition">{t('auth.create_account')}</button>
+              <button type="button" onClick={() => setShowLoginModal(false)} className="w-full py-2 text-sm text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition">{t('business_detail.maybe_later')}</button>
             </div>
           </div>
         </div>
@@ -906,15 +906,15 @@ const BusinessDetail = () => {
       {/* Discard modal */}
       {showDiscardModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
-          <div className="w-full max-w-sm rounded-[24px] bg-white p-5 shadow-xl sm:max-w-2xl sm:p-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-500 sm:h-24 sm:w-24">
+          <div className="w-full max-w-sm rounded-[24px] bg-white dark:bg-slate-800 p-5 shadow-xl sm:max-w-2xl sm:p-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-300 sm:h-24 sm:w-24">
               <span className="text-3xl font-light sm:text-5xl">i</span>
             </div>
-            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">{t('business_detail.discard_booking')}</h2>
-            <p className="mx-auto mt-3 text-center text-base text-gray-600 sm:mt-4 sm:text-lg">{t('business_detail.discard_confirm')}</p>
+            <h2 className="mt-5 text-center text-2xl font-bold text-gray-900 dark:text-white sm:mt-6 sm:text-3xl">{t('business_detail.discard_booking')}</h2>
+            <p className="mx-auto mt-3 text-center text-base text-gray-600 dark:text-slate-300 sm:mt-4 sm:text-lg">{t('business_detail.discard_confirm')}</p>
             <div className="mt-6 space-y-3">
               <button type="button" onClick={handleDiscardDraft} className="w-full rounded-2xl bg-[#2f95bb] px-6 py-3 text-base font-semibold text-white sm:py-4 sm:text-lg">{t('business_detail.yes_discard')}</button>
-              <button type="button" onClick={() => setShowDiscardModal(false)} className="w-full rounded-2xl border border-gray-300 px-6 py-3 text-base font-semibold text-gray-900 sm:py-4 sm:text-lg">{t('business_detail.continue_booking')}</button>
+              <button type="button" onClick={() => setShowDiscardModal(false)} className="w-full rounded-2xl border border-gray-300 dark:border-slate-600 px-6 py-3 text-base font-semibold text-gray-900 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 sm:py-4 sm:text-lg">{t('business_detail.continue_booking')}</button>
             </div>
           </div>
         </div>

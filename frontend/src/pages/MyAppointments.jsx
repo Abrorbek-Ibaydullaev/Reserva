@@ -98,34 +98,34 @@ const ReviewModal = ({ appointment: a, onClose, onSubmitted }) => {
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-base font-bold text-slate-900">{t('booking.rate_experience')}</h2>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
-            <XMarkIcon className="h-5 w-5 text-slate-500" />
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-slate-800 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('booking.rate_experience')}</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700">
+            <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
-            <p className="mb-1 text-sm font-semibold text-slate-700">{a.service_details?.name}</p>
-            <p className="text-xs text-slate-400">{t('booking.how_would_you_rate')}</p>
+            <p className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{a.service_details?.name}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">{t('booking.how_would_you_rate')}</p>
           </div>
 
-          <div className="flex flex-col items-center gap-2 rounded-2xl bg-slate-50 py-5">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-slate-50 dark:bg-slate-700/50 py-5">
             <StarPicker value={rating} onChange={setRating} />
-            <p className="text-sm font-medium text-slate-600">
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               {rating === 0 ? t('booking.tap_to_rate') : ratingLabels[rating]}
             </p>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700">{t('booking.your_review')}</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">{t('booking.your_review')}</label>
             <textarea
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={t('booking.review_placeholder')}
-              className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="w-full resize-none rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 p-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
@@ -166,12 +166,12 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center px-3 pb-3 sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-slate-800 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-base font-bold text-slate-900">{t('booking.appointment_details')}</h2>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100">
-            <XMarkIcon className="h-5 w-5 text-slate-500" />
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">{t('booking.appointment_details')}</h2>
+          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700">
+            <XMarkIcon className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
 
@@ -179,69 +179,69 @@ const DetailModal = ({ appointment: a, onClose, onCancel, onStatusUpdate, onRevi
           {/* Service + status */}
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xl font-bold text-slate-900">{a.service_details?.name}</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{a.service_details?.name}</p>
               {a.service_details?.category_name && (
-                <p className="text-sm text-slate-500">{t(categoryKey(a.service_details.category_name), { defaultValue: a.service_details.category_name })}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t(categoryKey(a.service_details.category_name), { defaultValue: a.service_details.category_name })}</p>
               )}
             </div>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'}`}>
               {a.status?.replace('_', ' ')}
             </span>
           </div>
 
           {/* Info grid */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="rounded-2xl bg-slate-50 dark:bg-slate-700/50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                 <CalendarDaysIcon className="h-4 w-4" /> {t('booking.date')}
               </div>
-              <p className="break-words text-sm font-semibold text-slate-900">{fmtDate(a.date)}</p>
+              <p className="break-words text-sm font-semibold text-slate-900 dark:text-white">{fmtDate(a.date)}</p>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="rounded-2xl bg-slate-50 dark:bg-slate-700/50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                 <ClockIcon className="h-4 w-4" /> {t('booking.time')}
               </div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 {fmtTime(a.start_time)} · {a.duration} {t('common.min')}
               </p>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="rounded-2xl bg-slate-50 dark:bg-slate-700/50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                 <CurrencyDollarIcon className="h-4 w-4" /> {t('booking.amount')}
               </div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 ${Number(a.total_amount || 0).toFixed(2)}
               </p>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="rounded-2xl bg-slate-50 dark:bg-slate-700/50 p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                 <BriefcaseIcon className="h-4 w-4" /> {t('booking.ref')}
               </div>
-              <p className="text-xs font-semibold text-slate-700 truncate">#{a.appointment_number}</p>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">#{a.appointment_number}</p>
             </div>
           </div>
 
           {/* People */}
-          <div className="rounded-2xl border border-slate-100 p-4 space-y-2">
+          <div className="rounded-2xl border border-slate-100 dark:border-slate-700 p-4 space-y-2">
             {(isBusinessOwner || isEmployee) && (
               <div className="flex items-center gap-2 text-sm">
-                <UserCircleIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">{t('booking.customer')}</span>
-                <span className="font-medium text-slate-900">{custName}</span>
+                <UserCircleIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                <span className="text-slate-500 dark:text-slate-400">{t('booking.customer')}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{custName}</span>
               </div>
             )}
             {!isEmployee && !isBusinessOwner && (
               <div className="flex items-center gap-2 text-sm">
-                <BriefcaseIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">{t('booking.business')}</span>
-                <span className="font-medium text-slate-900">{bName}</span>
+                <BriefcaseIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                <span className="text-slate-500 dark:text-slate-400">{t('booking.business')}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{bName}</span>
               </div>
             )}
             {empName && (
               <div className="flex items-center gap-2 text-sm">
-                <UserCircleIcon className="h-5 w-5 text-slate-400" />
-                <span className="text-slate-500">{t('booking.staff')}</span>
-                <span className="font-medium text-slate-900">{empName}</span>
+                <UserCircleIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                <span className="text-slate-500 dark:text-slate-400">{t('booking.staff')}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{empName}</span>
               </div>
             )}
           </div>
@@ -341,7 +341,7 @@ const ApptCard = ({ appointment: a, onClick, isBusinessOwner, isEmployee }) => {
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{displayName}</p>
           </div>
         </div>
-        <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+        <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLE[a.status] || 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'}`}>
           {a.status?.replace('_', ' ')}
         </span>
       </div>

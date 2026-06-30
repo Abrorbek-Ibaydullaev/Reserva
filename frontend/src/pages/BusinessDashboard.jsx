@@ -82,7 +82,7 @@ const Badge = ({ status }) => {
     rescheduled: 'bg-violet-100 text-violet-800',
   };
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${map[status] || 'bg-gray-100 text-gray-700'}`}>
+    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${map[status] || 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
       {status?.replace('_', ' ')}
     </span>
   );

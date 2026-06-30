@@ -41,16 +41,16 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4 py-6" onMouseDown={handleBackdropClick}>
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-[440px] rounded-xl bg-white p-6 shadow-2xl"
+        className="relative w-full max-w-[440px] rounded-xl bg-white dark:bg-slate-800 p-6 shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-bold text-slate-900">{t('cancel_modal.title')}</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t('cancel_modal.title')}</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-full p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            className="rounded-full p-1.5 text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 disabled:opacity-50"
             aria-label="Close cancellation modal"
           >
             <XMarkIcon className="h-5 w-5" />
@@ -58,12 +58,12 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
         </div>
 
         <div className="mt-5 space-y-4">
-          <p className="text-sm leading-6 text-slate-600">
+          <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
             {t('cancel_modal.are_you_sure', 'Are you sure you want to cancel this appointment? This action cannot be undone.')}
           </p>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+            <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t('cancel_modal.reason_label')}
             </span>
             <textarea
@@ -72,7 +72,7 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
               onChange={(event) => setReason(event.target.value)}
               disabled={isLoading}
               placeholder={t('cancel_modal.reason_placeholder')}
-              className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:opacity-70"
+              className="w-full resize-none rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 p-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 dark:disabled:bg-slate-600/50 disabled:opacity-70"
             />
           </label>
         </div>
@@ -82,7 +82,7 @@ const CancelAppointmentModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-xl border border-slate-200 dark:border-slate-600 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-60"
           >
             {t('cancel_modal.keep_appointment')}
           </button>
