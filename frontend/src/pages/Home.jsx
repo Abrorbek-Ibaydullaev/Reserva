@@ -911,14 +911,14 @@ const Home = () => {
     ) : (
       <>
         <Link to="/login" className={dark ? 'text-sm text-slate-400 hover:text-white transition' : 'text-sm font-medium text-white/80 hover:text-white transition'}>
-          Login
+          {t('nav.login')}
         </Link>
         <Link
           to="/register"
           className={
             dark
-              ? 'hidden sm:inline-flex rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
-              : 'rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
+              ? 'hidden sm:inline-flex items-center whitespace-nowrap rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
+              : 'hidden sm:inline-flex items-center whitespace-nowrap rounded-full border border-white/30 bg-black/20 px-4 py-1.5 text-sm font-semibold text-white hover:bg-black/30 transition backdrop-blur-sm'
           }
         >
           {t('home.add_business')}
