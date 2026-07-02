@@ -15,6 +15,7 @@ class UserProfileInline(admin.StackedInline):
         }),
         ('Business Details', {
             'fields': (
+                'is_approved',
                 'business_name',
                 'business_address',
                 'business_phone',
@@ -31,10 +32,27 @@ class UserProfileInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('email', 'first_name', 'last_name',
-                    'user_type', 'is_staff', 'is_verified')
-    list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_verified')
+                    'user_type', 'is_staff', 'is_verified', 'business_approved')
+    list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_verified',
+                   'profile__is_approved')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
+    actions = ('approve_business_owners',)
+
+    @admin.display(boolean=True, description='Approved')
+    def business_approved(self, obj):
+        return bool(getattr(getattr(obj, 'profile', None), 'is_approved', False))
+
+    @admin.action(description='Approve selected business owners (enable Google sign-in)')
+    def approve_business_owners(self, request, queryset):
+        updated = 0
+        for user in queryset.filter(user_type='business_owner'):
+            profile = getattr(user, 'profile', None)
+            if profile and not profile.is_approved:
+                profile.is_approved = True
+                profile.save(update_fields=['is_approved'])
+                updated += 1
+        self.message_user(request, f'{updated} business owner(s) approved.')
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),

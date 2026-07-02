@@ -64,6 +64,55 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
+class BusinessRegistrationSerializer(serializers.Serializer):
+    """Manual business-owner registration for biz.reserva.services.
+
+    Owner + business details in a single payload. No social sign-up. New
+    accounts start unapproved (profile.is_approved=False) until an admin
+    approves them — which is what gates "Sign in with Google" on biz.
+    """
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True)
+    full_name = serializers.CharField(max_length=150)
+    phone_number = serializers.CharField(max_length=20)
+    business_name = serializers.CharField(max_length=255)
+
+    def validate_email(self, value):
+        value = User.objects.normalize_email(value).strip().lower()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError(
+                _('An account with this email already exists. Please sign in instead.'))
+        return value
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError(
+                {'password': _("Password fields didn't match.")})
+        return attrs
+
+    def create(self, validated_data):
+        full_name = validated_data['full_name'].strip()
+        parts = full_name.split(None, 1)
+        first_name = parts[0] if parts else ''
+        last_name = parts[1] if len(parts) > 1 else ''
+
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=validated_data['phone_number'].strip(),
+            user_type='business_owner',
+        )
+        # UserProfile is auto-created by a post_save signal — fill it in.
+        profile = user.profile
+        profile.business_name = validated_data['business_name'].strip()
+        profile.is_approved = False
+        profile.save(update_fields=['business_name', 'is_approved'])
+        return user
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_first_name = serializers.CharField(

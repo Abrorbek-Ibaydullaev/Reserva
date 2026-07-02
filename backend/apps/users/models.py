@@ -99,6 +99,10 @@ class UserProfile(models.Model):
     business_website = models.URLField(blank=True, null=True)
     business_description = models.TextField(blank=True, null=True)
 
+    # Business onboarding approval (biz.reserva.services). A business owner may
+    # only use "Sign in with Google" once an admin has approved their account.
+    is_approved = models.BooleanField(default=False)
+
     # Social media links
     facebook = models.URLField(blank=True, null=True)
     instagram = models.URLField(blank=True, null=True)

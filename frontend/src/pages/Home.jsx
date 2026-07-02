@@ -34,6 +34,9 @@ import {
 // Place your video at /public/hero.mp4 — gradient shows as fallback
 const HERO_VIDEO = '/hero.mp4';
 
+// Business onboarding lives on the dedicated biz app (biz.reserva.services).
+const BIZ_URL = import.meta.env.VITE_BIZ_URL || 'https://biz.reserva.services';
+
 const HEADLINE_KEYS = [
   ['home.headline1_l1', 'home.headline1_l2'],
   ['home.headline2_l1', 'home.headline2_l2'],
@@ -913,8 +916,8 @@ const Home = () => {
         <Link to="/login" className={dark ? 'text-sm text-slate-400 hover:text-white transition' : 'text-sm font-medium text-white/80 hover:text-white transition'}>
           {t('nav.login')}
         </Link>
-        <Link
-          to="/register"
+        <a
+          href={`${BIZ_URL}/register`}
           className={
             dark
               ? 'hidden sm:inline-flex items-center whitespace-nowrap rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition'
@@ -922,7 +925,7 @@ const Home = () => {
           }
         >
           {t('home.add_business')}
-        </Link>
+        </a>
       </>
     );
   };
@@ -1312,7 +1315,7 @@ const Home = () => {
           <h2 className="mb-3 text-2xl font-extrabold text-white">{t('home.add_business')}</h2>
           <p className="mb-8 text-slate-400">{t('home.add_business_subtitle')}</p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/register" className="rounded-xl bg-[#2eadd0] px-8 py-3 font-semibold text-white hover:bg-[#29a0c0] transition">{t('auth.register')}</Link>
+            <a href={`${BIZ_URL}/register`} className="rounded-xl bg-[#2eadd0] px-8 py-3 font-semibold text-white hover:bg-[#29a0c0] transition">{t('home.add_business')}</a>
             <Link to="/services" className="rounded-xl border border-white/20 px-8 py-3 font-semibold text-white hover:bg-white/10 transition">{t('home.browse_businesses')}</Link>
           </div>
         </section>

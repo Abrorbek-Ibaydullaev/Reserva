@@ -35,6 +35,10 @@ from apps.users.views_pkg.password_reset import (
     OTPResetPasswordView,
 )
 from apps.users.views_pkg.google_auth import GoogleAuthView
+from apps.users.views_pkg.business_auth import (
+    BusinessRegistrationView,
+    BusinessGoogleAuthView,
+)
 from config.views import get_translations
 
 urlpatterns = [
@@ -46,6 +50,12 @@ urlpatterns = [
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/register/', UserRegistrationView.as_view(), name='register'),
     path('api/auth/google/', GoogleAuthView.as_view(), name='google-auth'),
+
+    # Business onboarding (biz.reserva.services)
+    path('api/auth/business/register/', BusinessRegistrationView.as_view(),
+         name='business-register'),
+    path('api/auth/business/google/', BusinessGoogleAuthView.as_view(),
+         name='business-google-auth'),
     path('api/auth/profile/', UserProfileView.as_view(), name='user-profile'),
     path('api/auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('api/auth/forgot-password/', OTPForgotPasswordView.as_view(), name='forgot-password'),

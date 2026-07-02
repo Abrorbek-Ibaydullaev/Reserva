@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import GoogleAuthButton from '../components/GoogleAuthButton';
+
+// Business owners register on the dedicated biz app (biz.reserva.services).
+const BIZ_URL = import.meta.env.VITE_BIZ_URL || 'https://biz.reserva.services';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
@@ -169,7 +172,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [userType, setUserType] = useState('customer');
+  const [userType] = useState('customer'); // main site register is customer-only
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState('');
@@ -319,31 +322,13 @@ const Register = () => {
             </Link>
           </p>
 
-          {/* Account type toggle */}
-          <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1 flex gap-1">
-            <button
-              type="button"
-              onClick={() => setUserType('customer')}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
-                userType === 'customer'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              <UserGroupIcon className="h-4 w-4" /> {t('form.customer')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType('business_owner')}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
-                userType === 'business_owner'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              <BuildingOfficeIcon className="h-4 w-4" /> {t('form.business_owner')}
-            </button>
-          </div>
+          {/* Business owners register on the dedicated biz app. */}
+          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            {t('auth.registering_a_business', { defaultValue: 'Registering a business?' })}{' '}
+            <a href={`${BIZ_URL}/register`} className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline">
+              <BuildingOfficeIcon className="h-4 w-4" /> {t('home.add_business', { defaultValue: 'Add your business' })}
+            </a>
+          </p>
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
@@ -397,19 +382,6 @@ const Register = () => {
               <PhoneInput onDigitsChange={setPhoneNumber} />
             </Field>
 
-            {userType === 'business_owner' && (
-              <Field label={t('form.business_name')} error={errors.business_name?.message}>
-                <Input
-                  icon={BuildingOfficeIcon}
-                  placeholder={t('form.business_name_placeholder')}
-                  {...register('business_name', {
-                    required: t('errors.business_name_required'),
-                    minLength: { value: 2, message: t('errors.name_min_2') },
-                    onChange: clearRegistrationErrors,
-                  })}
-                />
-              </Field>
-            )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label={t('form.password')} error={errors.password?.message}>
