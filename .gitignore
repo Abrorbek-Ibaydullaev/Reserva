@@ -28,3 +28,9 @@ Thumbs.db
 sample.md
 /thesis_frontend_implementation.md
 /thesis_backend_implementation.md
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
