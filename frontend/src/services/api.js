@@ -151,6 +151,23 @@ export const authService = {
         return api.post('auth/register/', payload);
     },
 
+    // Sign in / sign up with a Google ID token (credential) from Google Identity Services.
+    // Backend upserts the user and returns { access, refresh, user, created }.
+    googleLogin: async (credential) => {
+        const response = await api.post('auth/google/', { credential });
+
+        if (response.data.access && response.data.refresh) {
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
+            try { localStorage.setItem('auth_set_at', String(Date.now())); } catch (e) { /* ignore */ }
+            const raw = response.data.user || (await api.get('users/me/')).data;
+            const userData = { ...raw, profile_picture: fixMediaUrl(raw.profile_picture) };
+            localStorage.setItem('user_data', JSON.stringify(userData));
+        }
+
+        return response.data;
+    },
+
     logout: () => {
         localStorage.clear();
     },

@@ -340,3 +340,6 @@ FRONTEND_URL = _env('FRONTEND_URL', 'https://reserva.services')
 # Google reCAPTCHA v2
 # ---------------------------------------------------------------------------
 RECAPTCHA_SECRET_KEY = _env('RECAPTCHA_SECRET_KEY', '')
+
+# Google Sign-In (OAuth 2.0 Web Client ID — audience for ID token verification)
+GOOGLE_CLIENT_ID = _env('GOOGLE_CLIENT_ID', '')

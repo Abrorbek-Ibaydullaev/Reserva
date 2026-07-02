@@ -75,7 +75,8 @@
     "login_required": "Login required",
     "login_required_message": "Please log in to access this page.",
     "log_in": "Log in",
-    "go_back": "Go back"
+    "go_back": "Go back",
+    "or": "or"
   },
   "nav": {
     "home": "Home",

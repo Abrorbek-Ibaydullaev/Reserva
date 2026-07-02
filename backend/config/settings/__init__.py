@@ -238,6 +238,10 @@ TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
 # Google reCAPTCHA v2
 RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY', 'your-recaptcha-secret-key-here')
 
+# Google Sign-In (OAuth 2.0 / Google Identity Services)
+# The OAuth 2.0 Web Client ID — used as the audience when verifying ID tokens.
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+
 # Frontend URL (used in Telegram deep links)
 def _local_frontend_url():
     _env = os.getenv('FRONTEND_URL')

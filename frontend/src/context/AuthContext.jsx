@@ -92,6 +92,28 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * GOOGLE SIGN-IN / SIGN-UP
+   * Sends the Google ID token (credential) to the backend, which signs the
+   * user in or creates the account, then returns { access, refresh, user }.
+   * Used by both the Login and Register pages.
+   */
+  const loginWithGoogle = async (credential) => {
+    try {
+      const data = await authService.googleLogin(credential);
+      const userData = authService.getCurrentUser();
+      setUser(userData);
+      setIsAuthenticated(true);
+      return { success: true, user: userData, created: data?.created };
+    } catch (error) {
+      return {
+        success: false,
+        status: error.response?.status,
+        message: error.response?.data?.detail || error.response?.data || 'Google sign-in failed',
+      };
+    }
+  };
+
+  /**
    * REGISTER
    * The backend returns access + refresh tokens alongside the new user, so
    * no separate login request (and therefore no second reCAPTCHA) is needed.
@@ -147,6 +169,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         loading,
         login,
+        loginWithGoogle,
         register,
         logout,
         checkAuthStatus,

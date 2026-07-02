@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 import { useForm } from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from 'react-toastify';
@@ -514,6 +515,14 @@ const Register = () => {
               )}
             </button>
           </form>
+
+          {/* Divider + Sign up with Google */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-200 dark:bg-slate-700" />
+            <span className="text-xs font-medium text-slate-400">{t('auth.or', { defaultValue: 'or' })}</span>
+            <div className="h-px flex-1 bg-gray-200 dark:bg-slate-700" />
+          </div>
+          <GoogleAuthButton text="signup_with" onError={setError} />
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/SEO';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 import {
   EnvelopeIcon,
   LockClosedIcon,
@@ -247,6 +248,14 @@ const Login = () => {
               )}
             </button>
           </form>
+
+          {/* Divider + Sign in with Google */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-200 dark:bg-slate-700" />
+            <span className="text-xs font-medium text-slate-400">{t('auth.or', { defaultValue: 'or' })}</span>
+            <div className="h-px flex-1 bg-gray-200 dark:bg-slate-700" />
+          </div>
+          <GoogleAuthButton text="signin_with" onError={setSubmitError} />
         </div>
       </div>
     </div>

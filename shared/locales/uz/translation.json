@@ -75,7 +75,8 @@
     "login_required": "Kirish talab qilinadi",
     "login_required_message": "Bu sahifaga kirish uchun tizimga kiring.",
     "log_in": "Kirish",
-    "go_back": "Orqaga"
+    "go_back": "Orqaga",
+    "or": "yoki"
   },
   "nav": {
     "home": "Bosh sahifa",
